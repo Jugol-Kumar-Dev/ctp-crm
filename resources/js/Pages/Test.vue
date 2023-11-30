@@ -1,10 +1,6 @@
 <template>
 
-    <Head>
-        <title>Home</title>
-        <meta type="description" content="Home information" head-key="description">
-    </Head>
-
+    <Head title="CRM Dashboard"/>
     <!-- Dashboard Ecommerce Starts -->
     <div class="app-content content ">
         <div class="content-overlay"></div>
@@ -52,15 +48,18 @@
                             <thead>
                                 <tr>
                                     <th>Name</th>
-                                    <th>Email</th>
                                     <th>Phone</th>
                                     <th>Date</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="lead in props.others_followup_leads">
-                                    <td>{{ lead.name}}</td>
-                                    <td>{{ lead.email}}</td>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <strong>{{ lead.name }}</strong>
+                                            <smalll>{{ lead.email }}</smalll>
+                                        </div>
+                                    </td>
                                     <td>{{ lead.phone}}</td>
                                     <td>{{ moment(lead.follow_up)?.format('D-MM-y') }}</td>
                                 </tr>
@@ -96,19 +95,22 @@
                 <div class="card">
                     <div class="card-body">
                         <h2 class="card-title">Others Followup Clients</h2>
-                        <table class="table table-striped table-hover">
+                        <table class="table table-striped table-hover table-responsive">
                             <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>Email</th>
                                 <th>Phone</th>
                                 <th>Date</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr v-for="client in props.others_followup_Clients">
-                                <td>{{ client.name}}</td>
-                                <td>{{ client.email}}</td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <strong>{{ client.name }}</strong>
+                                        <small>{{ client.email }}</small>
+                                    </div>
+                                </td>
                                 <td>{{ client.phone}}</td>
                                 <td>{{ moment(client.follow_up)?.format('D-MM-y') }}</td>
                             </tr>

@@ -1,4 +1,6 @@
 <template>
+    <Head title="Show Invoice"/>
+
     <!-- BEGIN: Content-->
     <div class="app-content content ">
         <div class="content-overlay"></div>
@@ -27,7 +29,7 @@
                                     <a :href="props.url.invoice_url"  class="btn btn-outline-primary w-100 mb-75">Download PDF</a>
 <!--                                    <a :href="props.url.show_url+'?print=true'"  class="btn btn-outline-primary w-100 mb-75">Print Invoice</a>-->
                                     <button type="button" class="btn btn-outline-primary w-100 mb-75" data-bs-toggle="modal"
-                                            data-bs-target="#givenDiscount">Given Discount</button>
+                                            data-bs-target="#givenDiscount">Give Discount</button>
 
                                     <button type="button" class="btn btn-outline-primary w-100 mb-75" data-bs-toggle="modal"
                                             data-bs-target="#paymentHistory">Payment History</button>
@@ -126,7 +128,7 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">×</button>
                                 <div class="modal-header mb-1">
                                     <h5 class="modal-title">
-                                        <span class="align-middle">Given Discount</span>
+                                        <span class="align-middle">Give Discount</span>
                                     </h5>
                                 </div>
                                 <div class="modal-body flex-grow-1">
@@ -143,7 +145,7 @@
                                         </div>
 
                                         <div class="d-flex flex-wrap mb-0">
-                                            <button type="button" class="btn btn-primary me-1" data-bs-dismiss="modal" @click="addDiscount">Send</button>
+                                            <button type="button" class="btn btn-primary me-1" data-bs-dismiss="modal" @click="addDiscount">Save</button>
                                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
                                         </div>
                                     </form>
@@ -151,7 +153,7 @@
                             </div>
                         </div>
                     </div>
-                    <Modal v-if="props.isShowSidebar" id="paymentHistory" title="Add New Client" v-vb-is:modal size="xl">
+                    <Modal v-if="props.isShowSidebar" id="paymentHistory" title="Payment History" v-vb-is:modal size="xl">
                         <table class="table table-striped table-borderless">
                             <thead>
                                 <tr>
@@ -166,7 +168,7 @@
                             </thead>
                             <tbody>
                                 <tr v-for="(item, index) in props.invoice.transactions" :key="item.id">
-                                    <td>{{ 'Tran_#'+item.transaction_id }}</td>
+                                    <td>{{ 'Trx_#'+item.transaction_id }}</td>
                                     <td>{{ item.received_by?.name }}</td>
                                     <td>{{ moment(item.payment_date).format('ll') }}</td>
                                     <td>{{ item.amount }}</td>

@@ -59,7 +59,7 @@
                     <div class="card-body invoice-padding pt-0">
                         <div class="row invoice-spacing">
                             <div class="col-xl-8 p-0">
-                                <h6 class="mb-2">Quotation To:</h6>
+                                <h6 class="mb-2">Invoice To:</h6>
                                 <div class="row">
                                     <div class="col-md-8">
                                         <div class="input-group col-md-5">
@@ -73,6 +73,7 @@
                                                       :filter="fuseSearch"
                                                       placeholder="e.g Select Client">
                                                 <template v-slot:option="option">
+<!--
                                                     <li class="d-flex align-items-start border-bottom">
                                                         <div class="d-flex align-items-center justify-content-between w-100">
                                                             <div class="me-1 d-flex flex-column " >
@@ -81,6 +82,17 @@
                                                                 <span >{{ option.phone }}
                                                                    <span v-if="option.secondary_phone">/ {{ option.secondary_phone}}</span>
                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+-->
+
+                                                    <li class="d-flex align-items-start py-1">
+                                                        <div class="d-flex align-items-center justify-content-between w-100">
+                                                            <div class="me-1 d-flex flex-column">
+                                                                <span>{{ option.name }}</span>
+                                                                <span>{{ option.email ?? ''}}</span>
+                                                                <span>{{ option.phone ?? ''}}</span>
                                                             </div>
                                                         </div>
                                                     </li>

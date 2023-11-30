@@ -1,4 +1,6 @@
 <template>
+    <Head title="Lead Management"/>
+
     <div class="app-content content ">
         <div class="content-overlay"></div>
         <div class="header-navbar-shadow"></div>
@@ -16,7 +18,7 @@
                                         class="dt-button add-new btn btn-primary"
                                         @click="addDataModal"
                                     >
-                                        Add Lead btn
+                                        Add Lead
                                     </button>
                                     <!--                                    <div>
                                                                             <CDropdown>
@@ -274,7 +276,7 @@
 
             <div class="modal-footer">
                 <button :disabled="createForm.processing" type="submit"
-                        class="btn btn-primary waves-effect waves-float waves-light">Submit
+                        class="btn btn-primary waves-effect waves-float waves-light">Save
                 </button>
                 <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="modal"
                         aria-label="Close">Cancel
@@ -401,7 +403,7 @@
 
             <div class="modal-footer">
                 <button :disabled="updateForm.processing" type="submit"
-                        class="btn btn-primary waves-effect waves-float waves-light">Submit
+                        class="btn btn-primary waves-effect waves-float waves-light">Save
                 </button>
                 <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="modal"
                         aria-label="Close">Cancel

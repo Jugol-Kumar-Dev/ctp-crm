@@ -1,4 +1,6 @@
 <template>
+    <Head title="Welcome Again"/>
+
     <div class="vertical-layout vertical-menu-modern blank-page navbar-floating footer-static">
         <div class="app-content content ">
             <div class="content-overlay"></div>

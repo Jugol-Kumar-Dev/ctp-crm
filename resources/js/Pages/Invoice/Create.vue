@@ -1,4 +1,5 @@
 <template>
+    <Head title="Create New Invoice"/>
 
     <div class="app-content content ">
         <div class="content-overlay"></div>

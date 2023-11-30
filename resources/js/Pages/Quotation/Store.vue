@@ -1,4 +1,6 @@
 <template>
+    <Head title="Make New Quotation"/>
+
     <UpperQuotation :subtotal="totalPrice" :clients="props.clients" :errors="props.errors" @handleQuotation="saveQuotation">
         <!-- Product Details starts -->
         <div class="card-body invoice-padding invoice-product-details" v-for="(item, index) in formData.items">

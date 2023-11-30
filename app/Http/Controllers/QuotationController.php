@@ -1164,6 +1164,7 @@ class QuotationController extends Controller
             'u_id'       => date('Yd', strtotime(now())),
             'transaction_model' => 'App\\Models\\Invoice',
             'transaction_model_id' => $invoice->id,
+            "purpose" => "#".env('INV_PREFIX')."_".$invoice->invoice_id ?? NULL,
             'method_id'  => Request::input('payment_id'),
             'user_id'    => Auth::id(),
             'client_id'  => $quotation->client->id,

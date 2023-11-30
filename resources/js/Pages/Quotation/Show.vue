@@ -1,4 +1,6 @@
 <template>
+    <Head title="Show Quotation"/>
+
     <!-- BEGIN: Content-->
     <div class="app-content content ">
         <div class="content-overlay"></div>
@@ -165,7 +167,7 @@
                                     <a :href="props.url.show_url+'?download=true'"  class="btn btn-outline-primary w-100 mb-75">Download PDF</a>
                                     <a :href="props.url.show_url+'?print=true'"  class="btn btn-outline-primary w-100 mb-75">Print Quotation</a>
                                     <button type="button" class="btn btn-outline-primary w-100 mb-75" data-bs-toggle="modal"
-                                            data-bs-target="#givenDiscount">Given Discount</button>
+                                            data-bs-target="#givenDiscount">Give Discount</button>
                                     <button v-if="props.quotation.invoice === null" class="btn btn-success w-100 mb-75"
                                             data-bs-toggle="modal"
                                             data-bs-target="#createInvoice">
@@ -258,7 +260,7 @@
 
 
                                         <div class="mb-1">
-                                            <label class="form-label">Given Discount</label>
+                                            <label class="form-label">Give Discount</label>
                                             <input type="text" v-model="invoiceFormData.discount" @input="invoiceDiscount" class="form-control" placeholder="If want to given again discount..."/>
                                         </div>
 
@@ -269,8 +271,8 @@
 
 
                                         <div class="mb-1">
-                                            <label class="form-label">Total pay</label>
-                                            <input type="text" v-model="invoiceFormData.pay" @input="payAmount" class="form-control" placeholder="If want to given again discount..."/>
+                                            <label class="form-label">Total Paid</label>
+                                            <input type="text" v-model="invoiceFormData.pay" @input="payAmount" class="form-control"/>
                                         </div>
 
                                         <div class="mb-1">
@@ -283,7 +285,19 @@
                                             <v-select :options="props.paymentMethods"
                                                       :reduce="payment => payment.id"
                                                       v-model="invoiceFormData.payment_method"
+                                                      class="form-control"
                                                       label="name"  placeholder="Select Payment Method"></v-select>
+                                        </div>
+
+                                        <div class="mb-1">
+                                            <div class="d-flex justify-content-between">
+                                                <label class="invoice-terms-title mb-0" for="sendEmailInvoice">Send Invoice Client Email </label>
+                                                <div class="form-check form-switch">
+                                                    <input v-model="invoiceFormData.sendEmail" type="checkbox" class="form-check-input" checked id="sendEmailInvoice" />
+                                                    <label class="form-check-label" for="sendEmailInvoice"></label>
+                                                </div>
+                                            </div>
+
                                         </div>
 
 
@@ -360,7 +374,7 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">×</button>
                                 <div class="modal-header mb-1">
                                     <h5 class="modal-title">
-                                        <span class="align-middle">Given Discount</span>
+                                        <span class="align-middle">Give Discount</span>
                                     </h5>
                                 </div>
                                 <div class="modal-body flex-grow-1">
@@ -377,7 +391,7 @@
                                         </div>
 
                                         <div class="d-flex flex-wrap mb-0">
-                                            <button type="button" class="btn btn-primary me-1" data-bs-dismiss="modal" @click="addDiscount">Send</button>
+                                            <button type="button" class="btn btn-primary me-1" data-bs-dismiss="modal" @click="addDiscount">Save</button>
                                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
                                         </div>
                                     </form>
@@ -417,6 +431,7 @@
         quotationId:props.quotation.id,
         totalPrice:props.quotation.grand_total,
         clientId:props.quotation.client_id,
+        sendEmail:false,
         discount:null,
         pay:null,
         payment_method:null,

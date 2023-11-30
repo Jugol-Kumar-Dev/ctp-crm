@@ -1,4 +1,6 @@
 <template>
+    <Head title="My Todos"/>
+
     <TodoLayout :users='users' >
         <div class="card h-100 shadow-none mb-0 pb-0 rounded-0">
 <!--            <div class="card-header rounded-0">

@@ -41,17 +41,9 @@
                 <h3>Dear {{ $invoice->client?->name??  $invoice->quotation?->client?->name }},</h3>
                 <p>Greetings from Creative Tech Park! Hope you are doing well.</p>
                 <p>This is a notice that an invoice has been generated on {{ $invoice?->invoice_date?->format('l, F jS, Y')}}.</p>
-
                 @if($template)
                     <p class="temp_content" style="margin-bottom: 1rem">{!! nl2br($template) !!}</p>
                 @endif
-
-                <p>Creative Tech Park Team</p>
-                <p>Phone: +8801639-200002</p>
-                <p>Email: info@creativetechpark.com</p>
-                <p>Address: The Imperial Irish Kingdom, Mo-03 (3rd Floor),</p>
-                <p>Merul Badda, Dhaka 1212</p>
-                <p><a href="https://creativetechpark.com" target="_blank" rel="noopener noreferrer">https://creativetechpark.com</a></p>
             </div>
         </div>
     </div>

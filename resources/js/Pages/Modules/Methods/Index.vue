@@ -1,4 +1,6 @@
 <template>
+    <Head title="Payment Method Management"/>
+
     <div class="app-content content ">
         <div class="content-overlay"></div>
         <div class="header-navbar-shadow"></div>

@@ -1,5 +1,6 @@
 <template>
 <!-- User Create:START -->
+    <Head title="Create User"/>
 
     <div class="app-content content ">
         <div class="content-overlay"></div>

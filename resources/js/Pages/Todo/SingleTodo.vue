@@ -1,4 +1,6 @@
 <template>
+    <Head title="Show Todo"/>
+
     <Head title="Todo Index"/>
     <div class="app-content content ">
         <div class="content-overlay"></div>

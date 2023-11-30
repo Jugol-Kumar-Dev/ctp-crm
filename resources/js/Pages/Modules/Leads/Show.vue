@@ -1,4 +1,5 @@
 <template>
+    <Head title="Show Lead"/>
 
     <UserProfile :user="props.user" :image="props.image"/>
 

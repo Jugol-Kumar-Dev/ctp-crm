@@ -241,8 +241,6 @@ class InvoiceController extends Controller
         $due = $grandTotal - (int)Request::input('pay');
 
 
-//        return $quotation;
-
         $invoice = Invoice::create([
             'invoice_id' => now()->format('Ymd'),
             'quotation_id' => $quotation->id,
@@ -266,12 +264,12 @@ class InvoiceController extends Controller
             'transaction_id' =>  now()->format('Ymd'),
             'transactionable_id' => $invoice->id,
             'transactionable_type' => "App\\Models\\Invoice",
+            "purpose" => "#".env('INV_PREFIX')."_".$invoice->invoice_id ?? NULL,
             'received_by' => Auth::id(),
             'payment_by' => Request::input('clientId'),
             "transaction_type" => "Credited",
             "amount" => $quotation->total_price,
             "pay" => Request::input('pay'),
-            "purpose" => $invoice->invoice_id ?? NULL,
             "due" => $due,
             "payment_date" => now(),
             "method_id" => Request::input('payment_method')
@@ -280,8 +278,10 @@ class InvoiceController extends Controller
         $data = $this->downloadInvoice($invoice->id, true);
         $clientEmail = $invoice->quotation?->client?->email ?? $invoice->client?->email;
 
-        if (is_array($data) && $clientEmail){
-            Mail::to($clientEmail)->send(new InvoiceMail($data['invoice'], $data['pref']));
+        if(Request::input('sendEmail') || Request::input('sendEmail') == true || Request::input('sendEmail') == 'true'){
+            if (is_array($data) && $clientEmail){
+                Mail::to($clientEmail)->send(new InvoiceMail($data['invoice'], $data['pref']));
+            }
         }
 
         return back();
@@ -486,7 +486,7 @@ class InvoiceController extends Controller
             'user_id'    => Auth::id(),
             'client_id'  => $invoice->client->id,
             'invoice_id' => $invoice->id,
-            "purpose" => $invoice->invoice_id ?? NULL,
+            "purpose" => "#".env('INV_PREFIX')."_".$invoice->invoice_id ?? NULL,
             'amount'     => $invoice->grand_total,
             'pay_amount' => Request::input('pay_amount'),
             'discount'   => Request::input('discount'),

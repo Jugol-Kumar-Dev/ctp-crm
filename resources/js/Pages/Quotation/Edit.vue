@@ -1,4 +1,6 @@
 <template>
+    <Head title="Edit Quotation"/>
+
     <UpperQuotation :subtotal="totalPrice"
                     :clients="props.clients"
                     :errors="props.errors"

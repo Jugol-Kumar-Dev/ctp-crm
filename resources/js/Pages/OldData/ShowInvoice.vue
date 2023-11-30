@@ -1,4 +1,6 @@
 <template>
+    <Head title="Show Old Invoice"/>
+
     <!-- BEGIN: Content-->
     <div class="app-content content ">
         <div class="content-overlay"></div>

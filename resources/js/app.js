@@ -60,7 +60,7 @@ createInertiaApp({
       .mount(el);
   },
 
-  title: title => `My App - ${title}`
+  title: title => `${title} | Creative Tech Park`
 });
 
 InertiaProgress.init({

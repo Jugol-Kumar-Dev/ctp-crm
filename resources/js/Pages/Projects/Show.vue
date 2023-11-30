@@ -1,4 +1,5 @@
 <template>
+    <Head title="Show Project"/>
 
     <div class="app-content content ">
         <div class="content-overlay"></div>

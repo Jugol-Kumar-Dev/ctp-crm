@@ -19,19 +19,10 @@ class TransactionController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Inertia\Response|\Inertia\ResponseFactory
+     * @return
      */
     public function index()
     {
-
-
-//        $search = Request::input('dateRange');
-//
-//        $start_date = date('Y-m-d H:i:s', strtotime($search[0]));
-//        $end_date = date('Y-m-d H:i:s', strtotime($search[1]));
-//
-//        return $start_date."     ".$end_date;
-
         $transactions = Transaction::query()
             ->latest()
             ->with(['receivedBy', 'paymentBy', 'method'])
@@ -66,6 +57,16 @@ class TransactionController extends Controller
             ]);
 
         if (Request::input('export_pdf') === 'true'){
+            $data = $transactions;
+            $dateRange = Request::input('dateRange');
+            $pdf = Pdf::loadView('reports.pdf_transaction_list', compact('data', 'dateRange'));
+//            return $pdf->download("transaction"."_".now()->format('d_m_Y')."_".'quotation.pdf');
+
+            return $this->loadDownload($transactions, Request::input('dateRange'));
+        }
+
+
+        if (Request::input('exportPdf') === 'true'){
             return $this->loadDownload($transactions, Request::input('dateRange'));
         }
 
@@ -86,7 +87,7 @@ class TransactionController extends Controller
         Pdf::setOption(['enable_php', true]);
 //        return view('reports.pdf_transaction_list', compact('data', 'dateRange'));
         $pdf = Pdf::loadView('reports.pdf_transaction_list', compact('data', 'dateRange'));
-        return $pdf->download("transaction"."_".now()->format('d_m_Y')."_".'quotation.pdf');
+        return $pdf->download("transaction"."_".now()->format('d_m_Y')."_".'transaction.pdf');
     }
 
 

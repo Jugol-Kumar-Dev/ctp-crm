@@ -181,27 +181,21 @@
                         <td style="text-transform: capitalize">{{ $item["tran"]["receivedBy"]["name"] ?? '' }}</td>
                         <td style="text-transform: capitalize">{{ $item["tran"]["method"]["name"] }}</td>
                         <td>{{ $item["tran"]["purpose"] }}</td>
-                        <td>{{ date('d-m-Y',strtotime($item['created_at'])) }}</td>
+                        <td>{{ date('d-m-Y',strtotime($item['tran']["payment_date"])) }}</td>
                     </tr>
                 @endforeach
                 </tbody>
             </table>
 
 
-{{--            <div>
-                <h2>
+           <div>
+                <h4 style="margin-bottom:0;">
                     Total Credited : {{ $credit }} Tk
-                </h2>
-                <h2 style="
-                    border-bottom: 1px solid gray;
-                    max-width: max-content;
-                    padding-bottom: 10px;
-                ">
+                </h4>
+                <h4 style="max-width: max-content;">
                     Total Debited : {{ $debit }} Tk
-                </h2>
-                <h2>Net Profit : {{ $credit - $debit }} Tk</h2>
+                </h4>
             </div>
---}}
         </div>
     </div>
 

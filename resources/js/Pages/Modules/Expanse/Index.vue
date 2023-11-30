@@ -1,4 +1,6 @@
 <template>
+    <Head title="Expanse Managment"/>
+
     <div class="app-content content ">
         <div class="content-overlay"></div>
         <div class="header-navbar-shadow"></div>
@@ -165,7 +167,7 @@
     </Modal>
 
 
-    <Modal id="updateData" title="Update This Expanse" v-vb-is:modal size="md">
+    <Modal id="updateData" title="Update Expanse" v-vb-is:modal size="md">
         <form @submit.prevent="updateData(editData.id)">
             <div class="modal-body">
                 <div class="row mb-1 flex-column">
@@ -211,6 +213,11 @@
                     <div class="col mb-1">
                         <ImageUploader v-model="updateForm.document" label="Expanse Document" type="text" class="form-control"/>
                         <span v-if="errors.document" class="error text-sm text-danger">{{ errors.document }}</span>
+                        <a v-if="editData.document" :href="`/storage/${editData.document}`"
+                           class="error text-sm text-danger d-flex gap-1 align-items-center" target="_blank">
+                            <span>Existing File</span>
+                            <vue-feather type="external-link" size="12"/>
+                        </a>
                     </div>
                     <div class="col-md-12">
                         <Textarea v-model="updateForm.details" label="Expanse Note" placeholder="e.g explain here about more details in this expanse."></Textarea>
@@ -220,7 +227,7 @@
 
             <div class="modal-footer">
                 <button :disabled="createForm.processing" type="submit"
-                        class="btn btn-primary waves-effect waves-float waves-light">Submit</button>
+                        class="btn btn-primary waves-effect waves-float waves-light">Save</button>
                 <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="modal"
                         aria-label="Close">Cancel</button>
             </div>
@@ -228,17 +235,19 @@
     </Modal>
 
 
-    <Modal id="showExpanse" title="Show This Expanse" v-vb-is:modal size="md">
+    <Modal id="showExpanse" title="Show Expanse" v-vb-is:modal size="md">
         <div class="modal-body">
             <h3>Purpose: {{ editData.purpse?.name }}</h3>
             <h5>Amount: {{ editData.amount }}</h5>
             <h5>Exp Date: {{ moment(editData.date).format('D-MM-y')}}</h5>
             <div class="flex flex-column mb-3" style="display:flex; flex-direction: column;" v-if="editData.document">
                 <label for="image">Document</label>
-                <img id="image" :src="`/storage/${editData.document}`" alt="">
+                <img id="image" :src="`/storage/${editData.document}`" alt="" style="width: 100%;
+    height: 100%;
+    max-height: 250px;
+    object-fit: contain;">
             </div>
             <small v-if="editData.details">Notes: {{ editData?.details }}</small>
-
         </div>
     </Modal>
 
@@ -331,7 +340,7 @@ const editItem = (url, isShow=false) =>{
         console.log(res.data.date)
         editData.value = res.data;
         updateForm.purpose_id = res.data.purpose_id;
-        updateForm.method_id = res.data.method_id;
+        updateForm.method_id = res.data.method;
         updateForm.subject = res.data.subject;
         updateForm.amount = res.data.amount;
         updateForm.expanse_date = res.data.date;

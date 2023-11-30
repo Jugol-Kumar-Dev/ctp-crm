@@ -1,4 +1,6 @@
 <template>
+    <Head title="Transaction Management"/>
+
     <div class="app-content content ">
         <div class="content-overlay"></div>
         <div class="header-navbar-shadow"></div>
@@ -236,15 +238,6 @@ const props = defineProps({
 
 const tranDetails = () => document.getElementById("showData").$vb.modal.show()
 
-const url = location.search;
-const exportPDF =() =>{
-    if (url){
-        window.location.href = window.location.href+"&export_pdf=true";
-    }else{
-        window.location.href = window.location.href+"?export_pdf=true";
-    }
-}
-
 const editData = ref(null);
 const editItem = (url) =>{
     console.log(url);
@@ -264,9 +257,10 @@ const changeDateRange = (event) => {
         dateRange.value = '';
     }
 };
+
+
 const handleDate = (event) => isCustom.value = event !== null;
 const searchByStatus = ref(props.filters.byStatus)
-
 
 let search = ref(props.filters.search);
 let perPage = ref(props.filters.perPage);
@@ -274,8 +268,13 @@ watch([search, perPage, searchByStatus, dateRange], debounce(function ([val, val
     Inertia.get(props.main_url, { search: val, perPage: val2, byStatus: val3 , dateRange: val4}, { preserveState: true, replace: true });
 }, 300));
 
-
-
+const exportPDF =() =>{
+    if(props.filters.length === undefined){
+        window.location.replace(window.location.href+"&export_pdf=true")
+    }else{
+        window.location.replace(window.location.href+"?export_pdf=true")
+    }
+}
 
 
 </script>
