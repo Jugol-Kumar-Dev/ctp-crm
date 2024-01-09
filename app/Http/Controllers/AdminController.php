@@ -183,8 +183,15 @@ class AdminController extends Controller
 
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
-        $user->delete();
-        return back();
+        try{
+            $user = User::findOrFail($id);
+            if(count($user->invoices) | count($user->transactions) | count($user->projects) | count($user->clients) | count($user->expanses)){
+                return back()->withErrors('User data exist. Can not delete this user.');
+            }
+            $user->delete();
+            return back();
+        }catch (\Exception $e){
+            return back()->withErrors('error', $e->getMessage());
+        }
     }
 }

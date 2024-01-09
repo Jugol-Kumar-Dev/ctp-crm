@@ -69,6 +69,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'permissions' => [
                     'leads.show',
                     'leads.index',
+                    'leads.ownonly',
                     'leads.create',
                     'leads.edit',
                     'leads.delete',
@@ -77,6 +78,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'name' => [
                     'Show Leads',
                     'Manage Leads',
+                    'Manage Own Leads',
                     'Create Leads',
                     'Edit Leads',
                     'Delete Leads',
@@ -88,6 +90,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'permissions' => [
                     'client.show',
                     'client.index',
+                    'client.ownonly',
                     'client.create',
                     'client.edit',
                     'client.delete',
@@ -95,6 +98,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'name' => [
                     'Show Client',
                     'Manage Client',
+                    'Manage Own Client',
                     'Create Client',
                     'Edit Client',
                     'Delete Client',
@@ -295,6 +299,24 @@ class RolesAndPermissionsSeeder extends Seeder
                     'Delete Transaction'
                 ]
             ],
+            [
+                'module' => "Settings",
+                'permissions' => [
+                    'settings.show'
+                ],
+                'name' => [
+                    'Show Settings',
+                ]
+            ],
+            [
+                'module' => "Old Data",
+                'permissions' => [
+                    'settings.old_data'
+                ],
+                'name' => [
+                    'Show Old Data',
+                ]
+            ]
         ];
 
         foreach ($all as $item) {
@@ -316,19 +338,19 @@ class RolesAndPermissionsSeeder extends Seeder
         Role::updateOrCreate(['name' => 'Administrator', 'is_delete' => false]);
 
 
-        User::updateOrCreate([
-            'name' => 'admin',
-            'email' => 'admin@admin.com',
-            'password' => bcrypt(12345678),
-        ])->assignRole('Administrator');
-//
-//        $developer = Role::updateOrCreate(['name' => 'Developer']);
-//        foreach ($all as $item) {
-//            foreach ($item['permissions'] as $permission) {
-//                $developer->givePermissionTo( $permission );
-//            }
-//        };
-//
+//        User::updateOrCreate([
+//            'name' => 'admin',
+//            'email' => 'admin@admin.com',
+//            'password' => bcrypt(12345678),
+//        ])->assignRole('Administrator');
+
+        $developer = Role::updateOrCreate(['name' => 'Developer']);
+        foreach ($all as $item) {
+            foreach ($item['permissions'] as $permission) {
+                $developer->givePermissionTo( $permission );
+            }
+        };
+
 //        User::updateOrCreate([
 //            'name' => 'Jugol Kumar',
 //            'email' => 'jugol@creativetechpark.com',

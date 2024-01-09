@@ -68,8 +68,9 @@ class User extends Authenticatable
 
     public function quotations()
     {
-        return $this->hasMany('App\Models\Quotation');
+        return $this->hasMany('App\Models\Quotation', 'created_by');
     }
+
     public function clients()
     {
         return $this->belongsToMany('App\Models\Client', 'client_user');
@@ -83,4 +84,17 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Project::class, 'project_user','project_id', 'user_id')->withTimestamps();
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'received_by');
+    }
+
+    public function expanses()
+    {
+        return $this->hasMany(Expanse::class);
+    }
+
+
+
 }

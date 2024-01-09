@@ -402,7 +402,7 @@ const props = defineProps({
 })
 
 const formData = useForm({
-    clientId:props.invoice.client_id,
+    clientId:props.invoice.client,
     date:props.invoice.created_at,
     note:props.invoice.note,
     paymentPolicy:props.invoice.payment_policy ?? policyStore.getPaymentPolicy,

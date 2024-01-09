@@ -40,11 +40,18 @@ class TransactionController extends Controller
                 $query->where('transaction_type', $search);
             })
             ->when(Request::input('dateRange'), function ($query, $search){
-                $start_date = date('Y-m-d H:i:s', strtotime($search[0]));
-                $end_date = date('Y-m-d H:i:s', strtotime($search[1]));
-//                $query->whereBetween('created_at', [$start_date, $end_date]);
-                $query->whereDate('payment_date', '>=', $start_date)
-                    ->whereDate('payment_date', '<=', $end_date);
+
+//                $start_date = date('Y-m-d H:i:s', strtotime($search[0]));
+//                $end_date = date('Y-m-d', strtotime($search[1]));
+
+
+                $startDateTime = Carbon::parse($search[0])->startOfDay();
+                $endDateTime = Carbon::parse($search[1])->endOfDay();
+
+                $query->whereBetween('payment_date', [$startDateTime, $endDateTime]);
+
+//                $query->whereDate('payment_date', '>=', $start_date)
+//                    ->whereDate('payment_date', '<=', $end_date);
             })
             ->latest()
             ->paginate(Request::input('perPage') ?? 10)

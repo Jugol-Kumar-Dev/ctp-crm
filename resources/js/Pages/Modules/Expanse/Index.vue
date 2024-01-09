@@ -339,7 +339,7 @@ const editItem = (url, isShow=false) =>{
     axios.get(url+"/?data=true").then((res)=>{
         console.log(res.data.date)
         editData.value = res.data;
-        updateForm.purpose_id = res.data.purpose_id;
+        updateForm.purpose_id = res.data.purpse;
         updateForm.method_id = res.data.method;
         updateForm.subject = res.data.subject;
         updateForm.amount = res.data.amount;

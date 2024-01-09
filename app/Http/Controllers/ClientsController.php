@@ -6,6 +6,7 @@ use App\Http\Requests\ClientRequest;
 use App\Http\Requests\UpdateClient;
 use App\Models\Client;
 use App\Models\User;
+use Carbon\Carbon;
 use Cassandra\Custom;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -60,16 +61,14 @@ class ClientsController extends Controller
                         });
                     ;
                 })
+                ->when(Request::input('byStatus'), function ($query, $search) {
+                    $query->where('status', $search);
+                })
                 ->when(Request::input('dateRange'), function ($query, $search){
-                    $start_date = $search[0];
-                    $end_date =  $search[1];
-                    if (!empty($start_date) && !empty($end_date)) {
-                        $query->whereDate('created_at', '>=', $start_date)
-                            ->whereDate('created_at', '<=', $end_date);
-                    }
-                    if (empty($start_date) && !empty($end_date)) {
-                        $query->whereDate('created_at', '<=', $end_date);
-                    }
+                    $search = Request::input('dateRange');
+                    $startDateTime = Carbon::parse($search[0])->startOfDay();
+                    $endDateTime = Carbon::parse($search[1])->endOfDay();
+                    $query->whereBetween('created_at', [$startDateTime, $endDateTime]);
                 })
                 ->latest()
                 ->paginate(Request::input('perPage') ?? 10)
@@ -85,15 +84,18 @@ class ClientsController extends Controller
                     'photo' => '/images/avatar.png',
                     'address' => $client->address,
                     'users' => $client->users,
+                    'is_client' => $client->is_client,
                     'status' => $client->status,
                     'note' => $client->note,
                     'created_at' => $client->created_at->format('d M Y'),
                     'createdBy' => $client->createdBy,
                     'updatedBy' => $client->updatedBy,
+                    'followUp' => $client->follow_up?->format('d M Y'),
+                    'followUpMessage' => $client?->follow_up_message,
                     'show_url' => URL::route('clients.show', $client->id),
                 ]),
             'users' => User::all(),
-            'filters' => Request::only(['search','perPage', 'dateRange']),
+            'filters' => Request::only(['search','perPage', 'dateRange', 'byStatus']),
             "main_url" => Url::route('clients.index'),
         ]);
 
@@ -236,10 +238,23 @@ class ClientsController extends Controller
             }else{
                 $client->is_client = false;
             }
-
             $client->status = Request::input('status');
             $client->follow_up = date('Y-m-d H:i:s', strtotime(Request::input('followDate')));
+            $client->follow_up_message = Request::input('followMessage');
             $client->save();
+
+            $agents = [];
+            if (Request::input('agents') != null){
+                foreach (Request::input("agents") as $item){
+                    if (is_int($item)){
+                        $agents[] = $item;
+                    }else{
+                        $agents[] = $item["id"];
+                    }
+                }
+            }
+
+            $client->users()->sync($agents);
             return back();
         }else{
             $data = Request::validate([
@@ -346,5 +361,41 @@ class ClientsController extends Controller
         $customer->save();
         return back();
     }
+
+
+    public function bulkStatusUpdate(){
+
+        if(Request::input('status') == 'Follow Up') {
+            Request::validate([
+                'followDate' => 'required'
+            ]);
+        }
+
+        Client::whereIn('id', Request::input("ids"))->update([
+            'status' =>  Request::input("status"),
+            'follow_up' => Request::input('status') == 'Follow Up' ? date('Y-m-d H:i:s', strtotime(Request::input('followDate'))) : null,
+            'follow_up_message' => Request::input('status') == 'Follow Up' ? Request::input('followMessage') : null,
+            'updated_by' => Auth::id(),
+        ]);
+
+        return back();
+    }
+
+    public function bulkStatusAssigned()
+    {
+        $array = [];
+        foreach (Request::input('agents') as $item){
+            $array[] =['user_id' => $item];
+        }
+        $clients = Client::whereIn('id', Request::input("ids"));
+        $clients->update([
+            'updated_by' => Auth::id(),
+        ]);
+        $clients->each(function($item)use($array){
+           $item->users()->sync($array);
+        });
+        return back();
+    }
+
 
 }

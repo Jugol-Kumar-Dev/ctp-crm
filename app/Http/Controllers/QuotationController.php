@@ -157,15 +157,10 @@ class QuotationController extends Controller
                 $query->where('status', $search);
             })
             ->when(Request::input('dateRange'), function ($query, $search){
-                $start_date = $search[0];
-                $end_date =  $search[1];
-                if (!empty($start_date) && !empty($end_date)) {
-                    $query->whereDate('created_at', '>=', $start_date)
-                        ->whereDate('created_at', '<=', $end_date);
-                }
-                if (empty($start_date) && !empty($end_date)) {
-                    $query->whereDate('created_at', '<=', $end_date);
-                }
+                $search = Request::input('dateRange');
+                $startDateTime = Carbon::parse($search[0])->startOfDay();
+                $endDateTime = Carbon::parse($search[1])->endOfDay();
+                $query->whereBetween('created_at', [$startDateTime, $endDateTime]);
             })
             ->paginate(Request::input('perPage') ?? 10)
             ->withQueryString()

@@ -32,20 +32,31 @@
                                                 <option value="500">500</option>
                                             </select>
 
-                                            <div v-if="!isCustom">
-                                                <select v-model="dateRange" @update:modelValue="changeDateRange" class="select2 form-select select w-100" id="select2-basic">
-                                                    <option selected disabled :value="undefined">Filter By Date</option>
-                                                    <option :value="null">All</option>
-                                                    <option v-for="(type, index) in range.ranges" :value="type">
-                                                        {{ index }}
+                                            <div class="ml-2">
+                                                <select v-model="searchByStatus"
+                                                        class="select2 form-select select w-100">
+                                                    <option selected disabled :value="undefined">Filter By Quotation
+                                                        Status
                                                     </option>
-                                                    <option value="custom">Custom Range</option>
+                                                    <option :value="null">All</option>
+                                                    <option v-for="item in status" :value="item.name">{{
+                                                            item.name
+                                                        }}
+                                                    </option>
                                                 </select>
                                             </div>
-                                            <div v-else>
-                                                <Datepicker v-model="dateRange" :monthChangeOnScroll="false" range multi-calendars
-                                                            placeholder="Select Date Range" autoApply  @update:model-value="handleDate" ></Datepicker>
-                                            </div>
+                                            <Datepicker v-model="dateRange" :monthChangeOnScroll="false" range
+                                                        multi-calendars
+                                                        format="y-m-d"
+                                                        placeholder="Select Date Range" autoApply
+                                                        @update:model-value="handleDate"></Datepicker>
+
+
+                                            <a class="btn btn-sm btn-icon btn-primary" v-if="isReset"
+                                               href="/admin/clients">
+                                                <vue-feather type="x-circle"></vue-feather>
+                                            </a>
+
                                         </div>
                                         <div
                                             class="d-flex align-items-center justify-content-center justify-content-lg-end flex-lg-nowrap flex-wrap">
@@ -61,11 +72,20 @@
                                         </div>
                                     </div>
 
+                                    <div class="bulk-opration" v-if="checkedUsers.ids.length">
+                                        <ul class="list-group">
+                                            <li class="list-item" @click="updateBulkStatus">Update Bulk Status</li>
+                                            <li class="list-item" @click="updateBulkAgents">Assign Bulk Agents</li>
+                                        </ul>
+                                    </div>
                                     <table class="table table-responsive table-striped table-borderless">
                                         <thead class="table-light">
                                         <tr class=null>
+                                            <th>
+                                                <input type="checkbox" @change="selectUsers($event)" value="true"
+                                                       class="checkbox-padding form-check-input">
+                                            </th>
                                             <th class="sorting" style="width:7%">Client</th>
-                                            <th class="sorting">Phone</th>
                                             <th class="sorting">Assigned</th>
                                             <th class="sorting">Status</th>
 <!--                                            <th class="sorting">Created At</th>-->
@@ -76,6 +96,10 @@
                                         </thead>
                                         <tbody>
                                         <tr v-for="user in clients.data" :key="user.id">
+                                            <td>
+                                                <input type="checkbox" :value="user.id" v-model="checkedUsers.ids"
+                                                       class="checkbox-padding form-check-input select_all_users">
+                                            </td>
                                             <td>
                                                 <div class="d-flex justify-content-left align-items-center">
                                                     <div class="avatar-wrapper">
@@ -90,14 +114,15 @@
                                                             <span class="fw-bolder">{{ user.name?.slice(0, 10) }}</span>
                                                         </div>
                                                         <small class="emp_post text-muted">{{ user.email }}</small>
+                                                        <p>{{ user.phone }} <span v-if="user.secondary_phone"></span></p>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td>{{ user.phone }} <span v-if="user.secondary_phone"></span></td>
                                             <td>
                                                 <span v-for="user in user.users">{{ user.name }}, </span>
                                             </td>
-                                            <td class="d-flex flex-column" style="padding:19px 0;"><span class="badge" style="width: max-content" :class="{
+                                            <td :class="{'d-flex flex-column' : user.status === 'Follow Up'}" style="padding:19px 0;">
+                                                <span class="badge" style="width: max-content" :class="{
                                                 'badge-light-primary' : user.status === 'Proposal Sent',
                                                 'badge-light-secondary' : user.status === 'Contacted',
                                                 'badge-light-info' : user.status === 'Quote Sent',
@@ -108,9 +133,9 @@
                                                 'bg-pink' : user.status === 'Converted to Customer',
                                             }">{{ user.status }}
                                             </span>
-                                                <span v-if="user.followUp">
-                                                    {{ moment(user.followUp).format('ll') }}
-                                                </span>
+<!--                                                <span v-if="user.followUp">-->
+<!--                                                    {{ moment(user.followUp).format('ll') }}-->
+<!--                                                </span>-->
                                             </td>
 <!--                                            <td>{{ user.created_at }}</td>-->
                                             <td>{{ user.createdBy?.name ?? '---'}}</td>
@@ -264,7 +289,6 @@
         </form>
     </Modal>
 
-
     <Modal id="editClient" title="Show Client" v-vb-is:modal size="lg">
         <form @submit.prevent="updateClientForm(editData.id)">
             <div class="modal-body">
@@ -385,6 +409,105 @@
         </form>
     </Modal>
 
+
+    <Modal id="updateBulkStatus" title="Bulk Status" v-vb-is:modal size="sm">
+        <form @submit.prevent="updateBulkStatusSubmit">
+            <div class="modal-body">
+                <div class="row mb-1">
+                    <div :class="clientStatus ? 'col-md-12' : 'col-md'">
+                        <label>Lead Status <span class="text-danger">*</span></label>
+                        <v-select v-model="checkedUsers.status"
+                                  label="name"
+                                  @update:modelValue="changeStatus"
+                                  class="form-control select-padding"
+                                  :options="status"
+                                  :reduce="client => client.name"
+                                  placeholder="Select Lead Status">
+                        </v-select>
+                        <span v-if="errors.status" class="error text-sm text-danger">{{ errors.status }}</span>
+                    </div>
+                </div>
+
+                <div class="row mb-1" :class="{'d-none' : !followUp}">
+                    <div class="col-md">
+                        <label>Follow Up Date:
+                            <Required/>
+                        </label>
+                        <div class="single-datepiker">
+                            <Datepicker v-model="checkedUsers.followDate" :monthChangeOnScroll="false"
+                                        placeholder="Select Date" autoApply></Datepicker>
+                            <span v-if="errors.followDate" class="error text-sm text-danger">{{
+                                    errors.followDate
+                                }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-1" :class="{'d-none' : !followUp}">
+                    <div class="col-md">
+                        <label>Follow Up Message:</label>
+                        <textarea class="form-control" v-model="checkedUsers.followMessage" rows="5"
+                                  placeholder="Follow up message..."></textarea>
+                        <span v-if="errors.followDate" class="error text-sm text-danger">{{ errors.followDate }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button :disabled="createForm.processing" type="submit"
+                        class="btn btn-primary waves-effect waves-float waves-light">Update Bulk Status
+                </button>
+                <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                        aria-label="Close">Cancel
+                </button>
+            </div>
+        </form>
+    </Modal>
+
+    <Modal id="updateBulkAgents" title="Bulk Agent Assign" v-vb-is:modal size="sm">
+        <form @submit.prevent="updateBulkAssign">
+            <div class="modal-body">
+                <div class="row mb-1">
+                    <div :class="clientStatus ? 'col-md-12' : 'col-md'">
+                        <label>Assign Agents <span class="text-danger">*</span></label>
+                        <v-select
+                            multiple
+                            v-model="checkedUsers.agents"
+                            :options="users"
+                            placeholder="Select Assigned Employee"
+                            class="form-control select-padding"
+                            :reduce="user => user.id"
+                            label="name">
+                            <template v-slot:option="option">
+                                <li class="d-flex align-items-start py-1">
+                                    <div class="avatar me-75">
+                                        <img :src="`${option.photo}`" alt="" width="38" height="38">
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-between w-100">
+                                        <div class="me-1 d-flex flex-column">
+                                            <strong class="mb-25">{{ option.name }}</strong>
+                                            <span>{{ option.email }}</span>
+                                        </div>
+                                    </div>
+                                </li>
+                            </template>
+                        </v-select>
+                        <span v-if="errors.status" class="error text-sm text-danger">{{ errors.status }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button :disabled="createForm.processing" type="submit"
+                        class="btn btn-primary waves-effect waves-float waves-light">Update Bulk Status
+                </button>
+                <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                        aria-label="Close">Cancel
+                </button>
+            </div>
+        </form>
+    </Modal>
+
 </template>
 
 
@@ -393,7 +516,8 @@
     import Pagination from "../../../components/Pagination"
     import Icon from '../../../components/Icon'
     import Modal from '../../../components/Modal'
-    import {ref, watch} from "vue";
+    import moment from "moment";
+    import {computed, ref, watch} from "vue";
     import debounce from "lodash/debounce";
     import {Inertia} from "@inertiajs/inertia";
     import Swal from 'sweetalert2'
@@ -559,14 +683,88 @@
         }
     };
     const handleDate = (event) => isCustom.value = event !== null;
+
+
     const searchByStatus = ref(props.filters.byStatus)
-
-
     let search = ref(props.filters.search);
     let perPage = ref(props.filters.perPage);
     watch([search, perPage, searchByStatus, dateRange], debounce(function ([val, val2, val3, val4]) {
         Inertia.get(props.main_url, { search: val, perPage: val2, byStatus: val3 , dateRange: val4}, { preserveState: true, replace: true });
     }, 300));
+
+
+    const checkedUsers = useForm({
+        ids: [],
+        status: null,
+        followDate: null,
+        followMessage: null,
+        agents: [],
+    });
+    const selectUsers = (event) => {
+        if (event.target.checked) {
+            checkedUsers.ids = props.clients.data.map(row => row.id);
+        } else {
+            checkedUsers.ids = [];
+        }
+    }
+
+
+    const updateBulkStatus = () => {
+        document.getElementById('updateBulkStatus').$vb.modal.show()
+    }
+
+    const updateBulkStatusSubmit = () => {
+        checkedUsers.post('clients/bulk-status/update', {
+            preserveState: true,
+            onStart: () => {
+                createForm.processing = true
+            },
+            onFinish: () => {
+                createForm.processing = false
+            },
+            onSuccess: () => {
+                document.getElementById('updateBulkStatus').$vb.modal.hide()
+                checkedUsers.reset()
+                Swal.fire(
+                    'Updated!',
+                    'Multiple Row Updated',
+                    'success'
+                )
+            }
+        });
+
+    }
+
+
+    const updateBulkAgents = () => {
+        document.getElementById('updateBulkAgents').$vb.modal.show()
+    }
+    const updateBulkAssign = () => {
+        checkedUsers.post('clients/bulk-assigned/update', {
+            preserveState: true,
+            onStart: () => {
+                createForm.processing = true
+            },
+            onFinish: () => {
+                createForm.processing = false
+            },
+            onSuccess: () => {
+                document.getElementsByClassName('form-check-input').checked = false;
+                document.getElementById('updateBulkAgents').$vb.modal.hide()
+                checkedUsers.reset()
+                Swal.fire(
+                    'Updated!',
+                    'Multiple Row Updated',
+                    'success'
+                )
+            }
+        });
+    }
+
+    const isReset = computed(() => {
+        return !!props.filters?.perPage || props.filters?.byStatus || props.filters?.dateRange;
+    })
+
 
 </script>
 

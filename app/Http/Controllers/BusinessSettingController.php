@@ -17,6 +17,9 @@ use Illuminate\Support\Str;
 class BusinessSettingController extends Controller
 {
     public function get_setting($key, $default=null){
+        if (!auth()->user()->can('settings.show')){
+            abort(404);
+        }
         $setting = BusinessSetting::where('type', $key)->first();
         return $setting == null ? $default : $setting->value;
     }
@@ -32,6 +35,9 @@ class BusinessSettingController extends Controller
 
     public function overWriteEnv($key, $value)
     {
+        if (!auth()->user()->can('settings.show')){
+            abort(404);
+        }
         $envFile = base_path('.env');
         if (File::exists($envFile)) {
             // Read the contents of the .env file
@@ -53,6 +59,9 @@ class BusinessSettingController extends Controller
 
     public function index()
     {
+        if (!auth()->user()->can('settings.show')){
+            abort(404);
+        }
         return inertia('Settings/Setting', [
             'main_url' => URL::route('businessIndex'),
             'updateSmtp' => URL::route('updateSmtp'),
@@ -77,6 +86,9 @@ class BusinessSettingController extends Controller
     }
 
     public function updateSettings(){
+        if (!auth()->user()->can('settings.show')){
+            abort(404);
+        }
         foreach (Request::all() as $type => $value) {
             $business_settings = BusinessSetting::where('type', $type)->first();
             if($business_settings != null) {
@@ -108,6 +120,9 @@ class BusinessSettingController extends Controller
 
 
     public function updateSmtp(){
+        if (!auth()->user()->can('settings.show')){
+            abort(404);
+        }
         foreach (Request::all() as $type => $value) {
             $business_settings = BusinessSetting::where('type', $type)->first();
             if ($type == 'mailDriver' && $value != null){
@@ -160,7 +175,5 @@ class BusinessSettingController extends Controller
         }
         return back();
     }
-
-
 
 }

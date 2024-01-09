@@ -405,5 +405,7 @@ const props = defineProps({
 </script>
 
 <style scoped>
-
+.bg-primary{
+    background:var(--bs-primary) !important;
+}
 </style>

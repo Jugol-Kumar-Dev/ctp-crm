@@ -69,7 +69,8 @@ Route::prefix('admin')->group(function(){
         Route::get('clients', [ClientsController::class, 'index']);
         Route::resource('clients', ClientsController::class);
         Route::post('clients/set-follow-up', [ClientsController::class, 'setFollowUp'])->name('client.setFollowUp');
-
+        Route::post('clients/bulk-status/update', [ClientsController::class, 'bulkStatusUpdate'])->name('lead.bulkStatusUpdate');
+        Route::post('clients/bulk-assigned/update', [ClientsController::class, 'bulkStatusAssigned'])->name('lead.bulkStatusAssigned');
 
         // leads management
         Route::resource('leads', LeadController::class);

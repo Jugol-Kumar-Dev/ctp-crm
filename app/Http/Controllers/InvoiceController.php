@@ -395,7 +395,7 @@ class InvoiceController extends Controller
 
     public function edit($id){
 
-        $invoice = Invoice::findOrFail($id);
+        $invoice = Invoice::with('client')->findOrFail($id);
         $clients = Client::where('is_client', true)->latest()->get();
 
         return Inertia::render('Invoice/Edit', [

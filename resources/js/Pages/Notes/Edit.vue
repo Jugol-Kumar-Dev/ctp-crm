@@ -42,39 +42,45 @@
                                                 </div>
                                                 <div class="row mb-1">
                                                     <label>Note Category <Required/></label>
-                                                    <v-select v-model="createForm.category"
-                                                              label="title"
-                                                              :options="categories"
-                                                              :reduce="cat => cat.id"
-                                                              placeholder="~~Select Sub Category~~"></v-select>
-                                                    <span v-if="errors.category" class="error text-sm text-danger">{{ errors.category }}</span>
+                                                    <div>
+                                                        <v-select v-model="createForm.category"
+                                                                  label="title"
+                                                                  :options="categories"
+                                                                  :reduce="cat => cat.id"
+                                                                  class="form-control select-padding py-0"
+                                                                  placeholder="~~Select Sub Category~~"></v-select>
+                                                        <span v-if="errors.category" class="error text-sm text-danger">{{ errors.category }}</span>
+                                                    </div>
                                                 </div>
 
                                                 <div class="row mb-1">
                                                     <div class="col-md">
                                                         <label>Assign Agent: </label>
-                                                        <v-select
-                                                            multiple
-                                                            v-model="createForm.agents"
-                                                            :options="users"
-                                                            placeholder="Search Country Name"
-                                                            :reduce="user => user.id"
-                                                            label="name">
-                                                            <template v-slot:option="option">
-                                                                <li class="d-flex align-items-start py-1">
-                                                                    <div class="avatar me-75">
-                                                                        <img :src="`${option.photo}`" alt="" width="38" height="38">
-                                                                    </div>
-                                                                    <div class="d-flex align-items-center justify-content-between w-100">
-                                                                        <div class="me-1 d-flex flex-column">
-                                                                            <strong class="mb-25">{{ option.name }}</strong>
-                                                                            <span >{{ option.email }}</span>
+                                                        <div>
+                                                            <v-select
+                                                                multiple
+                                                                v-model="createForm.agents"
+                                                                :options="users"
+                                                                placeholder="Search Country Name"
+                                                                :reduce="user => user.id"
+                                                                class="form-control select-padding py-0"
+                                                                label="name">
+                                                                <template v-slot:option="option">
+                                                                    <li class="d-flex align-items-start py-1">
+                                                                        <div class="avatar me-75">
+                                                                            <img :src="`${option.photo}`" alt="" width="38" height="38">
                                                                         </div>
-                                                                    </div>
-                                                                </li>
-                                                            </template>
-                                                        </v-select>
-                                                        <span v-if="errors.agents" class="error text-sm text-danger">{{ errors.agents }}</span>
+                                                                        <div class="d-flex align-items-center justify-content-between w-100">
+                                                                            <div class="me-1 d-flex flex-column">
+                                                                                <strong class="mb-25">{{ option.name }}</strong>
+                                                                                <span >{{ option.email }}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </li>
+                                                                </template>
+                                                            </v-select>
+                                                            <span v-if="errors.agents" class="error text-sm text-danger">{{ errors.agents }}</span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="d-flex flex-column">
@@ -163,7 +169,7 @@ let createForm = useForm({
 createForm.noteId = props.note?.id;
 createForm.title = props.note?.title;
 createForm.notes = props.note?.notes;
-createForm.category = props.note?.note_category.id;
+createForm.category = props.note?.note_category;
 createForm.agents = props.note?.users;
 
 

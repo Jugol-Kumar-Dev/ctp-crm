@@ -41,21 +41,12 @@
                                                     <option v-for="item in status" :value="item.name" >{{ item.name }}</option>
                                                 </select>
                                             </div>-->
-                                            <div v-if="!isCustom">
-                                                <select v-model="dateRange" @update:modelValue="changeDateRange" class="select2 form-select select w-100 ms-1" id="select2-basic">
-                                                    <option selected disabled :value="undefined">Filter By Date</option>
-                                                    <option :value="null">All</option>
-                                                    <option v-for="(type, index) in range.ranges" :value="type">
-                                                        {{ index }}
-                                                    </option>
-                                                    <option value="custom">Custom Range</option>
-                                                </select>
-                                            </div>
-                                            <div v-else>
-                                                <Datepicker class="ms-2" v-model="dateRange"
-                                                            :monthChangeOnScroll="false" range multi-calendars
-                                                            placeholder="Select Date Range" autoApply  @update:model-value="handleDate" ></Datepicker>
-                                            </div>
+
+                                            <Datepicker v-model="dateRange" :monthChangeOnScroll="false" range
+                                                        multi-calendars
+                                                        format="y-m-d"
+                                                        placeholder="Select Date Range" autoApply
+                                                        @update:model-value="handleDate"></Datepicker>
                                         </div>
                                         <div
                                             class="d-flex align-items-center justify-content-center justify-content-lg-end flex-lg-nowrap flex-wrap">

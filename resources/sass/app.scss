@@ -217,3 +217,20 @@
 .card{
     background:#ffffff !important;
 }
+
+
+// bulk operation button css
+
+.bulk-opration .list-group {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.bulk-opration .list-group .list-item {
+    padding: 10px 15px;
+    background: var(--bs-primary);
+    color: white;
+    cursor: pointer;
+}

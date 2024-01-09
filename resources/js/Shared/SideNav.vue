@@ -44,14 +44,14 @@
 
 
                     <li class=" nav-item has-sub" :class="{'open' : clickMenu === 1}"  @click="toggleSubMenu(1)"
-                        v-if="this.$page.props.auth.user.role.includes('Administrator') ">
+                        v-if="this.$page.props.auth.user.role.includes('Administrator') || this.$page.props.auth.user.can.includes('user.index')">
                         <a preserve-scroll class="d-flex align-items-center">
                             <vue-feather type="users" size="8"/>
                             <span class="menu-title text-truncate"
                                   data-i18n="Authentication">User Management</span>
                         </a>
                         <ul class="menu-content">
-                            <li v-if="this.$page.props.auth.user.can.includes('user.create') || this.$page.props.auth.user.role.includes('Administrator') ">
+                            <li v-if="this.$page.props.auth.user.can.includes('authorization.index') || this.$page.props.auth.user.role.includes('Administrator')">
                                 <Link preserve-scroll class="d-flex align-items-center" href="/admin/authorizations">
                                     <vue-feather type="circle" />
                                     <span class="menu-item text-truncate" data-i18n="Login">Role & Permissions</span>
@@ -67,14 +67,17 @@
                     </li>
 
                     <li class=" nav-item has-sub" :class="{'open' : clickMenu === 2}"  @click="toggleSubMenu(2)"
-                        v-if="this.$page.props.auth.user.can.includes('client.index') || this.$page.props.auth.user.can.includes('leads.index') || this.$page.props.auth.user.role.includes('Administrator') ">
+                        v-if="this.$page.props.auth.user.can.includes('client.index') ||
+                        this.$page.props.auth.user.can.includes('leads.index') ||
+                        this.$page.props.auth.user.can.includes('leads.ownonly') ||
+                        this.$page.props.auth.user.role.includes('Administrator') ">
                         <a preserve-scroll class="d-flex align-items-center">
                             <vue-feather type="radio" size="8"/>
                             <span class="menu-title text-truncate"
                                   data-i18n="Authentication">Lead Source</span>
                         </a>
                         <ul class="menu-content">
-                            <li class=" nav-item" v-if="this.$page.props.auth.user.can.includes('leads.index') || this.$page.props.auth.user.role.includes('Administrator') ">
+                            <li class=" nav-item" v-if="this.$page.props.auth.user.can.includes('leads.index') || this.$page.props.auth.user.can.includes('leads.ownonly') || this.$page.props.auth.user.role.includes('Administrator') ">
                                 <Link preserve-scroll class="d-flex align-items-center" href="/admin/leads">
                                     <vue-feather type="circle" />
                                     <span class="menu-title text-truncate" data-i18n="Chat">Leads</span>
@@ -267,22 +270,15 @@
                     </li>
 
 
-                    <li class="nav-item">
+                    <li class="nav-item" v-if="this.$page.props.auth.user.can.includes('settings.show') || this.$page.props.auth.user.role.includes('Administrator')">
                         <Link preserve-scroll class="d-flex align-items-center" href="/admin/business-settings">
                             <vue-feather type="settings" />
                             <span class="menu-title text-truncate" data-i18n="Chat">Settings</span>
                         </Link>
                     </li>
 
-                    <li class="nav-item">
-                        <Link preserve-scroll class="d-flex align-items-center" method="post" href="/admin/logout">
-                            <vue-feather type="log-out" />
-                            <span class="menu-title text-truncate" data-i18n="Chat">Logout</span>
-                        </Link>
-                    </li>
 
-
-                    <li class="nav-item has-sub" :class="{'open' : clickMenu === 6}"  @click="toggleSubMenu(6)">
+                    <li class="nav-item has-sub" v-if="this.$page.props.auth.user.can.includes('show.old_data') || this.$page.props.auth.user.role.includes('Administrator')" :class="{'open' : clickMenu === 6}"  @click="toggleSubMenu(6)">
                         <a preserve-scroll class="d-flex align-items-center">
                             <vue-feather type="anchor" />
                             <span class="menu-title text-truncate"
@@ -307,6 +303,13 @@
 
 
 
+
+                    <li class="nav-item">
+                        <Link preserve-scroll class="d-flex align-items-center" method="post" href="/admin/logout">
+                            <vue-feather type="log-out" />
+                            <span class="menu-title text-truncate" data-i18n="Chat">Logout</span>
+                        </Link>
+                    </li>
 
 
 

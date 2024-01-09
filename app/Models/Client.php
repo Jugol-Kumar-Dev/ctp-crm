@@ -80,7 +80,7 @@ class Client extends Model
 
     public function users()
     {
-        return $this->belongsToMany('App\Models\User', 'client_user');
+        return $this->belongsToMany('App\Models\User', 'client_user', 'client_id', 'user_id');
     }
 
     public function projects(){

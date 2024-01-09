@@ -450,7 +450,7 @@ const props = defineProps({
 })
 
 const formData = useForm({
-    clientId:props.quotation.client_id,
+    clientId:props.quotation.client,
     date:props.quotation.qut_date,
     due_date:props.quotation.due_date,
     subject:props.quotation.subject,

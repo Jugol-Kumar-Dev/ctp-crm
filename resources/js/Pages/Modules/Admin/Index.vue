@@ -117,7 +117,7 @@
                                                         class="btn btn-icon btn-icon rounded-circle bg-light-warning waves-effect waves-float waves-light">
                                                         <Icon title="pencil" />
                                                     </button>
-                                                    <button @click="deleteItem(props.main_url, user.id)"
+                                                    <button @click="deleteItemModal(props.main_url, user.id)"
                                                             v-if="this.$page.props.auth.user.can.includes('user.delete') || this.$page.props.auth.user.role == 'Administrator' "
                                                             type="button"
                                                             class="btn btn-icon btn-icon rounded-circle aves-effect waves-float waves-light bg-light-danger">
@@ -402,7 +402,7 @@
             },
         })
     }
-    let deleteItemModal = (id) => {
+    let deleteItemModal = (url, id) => {
         Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -413,7 +413,7 @@
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                Inertia.delete(adminPath.value + '/users/' + id, {
+                Inertia.delete(`${url}/${id}`, {
                 preserveState: true,
                 replace: true,
                 onSuccess: page => {
@@ -424,9 +424,10 @@
                     )
                 },
                 onError: errors => {
+                    console.log(errors)
                     Swal.fire(
                         'Oops...',
-                        'Something went wrong!',
+                        `${errors[0]}`,
                         'error'
                     )
                 }})
