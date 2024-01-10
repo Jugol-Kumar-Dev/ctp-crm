@@ -122,7 +122,7 @@ class AdminController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, $id)
     {
@@ -149,8 +149,8 @@ class AdminController extends Controller
         if(Storage::exists($user->photo)){
             Storage::delete($user->photo);
         }
-        $path = Storage::putFile('public/user', Request::file('image'));
-        $user->photo = $path;
+        $filePath = Request::file('image')->store('images', 'public');
+        $user->photo = $filePath;
         $user->save();
         return back();
     }

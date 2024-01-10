@@ -179,9 +179,9 @@
                             {{ $item['tran']?->transaction_type === 'Credited' ? "Credit " : "Debit" }}
                         </td>
                         <td style="text-transform: capitalize">{{ $item["tran"]["receivedBy"]["name"] ?? '' }}</td>
-                        <td style="text-transform: capitalize">{{ $item["tran"]["method"]["name"] }}</td>
+                        <td style="text-transform: capitalize">{{ $item["tran"]["method"]["name"] ?? ''}}</td>
                         <td>{{ $item["tran"]["purpose"] }}</td>
-                        <td>{{ date('d-m-Y',strtotime($item['tran']["payment_date"])) }}</td>
+                        <td>{{ date('d-m-Y',strtotime($item['tran']["payment_date"])) ?? ''}}</td>
                     </tr>
                 @endforeach
                 </tbody>

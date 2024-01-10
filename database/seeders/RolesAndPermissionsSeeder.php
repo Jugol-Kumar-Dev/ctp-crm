@@ -201,6 +201,9 @@ class RolesAndPermissionsSeeder extends Seeder
                     'project.delete',
                     'project.budget',
                     'project.employees',
+                    'project.credentials',
+                    'project.clients',
+                    'project.attachment',
                 ],
                 'name' => [
                     'Show Project',
@@ -209,7 +212,10 @@ class RolesAndPermissionsSeeder extends Seeder
                     'Edit Project',
                     'Delete Project',
                     'Show Budget',
-                    'Employees Project'
+                    'Employees Project',
+                    'Show Project Credentials',
+                    'Show Project Client',
+                    'Show Project Attachments'
                 ]
             ],
             [
@@ -335,21 +341,21 @@ class RolesAndPermissionsSeeder extends Seeder
             }
         };
 
-        Role::updateOrCreate(['name' => 'Administrator', 'is_delete' => false]);
-
-
+//        Role::updateOrCreate(['name' => 'Administrator', 'is_delete' => false]);
+//
+//
 //        User::updateOrCreate([
 //            'name' => 'admin',
 //            'email' => 'admin@admin.com',
 //            'password' => bcrypt(12345678),
 //        ])->assignRole('Administrator');
-
-        $developer = Role::updateOrCreate(['name' => 'Developer']);
-        foreach ($all as $item) {
-            foreach ($item['permissions'] as $permission) {
-                $developer->givePermissionTo( $permission );
-            }
-        };
+//
+//        $developer = Role::updateOrCreate(['name' => 'Developer']);
+//        foreach ($all as $item) {
+//            foreach ($item['permissions'] as $permission) {
+//                $developer->givePermissionTo( $permission );
+//            }
+//        };
 
 //        User::updateOrCreate([
 //            'name' => 'Jugol Kumar',

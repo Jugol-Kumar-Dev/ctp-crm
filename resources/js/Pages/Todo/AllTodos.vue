@@ -30,16 +30,12 @@
                         <div class="d-flex align-items-center" style="gap:5px">
                             <span class="badge"
                                   :class="{
-                                    'badge-light-success' : todo.priority === 'Complete',
-                                    'badge-light-primary' : todo.priority === 'Normal',
-                                    'badge-light-info' : todo.priority === 'Contacted',
-                                    'badge-light-warning' : todo.priority === 'Medium',
-                                    'badge-light-purple' : todo.priority === 'Low',
-                                    'badge-light-danger' : todo.priority === 'High',
-                                    'badge-light-indego' : todo.priority === 'New Lead',
-                                    'badge-light-indego' : todo.priority === 'In Proce',
-                                    'badge-light-indego' : todo.priority === 'First',
-                                }"
+                                            'badge-light-success' : todo.priority === 'Complete',
+                                            'badge-light-primary' : todo.priority === 'Medium',
+                                            'badge-light-indego' : todo.priority === 'Low',
+                                            'badge-light-danger' : todo.priority === 'High',
+                                            'badge-light-warning' : todo.priority === 'In Process',
+                                          }"
                             >{{ todo.priority }}</span>
                             <small class="badge text-black">{{ moment(todo.date).format('MMMM, D') }}</small>
                             <span class="avatar me-1" v-c-tooltip="todo.user?.name">

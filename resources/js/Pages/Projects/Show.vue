@@ -46,7 +46,9 @@
                                     aria-selected="true">Overview</button>
                         </li>
 
-                        <li class="nav-item" role="presentation">
+                        <li class="nav-item" role="presentation" v-if="
+                            this.$page.props.auth.user.can.includes('project.clients') ||
+                            this.$page.props.auth.user.role.includes('Administrator')">
                             <button class="nav-link"
                                     id="client-tab" data-bs-toggle="tab"
                                     data-bs-target="#client" type="button"

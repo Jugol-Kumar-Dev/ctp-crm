@@ -422,7 +422,7 @@ class InvoiceController extends Controller
 
         $invoice->update([
             'invoice_id' => now()->format('Ymd'),
-            'client_id' => Request::input('clientId'),
+            'client_id' => Request::input('clientId')['id'],
             'user_id' => Auth::id(),
             'invoice_type' => 'custom',
             'items' => json_encode(Request::input('items')),

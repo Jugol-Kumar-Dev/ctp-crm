@@ -40,32 +40,27 @@ class LeadController extends Controller
                     $query->whereBetween('created_at', [$startDateTime, $endDateTime]);
                 });
         } elseif (auth()->user()->can('leads.ownonly')) {
-            $cliests = Client::query()
+            $clients = Client::query()
                 ->with(['users'])
-                ->where('is_client', false)
-                ->where('status', '!=',  "Converted to Customer")
-                ->where('created_by', Auth::id());
-//                ->orWhereHas('users', function($query){
-//                    $query->where('users.id', Auth::id());
-//                });
-
+                ->where(function ($query) {
+                    $query->where('is_client', false)
+                        ->where('created_by', Auth::id());
+                })
+                ->orWhereHas('users', function ($query) {
+                    $query->where('user_id', Auth::id());
+                })
+                ->when(Request::input('byStatus'), function ($query, $search){
+                    $query->where('status', $search);
+                });
             if(Request::input('search')){
                 $search = Request::input('search');
-                $clients = $cliests->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%");
-            }elseif(Request::input('byStatus')){
-                $search = Request::input('byStatus');
-                $clients = $cliests->where('status', $search);
-            }elseif(Request::input('dateRange')){
-                $search = Request::input('dateRange');
-                $startDateTime = Carbon::parse($search[0])->startOfDay();
-                $endDateTime = Carbon::parse($search[1])->endOfDay();
-                $clients = $cliests->whereBetween('created_at', [$startDateTime, $endDateTime]);
+                $clients = $clients->where(function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%");
+                })->where('is_client', false);
             }else{
-                $clients = $cliests->orWhereHas('users', function($query){
-                    $query->where('user_id', Auth::id());
-                });
+                $clients = $clients->where('is_client', false);
             }
         } else {
             abort(404);

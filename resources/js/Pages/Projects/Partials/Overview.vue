@@ -84,7 +84,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-12 mb-2">
+                <div class="col-12 mb-2" v-if="
+                            this.$page.props.auth.user.can.includes('project.credentials') ||
+                            this.$page.props.auth.user.role.includes('Administrator') ">
                     <div class="card">
                         <div class="card-header">
                             <h4 class="mb-0">Project Credintials</h4>
@@ -203,7 +205,11 @@
                     <ProgressChart :progress="props.info.progress" :status="props.info.status"/>
                 </div>
             </div>
-            <div class="card">
+
+
+            <div class="card" v-if="
+                            this.$page.props.auth.user.can.includes('project.attachment') ||
+                            this.$page.props.auth.user.role.includes('Administrator') ">
                 <!-- Card header -->
                 <div class="card-header card-header-height d-flex justify-content-between align-items-center">
                     <div>

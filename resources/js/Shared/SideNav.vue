@@ -77,13 +77,17 @@
                                   data-i18n="Authentication">Lead Source</span>
                         </a>
                         <ul class="menu-content">
-                            <li class=" nav-item" v-if="this.$page.props.auth.user.can.includes('leads.index') || this.$page.props.auth.user.can.includes('leads.ownonly') || this.$page.props.auth.user.role.includes('Administrator') ">
+                            <li class=" nav-item" v-if="this.$page.props.auth.user.can.includes('leads.index') ||
+                            this.$page.props.auth.user.can.includes('leads.ownonly') ||
+                            this.$page.props.auth.user.role.includes('Administrator') ">
                                 <Link preserve-scroll class="d-flex align-items-center" href="/admin/leads">
                                     <vue-feather type="circle" />
                                     <span class="menu-title text-truncate" data-i18n="Chat">Leads</span>
                                 </Link>
                             </li>
-                            <li class=" nav-item" v-if="this.$page.props.auth.user.can.includes('client.index') || this.$page.props.auth.user.role.includes('Administrator') ">
+                            <li class=" nav-item" v-if="this.$page.props.auth.user.can.includes('client.index') ||
+                            this.$page.props.auth.user.can.includes('client.ownonly') ||
+                             this.$page.props.auth.user.role.includes('Administrator') ">
                                 <Link preserve-scroll class="d-flex align-items-center" href="/admin/clients">
                                     <vue-feather type="circle" />
                                     <span class="menu-title text-truncate" data-i18n="Chat">Clients</span>

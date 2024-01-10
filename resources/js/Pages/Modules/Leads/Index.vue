@@ -60,28 +60,18 @@
                                                         Status
                                                     </option>
                                                     <option :value="null">All</option>
-                                                    <option v-for="item in status" :value="item.name">{{
-                                                        item.name
-                                                        }}
+                                                    <option v-for="item in status" :value="item.name">{{ item.name }}
                                                     </option>
                                                 </select>
                                             </div>
-                                            <!--                                            <div v-if="!isCustom">-->
-                                            <!--                                                <select v-model="dateRange" @update:modelValue="changeDateRange" class="select2 form-select select w-100 ms-1" id="select2-basic">-->
-                                            <!--                                                    <option selected disabled :value="undefined">Filter By Date</option>-->
-                                            <!--                                                    <option :value="null">All</option>-->
-                                            <!--                                                    <option v-for="(type, index) in range.ranges" :value="type">-->
-                                            <!--                                                        {{ index }}-->
-                                            <!--                                                    </option>-->
-                                            <!--                                                    <option value="custom">Custom Range</option>-->
-                                            <!--                                                </select>-->
-                                            <!--                                            </div>-->
 
-                                            <Datepicker v-model="dateRange" :monthChangeOnScroll="false" range
-                                                        multi-calendars
-                                                        format="y-m-d"
+                                            <Datepicker v-model="dateRange"
+                                                        :monthChangeOnScroll="false"
+                                                        range multi-calendars
+                                                        :enable-time-picker="false"
+                                                        :format="'d-MM-Y'"
                                                         placeholder="Select Date Range" autoApply
-                                                        @update:model-value="handleDate"></Datepicker>
+                                                        @update:model-value="handleDate" ></Datepicker>
 
                                             <a class="btn btn-sm btn-icon btn-primary" v-if="isReset"
                                                href="/admin/leads">
@@ -139,7 +129,7 @@
                                                     </div>
                                                     <div class="d-flex flex-column">
                                                         <div class="user_name text-truncate text-body">
-                                                            <span class="fw-bolder">{{ user.name ?? '---' }}</span>
+                                                            <span class="fw-bolder text-capitalize">{{ user.name ?? '---' }}</span>
                                                         </div>
                                                         <small class="emp_post text-muted">{{ user.email ?? '---'
                                                             }}</small>
@@ -448,7 +438,7 @@
                         <p>Created By: {{ singleLeadShow?.createdBy?.name }}</p>
                         <p>Created Date: {{ singleLeadShow?.created_at}}</p>
                         <hr>
-                        <div class="d-flex flex-column">
+                        <div class="d-flex flex-column" v-if="singleLeadShow?.followUp">
                             <strong>Follow Up Date: {{ moment(singleLeadShow?.followUp)?.format('ll') }}</strong>
                             <p>Message:
                                 <small>{{ singleLeadShow?.followUpMessage }}</small>

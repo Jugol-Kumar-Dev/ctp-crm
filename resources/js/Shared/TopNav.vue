@@ -16,6 +16,17 @@
                             <vue-feather type="check-square" />
                         </a>
                     </li>
+                    <li class="nav-item d-none d-lg-block" v-if="this.$page.props.auth.user.role.includes('Administrator')" v-c-tooltip="'Today Working Summery'">
+                        <a class="nav-link" href="/admin/admin-show-summery">
+                            <vue-feather type="list" />
+                        </a>
+                    </li>
+
+                    <li class="nav-item d-none d-lg-block" v-else v-c-tooltip="'Today Working Summery'">
+                        <a class="nav-link" href="/admin/work-summery">
+                            <vue-feather type="list" />
+                        </a>
+                    </li>
                 </ul>
 <!--                <ul class="nav navbar-nav">
                     <li class="nav-item d-none d-lg-block"><a class="nav-link bookmark-star"><vue-feather type="star" /></a>
@@ -83,11 +94,6 @@
 <!--                        <li class="dropdown-menu-footer"><a class="btn btn-primary w-100" href="#">Read all notifications</a></li>-->
                     </ul>
                 </li>
-
-
-
-
-
 
 
                 <dark-toggle />

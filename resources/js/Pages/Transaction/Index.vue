@@ -58,25 +58,20 @@
                                                     <option value="Debited" >Debited</option>
                                                 </select>
                                             </div>
-                                            <div v-if="!isCustom">
-                                                <select  v-model="dateRange" @update:model-value="changeDateRange" class="select2 form-select select w-100 ms-1" id="select2-basic">
-                                                    <option selected disabled :value="undefined">Filter By Date</option>
-                                                    <option :value="null">All</option>
-                                                    <option v-for="(type, index) in range.ranges" :value="type">
-                                                        {{ index }}
-                                                    </option>
-                                                    <option value="custom">Custom Range</option>
-                                                </select>
-                                            </div>
-                                            <div v-else>
-                                                <Datepicker v-model="dateRange"
-                                                            :monthChangeOnScroll="false"
-                                                            range multi-calendars
-                                                            :enable-time-picker="false"
-                                                            :format="'d-MM-Y'"
-                                                            placeholder="Select Date Range" autoApply
-                                                            @update:model-value="handleDate" ></Datepicker>
-                                            </div>
+
+                                            <Datepicker v-model="dateRange"
+                                                        :monthChangeOnScroll="false"
+                                                        range multi-calendars
+                                                        :enable-time-picker="false"
+                                                        :format="'d-MM-Y'"
+                                                        placeholder="Select Date Range" autoApply
+                                                        @update:model-value="handleDate" ></Datepicker>
+
+                                            <a class="btn btn-sm btn-icon btn-primary" v-if="isReset"
+                                               href="/admin/transaction">
+                                                <vue-feather type="x-circle"></vue-feather>
+                                            </a>
+
                                         </div>
                                         <div
                                             class="d-flex align-items-center justify-content-center justify-content-lg-end flex-lg-nowrap flex-wrap">
@@ -216,7 +211,7 @@ import Modal from '../../components/Modal'
 import ImageUploader from "../../components/ImageUploader"
 import Textarea from "../../components/Textarea";
 import moment from 'moment';
-import {ref, watch} from "vue";
+import {ref, watch, computed} from "vue";
 import debounce from "lodash/debounce";
 import {Inertia} from "@inertiajs/inertia";
 import Swal from 'sweetalert2'
@@ -275,6 +270,10 @@ const exportPDF =() =>{
         window.location.replace(window.location.href+"?export_pdf=true")
     }
 }
+
+const isReset = computed(() => {
+    return !!props.filters?.perPage || props.filters?.byStatus || props.filters?.dateRange;
+})
 
 
 </script>

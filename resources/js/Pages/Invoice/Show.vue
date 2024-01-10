@@ -157,7 +157,7 @@
                         <table class="table table-striped table-borderless">
                             <thead>
                                 <tr>
-                                <th class="py-1">Payment Id</th>
+                                <th class="py-1">TRX_ID</th>
                                 <th class="py-1">Taken By</th>
                                 <th class="py-1">Transaction Date</th>
                                 <th class="py-1">Amount</th>

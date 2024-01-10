@@ -111,7 +111,7 @@
                                                     </div>
                                                     <div class="d-flex flex-column">
                                                         <div class="user_name text-truncate text-body">
-                                                            <span class="fw-bolder">{{ user.name?.slice(0, 10) }}</span>
+                                                            <span class="fw-bolder text-capitalize">{{ user.name?.slice(0, 10) }}</span>
                                                         </div>
                                                         <small class="emp_post text-muted">{{ user.email }}</small>
                                                         <p>{{ user.phone }} <span v-if="user.secondary_phone"></span></p>
@@ -121,7 +121,7 @@
                                             <td>
                                                 <span v-for="user in user.users">{{ user.name }}, </span>
                                             </td>
-                                            <td :class="{'d-flex flex-column' : user.status === 'Follow Up'}" style="padding:19px 0;">
+                                            <td :class="{'d-flex flex-column' : user.status === 'Follow Up'}"  style="padding:40px 0;">
                                                 <span class="badge" style="width: max-content" :class="{
                                                 'badge-light-primary' : user.status === 'Proposal Sent',
                                                 'badge-light-secondary' : user.status === 'Contacted',
@@ -133,15 +133,18 @@
                                                 'bg-pink' : user.status === 'Converted to Customer',
                                             }">{{ user.status }}
                                             </span>
-<!--                                                <span v-if="user.followUp">-->
-<!--                                                    {{ moment(user.followUp).format('ll') }}-->
-<!--                                                </span>-->
+                                                <span v-if="user.followUp">
+                                                    {{ user.followUp }}
+                                                </span>
                                             </td>
 <!--                                            <td>{{ user.created_at }}</td>-->
                                             <td>{{ user.createdBy?.name ?? '---'}}</td>
                                             <td>{{ user.updatedBy?.name ?? '---'}}</td>
                                             <td>
-                                                <CDropdown>
+                                                <CDropdown v-if="this.$page.props.auth.user.can.includes('client.edit') ||
+                                                this.$page.props.auth.user.can.includes('client.show') ||
+                                                this.$page.props.auth.user.can.includes('client.delete') ||
+                                                this.$page.props.auth.user.role.includes('Administrator')">
                                                     <CDropdownToggle>
                                                         <vue-feather type="more-vertical" />
                                                     </CDropdownToggle>
@@ -289,7 +292,7 @@
         </form>
     </Modal>
 
-    <Modal id="editClient" title="Show Client" v-vb-is:modal size="lg">
+    <Modal id="editClient" title="Edit Client" v-vb-is:modal size="lg">
         <form @submit.prevent="updateClientForm(editData.id)">
             <div class="modal-body">
                 <div class="row mb-1">
@@ -316,9 +319,7 @@
                         <label>Secondary Email: </label>
                         <input v-model="updateForm.secondary_email" type="email" placeholder="second.eg@ctpbd.com"
                                class="form-control">
-                        <span v-if="errors.secondary_email" class="error text-sm text-danger">{{
-                                errors.secondary_email
-                            }}</span>
+                        <span v-if="errors.secondary_email" class="error text-sm text-danger">{{ errors.secondary_email }}</span>
                     </div>
                     <div class="col-md">
                         <label>Phone: <span class="text-danger">*</span></label>
@@ -331,9 +332,7 @@
                         <label>Secondary Phone: </label>
                         <input v-model="updateForm.secondary_phone" type="text" placeholder="+88017********"
                                class="form-control">
-                        <span v-if="errors.secondary_phone" class="error text-sm text-danger">{{
-                                errors.secondary_phone
-                            }}</span>
+                        <span v-if="errors.secondary_phone" class="error text-sm text-danger">{{ errors.secondary_phone }}</span>
                     </div>
                     <div class="col-md">
                         <label>Company: </label>
@@ -360,13 +359,13 @@
                 <div class="row mb-1">
                     <div class="col-md">
                         <label>Client Status: </label>
-
                         <v-select v-model="updateForm.status"
                                   label="name"
+                                  @update:modelValue="changeStatus"
                                   class="form-control select-padding"
                                   :options="status"
-                                  placeholder="Select Status"
-                                  :reduce="optoin"></v-select>
+                                  :reduce="item => item.name"
+                                  placeholder="Select Status"></v-select>
 
                     </div>
                     <div class="col-md">
@@ -398,6 +397,20 @@
                 </div>
             </div>
 
+            <div class="row mb-1 px-2" v-if="followUp">
+                <div class="col-md">
+                    <label>Follow Up Date: </label>
+                    <Datepicker v-model="updateForm.followDate" :monthChangeOnScroll="false"
+                                placeholder="Select Date" autoApply></Datepicker>
+                    <span v-if="errors.followDate" class="error text-sm text-danger">{{ errors.followDate }}</span>
+                </div>
+                <div class="col-md">
+                    <label>Follow Up Message:</label>
+                    <textarea class="form-control" v-model="updateForm.followMessage" rows="5"
+                              placeholder="Follow up message..."></textarea>
+                    <span v-if="errors.followDate" class="error text-sm text-danger">{{ errors.followDate }}</span>
+                </div>
+            </div>
             <div class="modal-footer">
                 <button :disabled="createForm.processing" type="submit"
                         class="btn btn-primary waves-effect waves-float waves-light">Submit
@@ -553,7 +566,7 @@
         note: null,
         status: null,
         agents: [],
-
+        isClient:true,
         processing: Boolean,
     })
 
@@ -568,10 +581,13 @@
         note: null,
         status: null,
         agents: null,
+        followDate:null,
+        followMessage:null,
+        isClient:true,
     })
 
     let status = [{"name":'Contacted'}, {"name":'Proposal Sent'},
-        {"name":'Quote Sent'}, {"name":'Qualified'}, {"name":'Disqualified'}
+        {"name":'Quote Sent'}, {"name":'Qualified'}, {"name":'Disqualified'}, {"name": 'Follow Up'}
     ]
 
     let deleteItemModal = (id) => {
@@ -674,6 +690,15 @@
     }
 
 
+    const followUp = ref(false);
+    const changeStatus = (event) => {
+        console.log(event)
+        followUp.value = event === 'Follow Up';
+    }
+
+
+
+
     const dateRange = ref(props.filters.dateRange)
     const isCustom =ref(false);
     const changeDateRange = (event) => {
@@ -699,6 +724,7 @@
         followDate: null,
         followMessage: null,
         agents: [],
+        isClient:true,
     });
     const selectUsers = (event) => {
         if (event.target.checked) {

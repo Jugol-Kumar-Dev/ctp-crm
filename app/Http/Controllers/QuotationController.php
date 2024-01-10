@@ -913,6 +913,7 @@ class QuotationController extends Controller
      */
     public function update(Request $request, Quotation $quotation)
     {
+
         Request::validate([
             'clientId' => 'required',
             'date' => 'required',
@@ -934,7 +935,7 @@ class QuotationController extends Controller
 
         $grandTotal = Request::input('totalPrice') - $quotation->discount;
         $quotation->update([
-            'client_id' => Request::input('clientId'),
+            'client_id' => Request::input("clientId")["id"],
             'qut_date' => Request::input('date'),
             'subject' => Request::input('subject'),
             'created_by' => Auth::id(),

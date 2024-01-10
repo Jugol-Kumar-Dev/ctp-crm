@@ -66,7 +66,7 @@
                                                 <div class="d-flex justify-content-left align-items-center">
                                                     <div class="d-flex flex-column">
                                                         <div class="user_name text-truncate text-body">
-                                                            <span class="fw-bolder" v-if="projects.project.client">{{ projects.project.client.name }}</span>
+                                                            <span class="fw-bolder text-capitalize" v-if="projects.project.client">{{ projects.project.client.name }}</span>
                                                         </div>
                                                         <small class="emp_post text-muted" v-if="projects.project.client">{{ projects.project.client.phone }}</small>
                                                         <small class="emp_post text-muted" v-if="projects.project.client">{{ projects.project.client.email }}</small>

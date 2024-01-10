@@ -28,6 +28,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebsiteController;
 use App\Http\Controllers\WorkController;
+use App\Http\Controllers\WorkingSummeryController;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -61,6 +62,13 @@ Route::prefix('admin')->group(function(){
         Route::post('users/{id}', [AdminController::class, 'update']);
         Route::post('user/update-pass/{id}', [AdminController::class, 'updateCredentials'])->name('updateCredentials');
         Route::post('user/update-profile-image', [AdminController::class, 'uploadProfile'])->name('users.uploadProfile');
+
+
+        // user work summery
+        Route::get('/work-summery', [WorkingSummeryController::class, 'index'])->name('user.workSummery');
+        Route::get('/admin-show-summery', [WorkingSummeryController::class, 'adminIndex'])->name('user.adminIndex');
+        Route::post('/work-summery/save', [WorkingSummeryController::class, 'store'])->name('user.workSummery');
+
 
 
         // user authorizations
