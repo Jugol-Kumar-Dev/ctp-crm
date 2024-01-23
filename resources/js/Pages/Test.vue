@@ -22,6 +22,7 @@
 
         <div class="row">
             <div class="col-md-6" v-if="this.$page.props.auth.user.can.includes('leads.index') ||
+            this.$page.props.auth.user.can.includes('leads.ownonly') ||
             this.$page.props.auth.user.role.includes('Administrator')">
                 <div class="card">
                     <div class="card-body">

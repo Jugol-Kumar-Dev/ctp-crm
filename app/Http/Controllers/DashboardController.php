@@ -247,6 +247,7 @@ class DashboardController extends Controller
         }
 
 
+//        return dd(auth()->user()->hasRole('administrator'));
 
 
         $clients = Client::query()
@@ -261,6 +262,9 @@ class DashboardController extends Controller
             ->whereNotNull('follow_up')
             ->whereDate('follow_up', "!=", Carbon::today())
             ->where('is_client', true)
+            ->when(!auth()->user()->hasRole('Administrator'), function ($query){
+                $query->where('updated_by', Auth::id());
+            })
             ->get();
 
 
@@ -276,6 +280,9 @@ class DashboardController extends Controller
             ->whereNotNull('follow_up')
             ->whereDate('follow_up', "!=", Carbon::today())
             ->where('is_client', false)
+            ->when(!auth()->user()->hasRole('Administrator'), function ($query){
+                $query->where('updated_by', Auth::id());
+            })
             ->get();
 
 

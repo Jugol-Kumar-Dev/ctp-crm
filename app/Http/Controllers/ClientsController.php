@@ -403,6 +403,8 @@ class ClientsController extends Controller
         $customer = Client::findOrFail(Request::input('clientId'));
         $customer->follow_up = Request::input('followDate');
         $customer->follow_up_message = Request::input('message');
+        $customer->status = 'Follow Up';
+        $customer->updated_by = Auth::id();
         $customer->save();
         return back();
     }
