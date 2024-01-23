@@ -136,6 +136,13 @@ class QuotationController extends Controller
 
 
     public function index(){
+
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.index')){
+            abort(401);
+        }
+
+
         $quotation  = Quotation::query()
             ->with(['client', 'user', 'invoice'])
             ->latest()
@@ -200,6 +207,10 @@ class QuotationController extends Controller
      */
     public function create(){
 
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.create')){
+            abort(401);
+        }
+
    /*
     * this is for package platform and features system
     * but here change the logic
@@ -258,6 +269,13 @@ class QuotationController extends Controller
 
     public function store()
     {
+
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.create')){
+            abort(401);
+        }
+
+
         Request::validate([
             'clientId' => 'required',
             'date' => 'required',
@@ -560,6 +578,11 @@ class QuotationController extends Controller
 
     public function show($id, $attatchment=false)
     {
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.show')){
+            abort(401);
+        }
+
         $quotation = Quotation::with(['client', 'user:id,name', 'invoice'])->findOrFail($id);
 
         $pref = [];
@@ -625,6 +648,12 @@ class QuotationController extends Controller
     }
 
     public function givenDiscount($id){
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.edit')){
+            abort(401);
+        }
+
+
         $quotation = Quotation::findOrFail($id);
         $discount = $quotation->discount + Request::input('discount');
         $grandTotal = $quotation->total_price - $discount;
@@ -759,6 +788,12 @@ class QuotationController extends Controller
 
 
     public function createInvoice($id){
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.edit')){
+            abort(401);
+        }
+
+
         $quotation = Quotation::findOrFail($id);
 
 
@@ -872,6 +907,11 @@ class QuotationController extends Controller
 
 
     public function editQuotation($id){
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.edit')){
+            abort(401);
+        }
+
         $quot = Quotation::with('client')->findOrFail($id);
 
 /*
@@ -913,6 +953,10 @@ class QuotationController extends Controller
      */
     public function update(Request $request, Quotation $quotation)
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.edit')){
+            abort(401);
+        }
+
 
         Request::validate([
             'clientId' => 'required',
@@ -935,7 +979,7 @@ class QuotationController extends Controller
 
         $grandTotal = Request::input('totalPrice') - $quotation->discount;
         $quotation->update([
-            'client_id' => Request::input("clientId")["id"],
+            'client_id' => Request::input("clientId")["id"] ?? Request::input("clientId"),
             'qut_date' => Request::input('date'),
             'subject' => Request::input('subject'),
             'created_by' => Auth::id(),
@@ -1099,6 +1143,10 @@ class QuotationController extends Controller
      */
     public function destroy(Quotation $quotation)
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.delete')){
+            abort(401);
+        }
+
         if ($quotation->invoice){
             if ($quotation->invoice->transactions->count()){
                 $quotation->invoice->transactions()->delete();
@@ -1111,6 +1159,11 @@ class QuotationController extends Controller
 
 
     public function chnageQuotationStatus(){
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.edit')){
+            abort(401);
+        }
+
         if(Request::input('quotId') != null && is_array(Request::input('status')) != null){
             $status = Request::input('status')["name"];
             $quotaiton = Quotation::findOrfail(Request::input('quotId'))->load(['invoice', 'client']);
@@ -1148,6 +1201,12 @@ class QuotationController extends Controller
     }
 
     public function addPayment(){
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.edit')){
+            abort(401);
+        }
+
+
 
         Request::validate([
             'payment_id' => 'required|integer'
@@ -1190,6 +1249,12 @@ class QuotationController extends Controller
     }
 
     public function sendMail($id=null){
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.edit')){
+            abort(401);
+        }
+
+
 
         Request::validate([
             'email' => 'required|email'

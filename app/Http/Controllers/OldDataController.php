@@ -11,6 +11,11 @@ class OldDataController extends Controller
 {
 
     public function quotation(){
+
+        if (!auth()->user()->can('settings.old_data') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
+
         return inertia('OldData/Quotation', [
             'oldQuotations' =>  OldQuotation::query()
                 ->with(['user', 'client'])
@@ -58,6 +63,11 @@ class OldDataController extends Controller
     }
 
     public function invoice(){
+
+        if (!auth()->user()->can('settings.old_data') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
+
         return inertia('OldData/Invoice', [
             'oldInvoice' =>  OldInvoice::query()
                 ->with(['quotation', 'quotation.client'])

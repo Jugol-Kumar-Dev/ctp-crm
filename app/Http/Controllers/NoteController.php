@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Note;
 use App\Models\NoteCategory;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\URL;
 use Mockery\Matcher\Not;
@@ -19,10 +20,10 @@ class NoteController extends Controller
     public function index()
     {
 
-        if (!auth()->user()->can('note.index')) {
-            abort(401 );
-        }
 
+        if (!auth()->user()->can('note.index') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
         return inertia('Notes/Notes', [
             $search = Request::input('search'),
             'notes' => Note::query()
@@ -70,8 +71,8 @@ class NoteController extends Controller
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->can('note.create')) {
-            abort(401 );
+        if (!auth()->user()->can('note.create') || auth()->user()->hasRole('administrator')){
+            abort(401);
         }
         Request::validate([
             "title" =>  "required",
@@ -85,7 +86,8 @@ class NoteController extends Controller
             'notes' => Request::input('notes'),
             'status' => Request::input('status') === "true",
         ]);
-        $note->users()->attach(Request::input('agents'));
+
+        $note->users()->attach([...Request::input('agents'), Auth::id()]);
         return back();
 
     }
@@ -98,8 +100,10 @@ class NoteController extends Controller
      */
     public function show($id)
     {
-        if (!auth()->user()->can('note.show')) {
-            abort(401 );
+
+
+        if (!auth()->user()->can('note.show') || auth()->user()->hasRole('administrator')){
+            abort(401);
         }
 
         $note = Note::with(["noteCategory", "users"])->findOrFail($id);
@@ -137,6 +141,11 @@ class NoteController extends Controller
      */
     public function update()
     {
+
+
+        if (!auth()->user()->can('note.edit') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
         if (!auth()->user()->can('note.edit')) {
             abort(401 );
         }
@@ -169,8 +178,10 @@ class NoteController extends Controller
      */
     public function destroy($id)
     {
-        if (!auth()->user()->can('note.delete')) {
-            abort(401 );
+
+
+        if (!auth()->user()->can('note.delete') || auth()->user()->hasRole('administrator')){
+            abort(401);
         }
         Note::findOrFail($id)->delete();
         return back();
@@ -178,6 +189,7 @@ class NoteController extends Controller
 
 
     public function employeeNotes(){
+
         return inertia('Notes/EmployeeNotes', [
             'notes' => Note::with(['noteCategory', 'users'])->get()
         ]);

@@ -122,20 +122,22 @@
 
                                             <td>{{ projects.start_date + " - " + projects.end_date }} </td>
                                             <td>
-                                                <CDropdown>
+                                                <CDropdown v-if="this.$page.props.auth.user.can.includes('project.show')||
+                                                this.$page.props.auth.user.can.includes('project.delete')||
+                                                this.$page.props.auth.user.role.includes('Administrator')">
                                                     <CDropdownToggle>
                                                         <vue-feather type="more-vertical" />
                                                     </CDropdownToggle>
                                                     <CDropdownMenu>
-                                                        <CDropdownItem @click="editProject(projects.edit_url)">
-                                                            <Icon title="pencil" />
-                                                            <span class="ms-1">Edit</span>
-                                                        </CDropdownItem>
-                                                        <CDropdownItem  :href="projects.show_url" >
+                                                        <CDropdownItem  :href="projects.show_url"
+                                                                        v-if="this.$page.props.auth.user.can.includes('project.show')||
+                                                                        this.$page.props.auth.user.role.includes('Administrator')">
                                                             <Icon title="eye" />
                                                             <span class="ms-1">Show</span>
                                                         </CDropdownItem>
-                                                        <CDropdownItem @click="deleteItem(props.main_url, projects.id)">
+                                                        <CDropdownItem @click="deleteItem(props.main_url, projects.id)"
+                                                                       v-if="this.$page.props.auth.user.can.includes('project.delete')||
+                                                                        this.$page.props.auth.user.role.includes('Administrator')">
                                                             <Icon title="trash" />
                                                             <span class="ms-1">Delete</span>
                                                         </CDropdownItem>

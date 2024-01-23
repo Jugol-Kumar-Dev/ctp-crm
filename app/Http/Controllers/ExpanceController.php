@@ -23,6 +23,9 @@ class ExpanceController extends Controller
      */
     public function index()
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('expanse.index')){
+            abort(401);
+        }
 
         return inertia('Modules/Expanse/Index', [
             $search = Request::input('search'),
@@ -77,6 +80,11 @@ class ExpanceController extends Controller
      */
     public function store(Request $request)
     {
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('expanse.create')){
+            abort(401);
+        }
+
         Request::validate([
             'purpose_id' => 'required|integer',
 //            'subject' => 'required',
@@ -131,6 +139,10 @@ class ExpanceController extends Controller
      */
     public function show($id)
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('expanse.show')){
+            abort(401);
+        }
+
         if (Request::input('data')){
             return Expanse::with(['purpse', 'user','method'])->findOrFail($id);
         }
@@ -157,6 +169,10 @@ class ExpanceController extends Controller
      */
     public function update($id)
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('expanse.edit')){
+            abort(401);
+        }
+
         $expance = Expanse::findOrFail($id);
         Request::validate([
             'purpose_id' => 'required|integer',
@@ -213,6 +229,10 @@ class ExpanceController extends Controller
      */
     public function destroy($id)
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('expanse.delete')){
+            abort(401);
+        }
+
         $expance = Expanse::findOrFail($id);
         $transaction = Transaction::where('transactionable_type', "App\\Models\\Expanse")->where('transactionable_id', $expance->id)->first();
         if($transaction){

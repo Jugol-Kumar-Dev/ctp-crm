@@ -44,7 +44,9 @@
 
 
                     <li class=" nav-item has-sub" :class="{'open' : clickMenu === 1}"  @click="toggleSubMenu(1)"
-                        v-if="this.$page.props.auth.user.role.includes('Administrator') || this.$page.props.auth.user.can.includes('user.index')">
+                        v-if="this.$page.props.auth.user.role.includes('Administrator') ||
+                        this.$page.props.auth.user.can.includes('user.index') ||
+                        this.$page.props.auth.user.can.includes('authorization.index')">
                         <a preserve-scroll class="d-flex align-items-center">
                             <vue-feather type="users" size="8"/>
                             <span class="menu-title text-truncate"
@@ -236,7 +238,6 @@
                         v-if="this.$page.props.auth.user.can.includes('transaction.index') ||
                         this.$page.props.auth.user.can.includes('purpose.index') ||
                         this.$page.props.auth.user.can.includes('method.index') ||
-                        this.$page.props.auth.user.can.includes('expanse.index') ||
                         this.$page.props.auth.user.role.includes('Administrator') ">
                         <a preserve-scroll class="d-flex align-items-center">
                             <vue-feather type="trending-up" />

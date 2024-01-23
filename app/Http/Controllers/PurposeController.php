@@ -16,6 +16,11 @@ class PurposeController extends Controller
      */
     public function index()
     {
+
+        if (!auth()->user()->can('purpose.index') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
+
         return inertia('Modules/Purpose/Index', [
             'purposes' => Purpose::query()
                 ->when(Request::input('search'), function ($query, $search) {
@@ -44,6 +49,10 @@ class PurposeController extends Controller
      */
     public function store(PurposeRequest $request)
     {
+        if (!auth()->user()->can('purpose.create') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
+
         Purpose::create($request->validated());
         return redirect()->route('purposes.index');
     }
@@ -56,6 +65,10 @@ class PurposeController extends Controller
      */
     public function show(Purpose $purpose)
     {
+        if (!auth()->user()->can('purpose.show') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
+
         return $purpose;
     }
 
@@ -68,6 +81,10 @@ class PurposeController extends Controller
      */
     public function update(PurposeRequest $request, Purpose $purpose)
     {
+        if (!auth()->user()->can('purpose.edit') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
+
         $purpose->update($request->validated());
         return redirect()->route('purposes.index');
     }
@@ -80,6 +97,10 @@ class PurposeController extends Controller
      */
     public function destroy(Purpose $purpose)
     {
+        if (!auth()->user()->can('purpose.delete') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
+
         $purpose->delete();
         return redirect()->route('purposes.index');
     }

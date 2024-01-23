@@ -60,9 +60,15 @@
                                         <tbody>
                                         <tr v-for="invoice in invoices.data" :key="invoice.id">
                                             <td>
-                                                <a :href="invoice.show_url" >
+                                                <a  v-if="this.$page.props.auth.user.can.includes('invoice.show') ||
+                                                this.$page.props.auth.user.role.includes('Administrator')"
+                                                    :href="invoice.show_url" >
                                                     #{{ invoice.invoice_id+''+invoice.id }}
                                                 </a>
+
+                                                <span v-else>
+                                                    #{{ invoice.invoice_id+''+invoice.id }}
+                                                </span>
                                             </td>
                                             <td>{{ invoice.client?.name ?? '---'}}</td>
                                             <td>{{ invoice.user?.name }}</td>

@@ -153,7 +153,8 @@
                         <!-- Invoice Edit Right starts -->
                         <div class="col-xl-3 col-md-4 col-12">
                             <div class="card">
-                                <div class="card-body">
+                                <div class="card-body" v-if="this.$page.props.auth.user.can.includes('quotation.edit') ||
+                                this.$page.props.auth.user.role.includes('Administrator')" >
                                     <a :href="props.url.edit_url" class="btn btn-primary w-100 mb-75">
                                         Edit Quotation
                                     </a>
@@ -161,11 +162,11 @@
                                         Send Email
                                     </button>
 
-<!--                                    data-bs-toggle="modal"-->
-<!--                                    data-bs-target="#sendEmail"-->
 
                                     <a :href="props.url.show_url+'?download=true'"  class="btn btn-outline-primary w-100 mb-75">Download PDF</a>
                                     <a :href="props.url.show_url+'?print=true'"  class="btn btn-outline-primary w-100 mb-75">Print Quotation</a>
+
+
                                     <button type="button" class="btn btn-outline-primary w-100 mb-75" data-bs-toggle="modal"
                                             data-bs-target="#givenDiscount">Give Discount</button>
                                     <button v-if="props.quotation.invoice === null" class="btn btn-success w-100 mb-75"
@@ -176,6 +177,10 @@
                                     <a :href="props.url.invoice_url" v-else target="_blank" class="btn btn-success w-100 mb-75">
                                         Get Invoices
                                     </a>
+                                </div>
+                                <div class="card-body" v-else>
+                                    <a :href="props.url.show_url+'?download=true'"  class="btn btn-outline-primary w-100 mb-75">Download PDF</a>
+                                    <a :href="props.url.show_url+'?print=true'"  class="btn btn-outline-primary w-100 mb-75">Print Quotation</a>
                                 </div>
                             </div>
                             <!--                            <div class="mt-2">

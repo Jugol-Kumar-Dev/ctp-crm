@@ -11,7 +11,7 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header border-bottom d-flex justify-content-between">
-                                    <h4 class="card-title">Services Information's </h4>
+                                    <h4 class="card-title">Service Information's </h4>
                                     <div
                                         class="d-flex align-items-center justify-content-center justify-content-lg-end flex-lg-nowrap flex-wrap">
                                         <div class="select-search-area">
@@ -42,10 +42,17 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center justify-content-between">
-                                        <a :href="item.show_url">
+
+
+                                        <a :href="item.show_url" v-if="this.$page.props.auth.user.can.includes('services.show') || this.$page.props.auth.user.role.includes('Administrator')">
                                             <h2 class="card-title">{{ item.name }}</h2>
                                             <small>Position:  {{ item.position }}</small>
                                         </a>
+
+                                        <div v-else>
+                                            <h2 class="card-title">{{ item.name }}</h2>
+                                            <small>Position:  {{ item.position }}</small>
+                                        </div>
                                         <CDropdown v-if="this.$page.props.auth.user.can.includes('services.delete') || this.$page.props.auth.user.can.includes('services.edit') || this.$page.props.auth.user.role.includes('Administrator')">
                                             <CDropdownToggle class="p-0">
                                                 <vue-feather type="more-vertical" />
@@ -73,8 +80,8 @@
                                         </CDropdown>
                                     </div>
                                     <span class="badge bg-primary"  style="margin-right:5px;" v-for="plat in item.platforms">
-                                    {{ plat.name }}
-                                </span>
+                                        {{ plat.name }}
+                                    </span>
                                 </div>
                             </div>
 <!--                        </a>-->

@@ -76,7 +76,11 @@
                                         <tbody>
                                         <tr v-for="qut in quotations.data" :key="qut.id">
                                             <td>
-                                                <a :href="qut.show_url" target="_blank">#{{ moment(new Date()).format('YYYYMMD')+qut.id}}</a>
+                                                <a v-if="this.$page.props.auth.user.can.includes('quotation.show') ||
+                                                this.$page.props.auth.user.role.includes('Administrator')"
+                                                    :href="qut.show_url" target="_blank">#{{ moment(new Date()).format('YYYYMMD')+qut.id}}</a>
+
+                                                <span v-else>#{{ moment(new Date()).format('YYYYMMD')+qut.id}}</span>
                                             </td>
 
                                             <td>

@@ -32,7 +32,7 @@
                         {{ moment(qut.created_at).format('lll') }}
                     </td>
                     <td>
-                        <a :href="`/admin/quotations/${qut.id}`">
+                        <a v-if="this.$page.props.auth.user.role == 'Administrator' || this.$page.props.auth.user.can.includes('quotation.show')" :href="`/admin/quotations/${qut.id}`">
                             <vue-feather class="text-info" type="eye" size="15"/>
                         </a>
                     </td>

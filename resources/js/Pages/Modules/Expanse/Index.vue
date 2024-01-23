@@ -60,9 +60,15 @@
                                         <tbody>
                                         <tr v-for="exp in expanses.data" :key="exp.id">
                                             <td>
-                                                <a href="javascript:void(0)" @click="editItem(exp.show_url, true)">
+                                                <a  v-if="this.$page.props.auth.user.can.includes('expanse.show') ||
+                                                this.$page.props.auth.user.role.includes('Administrator')"
+                                                    href="javascript:void(0)" @click="editItem(exp.show_url, true)">
                                                     #EXP_{{ exp.id }}
                                                 </a>
+                                                <span v-else>
+                                                    #EXP_{{ exp.id }}
+                                                </span>
+
                                             </td>
 <!--                                            <td>{{ exp.subject }}</td>-->
                                             <td>{{ exp.purpse.name }}</td>
@@ -77,13 +83,13 @@
                                             <td>{{ exp.created_at }}</td>
                                             <td>
                                                 <button type="button"  @click="editItem(exp.show_url)"
-                                                        v-if="this.$page.props.auth.user.can.includes('client.edit') || this.$page.props.auth.user.role == 'Administrator' "
+                                                        v-if="this.$page.props.auth.user.can.includes('expanse.edit') || this.$page.props.auth.user.role.includes('Administrator') "
                                                         class="btn btn-icon btn-icon rounded-circle bg-light-warning waves-effect waves-float waves-light">
                                                     <Icon title="pencil"/>
                                                 </button>
 
                                                 <button @click="deleteItemModal(exp.id)" type="button"
-                                                        v-if="this.$page.props.auth.user.can.includes('client.delete') || this.$page.props.auth.user.role == 'Administrator' "
+                                                        v-if="this.$page.props.auth.user.can.includes('expanse.delete') || this.$page.props.auth.user.role.includes('Administrator') "
                                                         class="btn btn-icon btn-icon rounded-circle waves-effect waves-float waves-light bg-light-danger">
                                                     <Icon title="trash"/>
                                                 </button>

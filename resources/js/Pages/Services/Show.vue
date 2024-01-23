@@ -33,7 +33,8 @@
                                 <div class="card">
                                     <div class="card-body d-flex align-items-center justify-content-between">
                                         <h2>Packages</h2>
-                                        <button @click="addDataModal" class="btn btn-primary">Add New</button>
+                                        <button v-if="this.$page.props.auth.user.can.includes('packages.create') || this.$page.props.auth.user.role.includes('Administrator')"
+                                                                                           @click="addDataModal" class="btn btn-primary">Add New</button>
                                     </div>
                                 </div>
                                 <div class="row">

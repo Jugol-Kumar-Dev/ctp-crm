@@ -455,9 +455,14 @@ const formData = useForm({
     due_date:props.quotation.due_date,
     subject:props.quotation.subject,
     note:props.quotation.note,
-    paymentPolicy:props.quotation.payment_policy,
-    servicePolicy:props.quotation.trams_of_service,
-    paymentMethos:props.quotation.payment_methods,
+    // paymentPolicy:props.quotation.payment_policy,
+    // servicePolicy:props.quotation.trams_of_service,
+    // paymentMethos:props.quotation.payment_methods,
+
+
+    servicePolicy:servicePolicy.tramsAndCondition,
+    paymentPolicy:servicePolicy.paymentPolicy,
+    paymentMethos:servicePolicy.paymentMethods,
 
     attachPaymentPolicy:props.quotation.payment_policy !== null,
     attachServicePolicy:props.quotation.trams_of_service !== null,

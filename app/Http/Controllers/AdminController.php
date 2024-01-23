@@ -22,8 +22,9 @@ class AdminController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()->can('user.index')){
-            abort(404);
+
+        if (!auth()->user()->can('user.index') || auth()->user()->hasRole('administrator')){
+            abort(401);
         }
 
         return inertia('Modules/Admin/Index', [
@@ -50,9 +51,9 @@ class AdminController extends Controller
 
     }
     public function allUsers(){
-//        if (!Request::ajax()){
-//            abort(404);
-//        }
+        if (!auth()->user()->can('user.index') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
         return User::where('id', '!=', Auth::id())->get();
     }
 
@@ -68,8 +69,9 @@ class AdminController extends Controller
      */
     public function store()
     {
-        if (!auth()->user()->can('user.create')){
-            abort(404);
+
+        if (!auth()->user()->can('user.create') || auth()->user()->hasRole('administrator')){
+            abort(401);
         }
 
         Request::validate([
@@ -105,9 +107,15 @@ class AdminController extends Controller
      */
     public function show($id)
     {
-//        if (!auth()->user()->can('user.show')){
-//            abort(404);
-//        }
+        $show =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('user.show');
+        $edit =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('user.edit');
+        $me   =  auth()->user()->hasRole('administrator')  || Auth::id() != $id;
+
+
+        if ( $show && $edit && $me){
+            abort(401);
+        }
+
         $user = User::findOrFail($id)->load('invoices', 'projects', 'roles');
         if(Request::input("api")){
             return $user;
@@ -126,6 +134,10 @@ class AdminController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if (!auth()->user()->can('user.edit') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
+
         $user = User::findOrFail($id);
         $user->update([
             'name' => Request::input('name'),
@@ -144,6 +156,11 @@ class AdminController extends Controller
     }
 
     public function uploadProfile(){
+
+        if (!auth()->user()->can('user.edit') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
+
 
         $user = User::findOrFail(Auth::id());
         if(Storage::exists($user->photo)){
@@ -166,6 +183,14 @@ class AdminController extends Controller
     public function updateCredentials($id){
 
 
+        $show =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('user.show');
+        $edit =  auth()->user()->hasRole('administrator')  || !auth()->id() == $id;
+
+        if ( $show && $edit){
+            abort(401);
+        }
+
+
         $user = User::findOrFail($id);
 
         Request::validate([
@@ -176,13 +201,17 @@ class AdminController extends Controller
 
         $user->name = Request::input('name');
         $user->email = Request::input('email');
-        $user->password = Hash::make(Request::integer('password'));
+        $user->password = Hash::make(Request::input('password'));
         $user->update();
     }
 
 
     public function destroy($id)
     {
+        if (!auth()->user()->can('user.delete') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
+
         try{
             $user = User::findOrFail($id);
             if(count($user->invoices) | count($user->transactions) | count($user->projects) | count($user->clients) | count($user->expanses)){

@@ -10,7 +10,7 @@
             <!--             horizontal role create module-->
 
             <div class="content-body">
-                <h3>Roles List</h3>
+                <h3>Role List</h3>
                 <!-- Role cards -->
                 <div class="row match-height">
                     <div class="col-xl-4 col-lg-6 col-md-6" v-for="role in roles" :key="role.id">
@@ -34,16 +34,18 @@
                                 <div class="d-flex justify-content-between align-items-end mt-1 pt-25">
                                     <div class="role-heading">
                                         <h4 class="fw-bolder">{{ role.name  }}</h4>
-                                        <a v-if="role.is_delete"  href="javascript:;" class="role-edit-modal" @click="editRole(role.id)">
+                                        <a v-if="role.is_delete &&  this.$page.props.auth.user.role.includes('Administrator') ||
+                                        role.is_delete && this.$page.props.auth.user.can.includes('authorization.edit') "  href="javascript:void(0);"
+                                           class="role-edit-modal" @click="editRole(role.id)">
                                             <small class="fw-bolder">Edit Role</small>
                                         </a>
-                                        <span v-else class="text-danger">
+                                        <span v-else-if="!role.is_delete" class="text-danger">
                                             This is System Role. Can't Edit Or Delete This Role
                                         </span>
                                     </div>
                                     <span @click="deleteItem(props.main_url, role.id)" class="text-body text-danger cursor-pointer"
-
-                                       v-if="role.is_delete">
+                                       v-if="role.is_delete &&  this.$page.props.auth.user.role.includes('Administrator') ||
+                                        role.is_delete &&  this.$page.props.auth.user.can.includes('authorization.delete') ">
                                         <vue-feather type="trash-2" class="text-danger"/>
                                     </span>
                                 </div>
@@ -51,7 +53,7 @@
                         </div>
                     </div>
 
-                    <div class="col-xl-4 col-lg-6 col-md-6">
+                    <div class="col-xl-4 col-lg-6 col-md-6" v-if="this.$page.props.auth.user.role.includes('Administrator') || this.$page.props.auth.user.can.includes('authorization.create')">
                         <div class="card">
                             <div class="row">
                                 <div class="col-sm-5">
@@ -78,7 +80,7 @@
                 <!-- table -->
                 <div class="card">
                     <div class="table-responsive">
-                        <table class="user-list-table table">
+                        <table class="user-list-table table table-striped">
                             <thead class="table-light">
                             <tr>
                                 <th></th>

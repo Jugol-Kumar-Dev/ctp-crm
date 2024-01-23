@@ -26,9 +26,9 @@
 
 <!--                                                <p v-if="props.user?.follow_up" v-c-tooltip="'follow up date'">{{ moment(props.user?.follow_up)  }}</p>-->
                                                 <div class="d-flex align-items-center gap-1">
-                                                    <button  v-if="
+                                                    <button class="btn-sm btn btn-primary w-100" v-if="
                                                 this.$page.props.auth.user.role == 'Administrator' ||
-                                                this.$page.props.auth.user.can.includes('leads.edit')" @click="editClient" class="btn-sm btn btn-primary w-100">Edit Me</button>
+                                                this.$page.props.auth.user.can.includes('client.edit')" @click="editClient" >Edit Me</button>
 <!--                                                    <button v-if="props.user?.note" class="btn btn-info btn-sm" @click="showClientNote" v-c-tooltip="'click for show client note.'">-->
 <!--                                                        <vue-feather type="info"/>-->
 <!--                                                    </button>-->
@@ -413,17 +413,17 @@
 </template>
 
 <script setup>
-import Account from './Uerprofile/Account'
-import Billing from './Uerprofile/Billing'
-import Quotation from './Uerprofile/Quotation'
-import Invoice from './Uerprofile/Invoice'
-import Project from './Uerprofile/Project'
-import Domain from './Uerprofile/Domain'
-import Hosting from './Uerprofile/Hosting'
-import Modal from './Modal.vue'
+import Account from './Account'
+import Billing from './Billing'
+import Quotation from './Quotation'
+import Invoice from './Invoice'
+import Project from './Project'
+import Domain from './Domain'
+import Hosting from './Hosting'
+import Modal from '../Modal.vue'
 import moment from "moment";
 
-import {useDate} from '../composables/useDate.js'
+import {useDate} from '../../composables/useDate.js'
 import {ref} from "vue";
 import {Inertia} from "@inertiajs/inertia";
 import Swal from "sweetalert2";
@@ -431,8 +431,8 @@ import axios from "axios";
 import {useForm} from "@inertiajs/inertia-vue3";
 let {formatted} = useDate();
 let props = defineProps({
-    user:[]|Object,
-    users:[]|Object,
+    user:[]|Object|null,
+    users:[]|Object|null,
     image:String,
     showUrl:String,
     errors:Object,

@@ -16,7 +16,7 @@
                                         <h4 class="card-title me-1">Transactions Information's</h4>
                                         <span class="text-info cursor-pointer" @click="tranDetails" v-c-tooltip="'Click Me Me Get More Details'"> <vue-feather type="info" size="15"/></span>
                                     </div>
-                                    <div>
+                                    <div v-if="this.$page.props.auth.user.can.includes('transaction.export')|| this.$page.props.auth.user.role.includes('Administrator')">
                                         <CDropdown>
                                             <CDropdownToggle class="p-0">
                                                 <button class="btn bg-light-secondary d-flex align-items-center">

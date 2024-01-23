@@ -16,6 +16,7 @@ use Illuminate\Support\Str;
 
 class BusinessSettingController extends Controller
 {
+
     public function get_setting($key, $default=null){
         if (!auth()->user()->can('settings.show')){
             abort(404);
@@ -25,6 +26,12 @@ class BusinessSettingController extends Controller
     }
 
     public function getAllPolicy(){
+        if (!auth()->user()->can('settings.show') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
+
+
+
         $data = [
             'trams_and_condition' => $this->get_setting('trams_and_condition'),
             'payment_policy' => $this->get_setting('payment_policy'),
@@ -35,6 +42,10 @@ class BusinessSettingController extends Controller
 
     public function overWriteEnv($key, $value)
     {
+        if (!auth()->user()->can('settings.show') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
+
         if (!auth()->user()->can('settings.show')){
             abort(404);
         }
@@ -59,8 +70,8 @@ class BusinessSettingController extends Controller
 
     public function index()
     {
-        if (!auth()->user()->can('settings.show')){
-            abort(404);
+        if (!auth()->user()->can('settings.show') || auth()->user()->hasRole('administrator')){
+            abort(401);
         }
         return inertia('Settings/Setting', [
             'main_url' => URL::route('businessIndex'),
@@ -86,8 +97,8 @@ class BusinessSettingController extends Controller
     }
 
     public function updateSettings(){
-        if (!auth()->user()->can('settings.show')){
-            abort(404);
+        if (!auth()->user()->can('settings.show') || auth()->user()->hasRole('administrator')){
+            abort(401);
         }
         foreach (Request::all() as $type => $value) {
             $business_settings = BusinessSetting::where('type', $type)->first();
@@ -120,8 +131,8 @@ class BusinessSettingController extends Controller
 
 
     public function updateSmtp(){
-        if (!auth()->user()->can('settings.show')){
-            abort(404);
+        if (!auth()->user()->can('settings.show') || auth()->user()->hasRole('administrator')){
+            abort(401);
         }
         foreach (Request::all() as $type => $value) {
             $business_settings = BusinessSetting::where('type', $type)->first();

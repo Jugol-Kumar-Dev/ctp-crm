@@ -50,18 +50,16 @@ class RolesAndPermissionsSeeder extends Seeder
             [
                 'module' => "Authorizations",
                 'permissions' => [
-                    'authorization.show',
                     'authorization.index',
                     'authorization.create',
                     'authorization.edit',
                     'authorization.delete'
                 ],
                 'name' => [
-                    'Show Authorizations',
-                    'Manage Authorizations',
-                    'Create Authorizations',
-                    'Edit Authorizations',
-                    'Delete Authorizations'
+                    'Manage Authorization',
+                    'Create Authorization',
+                    'Edit Authorization',
+                    'Delete Authorization'
                 ]
             ],
             [
@@ -73,7 +71,6 @@ class RolesAndPermissionsSeeder extends Seeder
                     'leads.create',
                     'leads.edit',
                     'leads.delete',
-                    'leads.download'
                 ],
                 'name' => [
                     'Show Leads',
@@ -82,7 +79,6 @@ class RolesAndPermissionsSeeder extends Seeder
                     'Create Leads',
                     'Edit Leads',
                     'Delete Leads',
-                    'Download Leads'
                 ]
             ],
             [
@@ -105,40 +101,6 @@ class RolesAndPermissionsSeeder extends Seeder
                 ]
             ],
             [
-                'module' => "Platform",
-                'permissions' => [
-                    'platform.show',
-                    'platform.index',
-                    'platform.create',
-                    'platform.edit',
-                    'platform.delete'
-                ],
-                'name' => [
-                    'Show Platform',
-                    'Manage Platform',
-                    'Create Platform',
-                    'Edit Platform',
-                    'Delete Platform'
-                ]
-            ],
-            [
-                'module' => "Packages",
-                'permissions' => [
-                    'packages.show',
-                    'packages.index',
-                    'packages.create',
-                    'packages.edit',
-                    'packages.delete'
-                ],
-                'name' => [
-                    'Show Packages',
-                    'Manage Packages',
-                    'Create Packages',
-                    'Edit Packages',
-                    'Delete Packages'
-                ]
-            ],
-            [
                 'module' => "Services",
                 'permissions' => [
                     'services.show',
@@ -156,6 +118,32 @@ class RolesAndPermissionsSeeder extends Seeder
                 ]
             ],
             [
+                'module' => "Packages",
+                'permissions' => [
+                    'packages.create',
+                    'packages.edit',
+                    'packages.delete'
+                ],
+                'name' => [
+                    'Create Packages',
+                    'Edit Packages',
+                    'Delete Packages'
+                ]
+            ],
+            [
+                'module' => "Features",
+                'permissions' => [
+                    'features.create',
+                    'features.edit',
+                    'features.delete'
+                ],
+                'name' => [
+                    'Create Features',
+                    'Edit Features',
+                    'Delete Features'
+                ]
+            ],
+            [
                 'module' => "Quotation",
                 'permissions' => [
                     'quotation.show',
@@ -163,7 +151,6 @@ class RolesAndPermissionsSeeder extends Seeder
                     'quotation.create',
                     'quotation.edit',
                     'quotation.delete',
-                    'quotation.invoice'
                 ],
                 'name' => [
                     'Show Quotation',
@@ -171,7 +158,6 @@ class RolesAndPermissionsSeeder extends Seeder
                     'Create Quotation',
                     'Edit Quotation',
                     'Delete Quotation',
-                    'Invoice Quotation'
                 ]
             ],
             [
@@ -219,25 +205,6 @@ class RolesAndPermissionsSeeder extends Seeder
                 ]
             ],
             [
-                'module' => "Note",
-                'permissions' => [
-                    'note.show',
-                    'note.index',
-                    'note.create',
-                    'note.edit',
-                    'note.delete',
-                    'note.employees'
-                ],
-                'name' => [
-                    'Show Note',
-                    'Manage Note',
-                    'Create Note',
-                    'Edit Note',
-                    'Delete Note',
-                    'Show Employees'
-                ]
-            ],
-            [
                 'module' => "Expanse",
                 'permissions' => [
                     'expanse.show',
@@ -252,6 +219,25 @@ class RolesAndPermissionsSeeder extends Seeder
                     'Create Expanse',
                     'Edit Expanse',
                     'Delete Expanse'
+                ]
+            ],
+            [
+                'module' => "Note",
+                'permissions' => [
+                    'note.show',
+                    'note.index',
+                    'note.create',
+                    'note.edit',
+                    'note.delete',
+                    'note.category'
+                ],
+                'name' => [
+                    'Show Note',
+                    'Manage Note',
+                    'Create Note',
+                    'Edit Note',
+                    'Delete Note',
+                    'Manage Note Category'
                 ]
             ],
             [
@@ -291,18 +277,12 @@ class RolesAndPermissionsSeeder extends Seeder
             [
                 'module' => "Transaction",
                 'permissions' => [
-                    'transaction.show',
                     'transaction.index',
-                    'transaction.create',
-                    'transaction.edit',
-                    'transaction.delete'
+                    'transaction.export'
                 ],
                 'name' => [
-                    'Show Transaction',
                     'Manage Transaction',
-                    'Create Transaction',
-                    'Edit Transaction',
-                    'Delete Transaction'
+                    'Export Transaction',
                 ]
             ],
             [
@@ -341,33 +321,33 @@ class RolesAndPermissionsSeeder extends Seeder
             }
         };
 
-//        Role::updateOrCreate(['name' => 'Administrator', 'is_delete' => false]);
-//
-//
-//        User::updateOrCreate([
-//            'name' => 'admin',
-//            'email' => 'admin@admin.com',
-//            'password' => bcrypt(12345678),
-//        ])->assignRole('Administrator');
-//
-//        $developer = Role::updateOrCreate(['name' => 'Developer']);
-//        foreach ($all as $item) {
-//            foreach ($item['permissions'] as $permission) {
-//                $developer->givePermissionTo( $permission );
-//            }
-//        };
+        Role::updateOrCreate(['name' => 'Administrator', 'is_delete' => false]);
 
-//        User::updateOrCreate([
-//            'name' => 'Jugol Kumar',
-//            'email' => 'jugol@creativetechpark.com',
-//            'password' => bcrypt(12345678),
-//        ])->assignRole('Developer');
-//
-//        User::updateOrCreate([
-//        'name' => 'Creative Tech Park',
-//            'email' => 'info@creativetechpark.com',
-//            'password' => bcrypt('creativetechpark'),
-//        ])->assignRole('Administrator');
+
+        User::updateOrCreate([
+            'name' => 'admin',
+            'email' => 'admin@admin.com',
+            'password' => bcrypt(12345678),
+        ])->assignRole('Administrator');
+
+        $developer = Role::updateOrCreate(['name' => 'Developer']);
+        foreach ($all as $item) {
+            foreach ($item['permissions'] as $permission) {
+                $developer->givePermissionTo( $permission );
+            }
+        };
+
+        User::updateOrCreate([
+            'name' => 'Jugol Kumar',
+            'email' => 'jugol@creativetechpark.com',
+            'password' => bcrypt(12345678),
+        ])->assignRole('Developer');
+
+        User::updateOrCreate([
+        'name' => 'Creative Tech Park',
+            'email' => 'info@creativetechpark.com',
+            'password' => bcrypt('creativetechpark'),
+        ])->assignRole('Administrator');
 
 
     }

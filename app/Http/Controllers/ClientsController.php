@@ -24,6 +24,17 @@ class ClientsController extends Controller
      */
     public function index()
     {
+
+        $show =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('client.index');
+        $my =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('client.ownonly');
+
+        if ( $show && $my){
+            abort(401);
+        }
+
+
+
+
         $names = array_column(Auth::user()->roles->toArray(), 'name');
         $admin = in_array('Administrator', $names);
 
@@ -32,13 +43,8 @@ class ClientsController extends Controller
             $clients = Client::query()->with(['projects', 'users', 'createdBy', 'updatedBy'])
                 ->latest()
                 ->with('projects', 'users')
-                ->where('status', '==', 'Converted to Customer')
+//                ->where('status', '==', 'Converted to Customer')
                 ->orWhere('is_client', true)
-                ->when(!$admin, function ($query){
-                    $query->whereHas('users',function($user){
-                        $user->where('user_id', Auth::id());
-                    });
-                })
                 ->when(Request::input('search'), function ($query, $search) {
                     $query
                     ->where('email', 'like', "%{$search}%")
@@ -194,9 +200,13 @@ class ClientsController extends Controller
     public function show($id)
     {
 
-//        if (!auth()->user()->can('client.show') || !auth()->user()->can('leads.show')) {
-//            abort(401 );
-//        }
+        $show =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('client.show');
+        $my =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('client.edit');
+
+        if ( $show && $my){
+            abort(401);
+        }
+
 
         $user = Client::findOrFail($id)->load('users', 'transactions', 'transactions.receivedBy',
             'invoices', 'invoices.user',
@@ -349,9 +359,14 @@ class ClientsController extends Controller
      */
     public function destroy($id)
     {
-//        if (!auth()->user()->can('client.delete') || !auth()->user()->can('leads.delete')) {
-//            abort(401 );
-//        }
+
+
+        $show =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('client.delete');
+        $my =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('leads.delete');
+
+        if ( $show && $my){
+            abort(401);
+        }
 
         $client = Client::findOrFail($id);
 

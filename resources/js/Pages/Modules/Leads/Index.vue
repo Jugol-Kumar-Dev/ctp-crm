@@ -122,7 +122,12 @@
                                                 <input type="checkbox" :value="user.id" v-model="checkedUsers.ids"
                                                        class="checkbox-padding form-check-input select_all_users">
                                             </td>
-                                            <td class="cursor-pointer" @click="singleShowlead(user)">
+
+
+                                            <td v-if=" this.$page.props.auth.user.role.includes('Administrator') ||
+                                            this.$page.props.auth.user.can.includes('leads.edit') ||
+                                            this.$page.props.auth.user.can.includes('leads.delete') ||
+                                            this.$page.props.auth.user.can.includes('leads.show')" class="cursor-pointer" @click="singleShowlead(user)">
                                                 <div class="d-flex align-items-center gap-1 user-info">
                                                     <div class="icon">
                                                         <vue-feather type="more-vertical"/>
@@ -138,6 +143,22 @@
                                                     </div>
                                                 </div>
                                             </td>
+
+                                            <td v-else>
+                                                <div class="d-flex flex-column">
+                                                    <div class="user_name text-truncate text-body">
+                                                        <span class="fw-bolder text-capitalize">{{ user.name ?? '---' }}</span>
+                                                    </div>
+                                                    <small class="emp_post text-muted">{{ user.email ?? '---'
+                                                        }}</small>
+                                                    <small>{{ user.phone }} <span
+                                                        v-if="user.secondary_phone">/ {{ user.secondary_phone }}</span></small>
+                                                </div>
+                                            </td>
+
+
+
+
                                             <td>
                                                 <span v-for="user in user.assigned">{{ user.name }}, </span>
                                             </td>
@@ -454,15 +475,23 @@
                     </div>
                 </div>
                 <div class="d-flex gap-1">
-                    <a :href="`/admin/show-lead/${singleLeadShow.id}`" class="btn btn-sm btn-success btn-icon d-flex align-items-center">
+                    <a :href="`/admin/show-lead/${singleLeadShow.id}`" v-if="this.$page.props.auth.user.can.includes('leads.show') ||
+                    this.$page.props.auth.user.role.includes('Administrator')"
+                       class="btn btn-sm btn-success btn-icon d-flex align-items-center">
                         <vue-feather type="eye" size="18"/>
                         <span>Show</span>
                     </a>
-                    <button class="btn btn-sm btn-primary d-flex align-items-center" @click="editClient(singleLeadShow.show_url)">
+                    <button class="btn btn-sm btn-primary d-flex align-items-center"
+                            v-if=" this.$page.props.auth.user.role.includes('Administrator') ||
+                                            this.$page.props.auth.user.can.includes('leads.edit')"
+                            @click="editClient(singleLeadShow.show_url)">
                         <vue-feather type="edit" size="18"/>
                         <span>Edit</span>
                     </button>
-                    <button class="btn btn-sm btn-danger btn-icon d-flex align-items-center" @click="deleteItemModal(singleLeadShow.id)">
+                    <button class="btn btn-sm btn-danger btn-icon d-flex align-items-center"
+                            v-if=" this.$page.props.auth.user.role.includes('Administrator') ||
+                                            this.$page.props.auth.user.can.includes('leads.delete')"
+                            @click="deleteItemModal(singleLeadShow.id)">
                         <vue-feather type="trash" size="18"/>
                         <span>Delete</span>
                     </button>
@@ -705,7 +734,7 @@ let deleteItemModal = (id) => {
         confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
         if (result.isConfirmed) {
-            Inertia.delete('clients/' + id, {
+            Inertia.delete('leads/' + id, {
                 preserveState: true, replace: true, onSuccess: page => {
                     Swal.fire(
                         'Deleted!',

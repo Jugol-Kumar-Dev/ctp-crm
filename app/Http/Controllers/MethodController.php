@@ -16,6 +16,10 @@ class MethodController extends Controller
      */
     public function index()
     {
+        if (!auth()->user()->can('method.index') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
+
 
         return inertia('Modules/Methods/Index', [
             'moethods' => Method::query()
@@ -43,6 +47,10 @@ class MethodController extends Controller
      */
     public function store(MethodRequest $request)
     {
+        if (!auth()->user()->can('method.create') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
+
         Method::create($request->validated());
         return redirect()->route('methods.index');
     }
@@ -55,6 +63,10 @@ class MethodController extends Controller
      */
     public function show(Method $method)
     {
+        if (!auth()->user()->can('method.show') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
+
         return $method;
     }
 
@@ -67,6 +79,10 @@ class MethodController extends Controller
      */
     public function update(MethodRequest $request, Method $method)
     {
+        if (!auth()->user()->can('method.edit') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
+
         $method->update($request->validated());
         return redirect()->route('methods.index');
     }
@@ -79,6 +95,10 @@ class MethodController extends Controller
      */
     public function destroy(Method $method)
     {
+        if (!auth()->user()->can('method.delete') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
+
         $method->delete();
         return redirect()->route('methods.index');
     }

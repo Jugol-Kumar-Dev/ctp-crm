@@ -25,6 +25,11 @@ class SearviceController extends Controller
     public function index()
     {
 
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('services.index')){
+            abort(401);
+        }
+
+
         return inertia('Services/Index',[
             'services' => Searvice::query()
                 ->when(Request::input('search'), function ($query, $search) {
@@ -65,6 +70,10 @@ class SearviceController extends Controller
      */
     public function store()
     {
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('services.create')){
+            abort(401);
+        }
         Request::validate([
             'serviceName' => 'required|unique:searvices,service_name'
         ]);
@@ -85,6 +94,12 @@ class SearviceController extends Controller
      */
     public function show($id)
     {
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('services.show')){
+            abort(401);
+        }
+
+
         $service = Searvice::with([
             'packages'=>fn($query)=>$query->oldest('position'),
             'features'=>fn($query)=>$query->oldest('position')
@@ -106,6 +121,10 @@ class SearviceController extends Controller
      */
     public function edit($id)
     {
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('services.edit')){
+            abort(401);
+        }
         $service = Searvice::findOrFail($id);
         return $service;
     }
@@ -119,6 +138,10 @@ class SearviceController extends Controller
      */
     public function update(Request $request, $id)
     {
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('services.edit')){
+            abort(401);
+        }
         Request::validate([
             'serviceName' => 'required|unique:searvices,service_name,'.$id
         ]);
@@ -140,6 +163,10 @@ class SearviceController extends Controller
      */
     public function destroy($id)
     {
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('services.delete')){
+            abort(401);
+        }
         $service = Searvice::findOrFail($id);
         $service->features->each->delete();
         $service->packages->each->delete();
@@ -152,6 +179,11 @@ class SearviceController extends Controller
 
     public function createPackage()
     {
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('packages.create')){
+            abort(401);
+        }
+
         $data = Request::validate([
             'serviceId' => 'required',
             'name' => 'required',
@@ -167,10 +199,19 @@ class SearviceController extends Controller
     }
 
     public function editPackage($id){
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('packages.edit')){
+            abort(401);
+        }
         return ServicePackage::findOrFail($id);
     }
 
     public function updatePackage($id){
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('packages.edit')){
+            abort(401);
+        }
+
         $data = Request::validate([
             'serviceId' => 'required',
             'name' => 'required',
@@ -190,6 +231,10 @@ class SearviceController extends Controller
      * @return RedirectResponse
      */
     public function deletePackage($id){
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('packages.delete')){
+            abort(401);
+        }
         ServicePackage::findOrFail($id)->delete();
         return back();
     }
@@ -199,6 +244,9 @@ class SearviceController extends Controller
 
     public function createFeature()
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('features.create')){
+            abort(401);
+        }
 
         $data = Request::validate([
             'serviceId' => 'required',
@@ -214,10 +262,17 @@ class SearviceController extends Controller
     }
 
     public function editFeature($id){
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('features.edit')){
+            abort(401);
+        }
         return ServiceFeature::findOrFail($id);
     }
 
     public function updateFeature($id){
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('features.edit')){
+            abort(401);
+        }
         $data = Request::validate([
             'serviceId' => 'required',
             'name' => 'required',
@@ -237,6 +292,10 @@ class SearviceController extends Controller
      * @return RedirectResponse
      */
     public function deleteFeature($id){
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('features.delete')){
+            abort(401);
+        }
         ServiceFeature::findOrFail($id)->delete();
         return back();
     }

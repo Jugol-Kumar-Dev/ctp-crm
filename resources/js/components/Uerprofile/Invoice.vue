@@ -34,7 +34,7 @@
                     <td>{{ invoice.due ?? '---'}} </td>
                     <td>{{ invoice.created_at }}</td>
                     <td>
-                        <a :href="`/admin/invoices/${invoice.id}`">
+                        <a v-if="this.$page.props.auth.user.role == 'Administrator' || this.$page.props.auth.user.can.includes('invoice.show')" :href="`/admin/invoices/${invoice.id}`">
                             <vue-feather class="text-info" type="eye" size="15"/>
                         </a>
                     </td>

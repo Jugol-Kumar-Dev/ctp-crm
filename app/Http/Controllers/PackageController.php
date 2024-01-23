@@ -17,6 +17,11 @@ class PackageController extends Controller
      */
     public function index()
     {
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('services.show')){
+            abort(401);
+        }
+
         return inertia('Package/Index', [
             'packages' => Package::query()
                 ->with('platform')
@@ -48,6 +53,10 @@ class PackageController extends Controller
      */
     public function create()
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('packages.create')){
+            abort(401);
+        }
+
         $platforms = Platform::all()->map(function($platform){
             $platform->featureds = json_decode($platform->featureds);
             return $platform;
@@ -67,6 +76,10 @@ class PackageController extends Controller
      */
     public function store()
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('packages.create')){
+            abort(401);
+        }
+
         Request::validate([
            'platformId' => 'required',
             'name' => 'required',
@@ -91,7 +104,9 @@ class PackageController extends Controller
      */
     public function show(Package $package)
     {
-        //
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('packages.show')){
+            abort(401);
+        }
     }
 
     /**
@@ -102,6 +117,10 @@ class PackageController extends Controller
      */
     public function edit(Package $package)
     {
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('packages.edit')){
+            abort(401);
+        }
 
         $platforms = Platform::all()->map(function($platform){
             $platform->featureds = json_decode($platform->featureds);
@@ -125,6 +144,10 @@ class PackageController extends Controller
      */
     public function update(Request $request, Package $package)
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('packages.edit')){
+            abort(401);
+        }
+
         Request::validate([
             'platformId' => 'required',
             'name' => 'required',
@@ -147,6 +170,10 @@ class PackageController extends Controller
      */
     public function destroy(Package $package)
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('packages.delete')){
+            abort(401);
+        }
+
         $package->delete();
         return back();
     }

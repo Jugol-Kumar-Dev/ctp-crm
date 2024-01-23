@@ -6,13 +6,13 @@
     <title>Quotation Invoice PDF</title>
     <style>
         body {
-            font-size: 12px;
+            font-size: 14px;
             font-family: Arial, serif !important;
         }
 
         p {
             margin: 2px 0;
-            font-size: 12px;
+            font-size: 14px;
         }
 
         h3 {
@@ -127,7 +127,7 @@
         }
 
         small {
-            font-size: 10px;
+            font-size: 14px;
         }
     </style>
 </head>

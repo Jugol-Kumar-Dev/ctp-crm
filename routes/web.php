@@ -82,7 +82,7 @@ Route::prefix('admin')->group(function(){
 
         // leads management
         Route::resource('leads', LeadController::class);
-        Route::get('show-lead/{id}', [ClientsController::class, 'show']);
+        Route::get('show-lead/{id}', [LeadController::class, 'show']);
 
         // designs management
         Route::resource('designs', DesignController::class);

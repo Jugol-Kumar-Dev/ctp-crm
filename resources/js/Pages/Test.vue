@@ -12,6 +12,9 @@
                         <div class="card-body">
                             <h1 class="text-capitalize">Welcome {{ this.$page.props.auth.user.username }}</h1>
                         </div>
+                        <pre>
+                            {{  this.$page.props.auth.user.can  }}
+                        </pre>
                     </div>
                 </div>
             </div>

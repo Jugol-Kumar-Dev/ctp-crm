@@ -6,13 +6,13 @@
     <title>Quotation Invoice PDF</title>
     <style>
         body {
-            font-size: 12px;
+            font-size: 14px;
             font-family: Arial, serif !important;
         }
 
         p {
             margin: 2px 0;
-            font-size: 10px;
+            font-size: 14px;
         }
 
         h3 {
@@ -130,7 +130,7 @@
         }
 
         small {
-            font-size: 10px;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -335,14 +335,14 @@
     <div class="page-break"></div>
     <div class="row">
         <div class="col-3">
-            @if (!is_null($invoice->payment_methods ?? $invoice->quotation->payment_methods))
+            @if (!is_null($invoice?->payment_methods ?? $invoice?->quotation?->payment_methods))
                 <h3>Payment Mehod:</h3>
-                {!! nl2br($invoice->payment_methods ?? $invoice->quotation->payment_methods) !!}
+                {!! nl2br($invoice?->payment_methods ?? $invoice?->quotation?->payment_methods) !!}
             @endif
             <h3>Direct Payment Bill Online at <a href="https://creativetechpark.com/pay" target="_blank">https://creativetechpark.com/pay</a></h3>
         </div>
     </div>
-    @if (!is_null($invoice?->payment_policy ?? $invoice->quotation->payment_policy))
+    @if (!is_null($invoice?->payment_policy ?? $invoice?->quotation?->payment_policy))
         <div class="row">
             <div class="col-3">
                 <h3>Payment Policy:</h3>
@@ -351,11 +351,11 @@
         </div>
     @endif
 
-    @if (!is_null($invoice?->trams_of_service ?? $invoice->quotation->trams_of_service))
+    @if (!is_null($invoice?->trams_of_service ?? $invoice?->quotation?->trams_of_service))
         <div class="row mb-50">
             <div class="col-3">
                 <h3>Terms of Service:</h3>
-                {!! nl2br($invoice?->trams_of_service ?? $invoice->quotation->trams_of_service) !!}
+                {!! nl2br($invoice?->trams_of_service ?? $invoice?->quotation?->trams_of_service) !!}
             </div>
         </div>
     @endif

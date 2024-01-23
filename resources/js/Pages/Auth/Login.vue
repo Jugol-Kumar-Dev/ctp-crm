@@ -51,13 +51,13 @@
                                         </div>
 
 
-<!--                                        <div class="mb-1">-->
-<!--                                            <div class="form-check">-->
-<!--                                                <input class="form-check-input" type="checkbox" id="remember-me"-->
-<!--                                                    tabindex="3" />-->
-<!--                                                <label class="form-check-label" for="remember-me"> Remember Me </label>-->
-<!--                                            </div>-->
-<!--                                        </div>-->
+                                        <div class="mb-1">
+                                            <div class="form-check">
+                                                <input class="form-check-input" v-model="form.remember" type="checkbox" id="remember-me"
+                                                    tabindex="3" />
+                                                <label class="form-check-label" for="remember-me"> Remember Me </label>
+                                            </div>
+                                        </div>
                                         <button class="btn btn-primary w-100" tabindex="4" type="submit" :disabled="form.processing">Sign in</button>
                                     </form>
                                 </div>
@@ -86,6 +86,7 @@ const passwordFieldType = ref('password')
 let form = useForm({
     email: '',
     password: '',
+    remember:true,
 });
 const togglePasswordVisibility = () => {
     passwordFieldType.value = passwordFieldType.value === "password" ? "text" : "password"

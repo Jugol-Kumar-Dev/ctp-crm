@@ -14,6 +14,15 @@ class LeadController extends Controller
 {
     public function index()
     {
+
+
+        $show =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('leads.index');
+        $my =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('leads.ownonly');
+
+        if ( $show && $my){
+            abort(401);
+        }
+
         $names = array_column(Auth::user()->roles->toArray(), 'name');
         $admin = in_array('Administrator', $names);
 
@@ -217,13 +226,42 @@ class LeadController extends Controller
 
     public function show($id)
     {
-//        if (!auth()->user()->can('leads.show')){
-//            abort(404);
-//        }
-        $client = Client::with('users')->findOrFail($id);
+        if (auth()->user()->hasRole('administrator')  || !auth()->user()->can('leads.show')){
+            abort(404);
+        }
 
-        return $client;
+        $user = Client::findOrFail($id)->load('users', 'transactions', 'transactions.receivedBy',
+            'invoices', 'invoices.user',
+            'transactions.method',
+            'quotations', 'quotations.user', 'projects',
+            'projects.users', 'createdBy', 'updatedBy');
+
+
+        if (Request::input('edit')) {
+            return $user;
+        }
+
+
+        return inertia('Modules/Leads/Show', [
+            "user" => $user,
+            'users' => User::all(),
+            'image' => "/images/avatar.png",
+            'show_url' => URL::route('clients.show', $user->id),
+        ]);
+
+
+
     }
+    public function destroy($id)
+    {
+        if (auth()->user()->hasRole('administrator')  || !auth()->user()->can('leads.delete')){
+            abort(401);
+        }
 
+        $client = Client::findOrFail($id);
+
+        $client->delete();
+        return back();
+    }
 
 }

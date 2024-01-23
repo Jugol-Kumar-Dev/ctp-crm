@@ -18,6 +18,10 @@ class FeatureController extends Controller
      */
     public function index()
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('features.index')){
+            abort(401);
+        }
+
         return inertia('Modules/Feature/Index', [
             'features' => Feature::query()
                 ->when(Request::input('search'), function ($query, $search) {
@@ -45,8 +49,18 @@ class FeatureController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(FeatureRequest $request)
+    public function store(Request $request)
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('features.create')){
+            abort(401);
+        }
+
+        $request->validate([
+            "name" => ["required", "min:3"],
+            "price" => ["required", "numeric"],
+            "platform_id" => ["required", "integer"],
+        ]);
+
         Feature::create($request->validated());
         return redirect()->route('features.index');
     }
@@ -59,6 +73,10 @@ class FeatureController extends Controller
      */
     public function show(Feature $feature)
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('features.show')){
+            abort(401);
+        }
+
         return $feature;
     }
 
@@ -71,6 +89,10 @@ class FeatureController extends Controller
      */
     public function update(FeatureRequest $request, Feature $feature)
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('features.edit')){
+            abort(401);
+        }
+
         $feature->update($request->validated());
         return redirect()->route('features.index');
     }
@@ -83,6 +105,10 @@ class FeatureController extends Controller
      */
     public function destroy(Feature $feature)
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('features.delete')){
+            abort(401);
+        }
+
         $feature->delete();
         return redirect()->route('features.index');
     }

@@ -39,7 +39,7 @@
                             >{{ todo.priority }}</span>
                             <small class="badge text-black">{{ moment(todo.date).format('MMMM, D') }}</small>
                             <span class="avatar me-1" v-c-tooltip="todo.user?.name">
-                                <img :src="todo.user.photo" height="32" width="32" alt="Generic placeholder image">
+                                <img :src="todo.user?.photo" height="32" width="32" alt="Generic placeholder image">
                             </span>
                         </div>
                     </li>

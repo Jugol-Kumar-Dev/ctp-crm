@@ -10,7 +10,7 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header border-bottom d-flex justify-content-between">
-                                    <h4 class="card-title">Clients Information's </h4>
+                                    <h4 class="card-title">Client Information's </h4>
 <!--                                    <button class="dt-button add-new btn btn-primary" tabindex="0" type="button" data-bs-toggle="modal" data-bs-target="#addItemModal">Add Client</button>-->
                                     <button
                                         v-if="this.$page.props.auth.user.can.includes('client.create') || this.$page.props.auth.user.role == 'Administrator'"

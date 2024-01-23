@@ -23,6 +23,10 @@ class ProjectController extends Controller
      */
     public function index()
     {
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('project.index')){
+            abort(401);
+        }
         return inertia('Projects/Index', [
             'projects' => Project::query()
                 ->with(['user', 'users', 'client', 'invoice'])
@@ -77,6 +81,9 @@ class ProjectController extends Controller
      */
     public function create()
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('project.create')){
+            abort(401);
+        }
         return inertia('Projects/Create');
     }
 
@@ -102,13 +109,16 @@ class ProjectController extends Controller
     {
 
 
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('project.create')){
+            abort(401);
+        }
 
         Request::validate([
            'name' => 'required',
            'date' => 'required',
            'start_date' => 'required',
            'end_date' => 'required',
-            'url' => 'nullable|url'
+            'url' => 'nullable|string'
         ]);
 
         if(empty(Request::input('invoiceId')) && empty(Request::input('clientId'))){
@@ -161,6 +171,9 @@ class ProjectController extends Controller
      */
     public function show($id)
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('project.show')){
+            abort(401);
+        }
 
         $project = Project::with(['user', 'users', 'users','users.roles', 'clients',
             'client', 'invoice', 'invoice.client',
@@ -173,8 +186,10 @@ class ProjectController extends Controller
 
 
 
-        $invObj = new InvoiceController();
-        $pref = $invObj->invoiceItemsGenerate($project->invoice);
+        if(auth()->user()->hasRole('administrator')  || auth()->user()->can('invoice.show')) {
+            $invObj = new InvoiceController();
+            $pref = $invObj->invoiceItemsGenerate($project->invoice);
+        }
 
 
 
@@ -186,7 +201,7 @@ class ProjectController extends Controller
 
         return inertia('Projects/Show', [
             "info" =>  $project,
-            "pref" => $pref,
+            "pref" => $pref ?? [],
             "users" => User::with('roles')->get(),
             "dates" =>[
                 "end_date" => $project->end->format("d M, y"),
@@ -210,6 +225,10 @@ class ProjectController extends Controller
      */
     public function edit($id)
     {
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('project.edit')){
+            abort(401);
+        }
         return Project::with(['user', 'users', 'clients', 'client'])->findOrFail($id);
 
     }
@@ -223,6 +242,11 @@ class ProjectController extends Controller
      */
     public function update(Request $request, $id)
     {
+
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('project.edit')){
+            abort(401);
+        }
         $project = Project::findOrFail($id);
         $filePath = "";
 
@@ -258,6 +282,11 @@ class ProjectController extends Controller
     }
 
     public function updateProjectDetails($id){
+
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('project.edit')){
+            abort(401);
+        }
         $project = Project::findOrFail($id);
         $project->update([
             "date"        => Request::input('date'),
@@ -281,6 +310,12 @@ class ProjectController extends Controller
         return back();
     }
     public function updateProjectAttachment($id){
+
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('project.attachment')){
+            abort(401);
+        }
+
         $project = Project::findOrFail($id);
         if (Request::hasFile('files')) {
             Storage::disk('public')->delete($project->files);
@@ -300,6 +335,10 @@ class ProjectController extends Controller
      */
     public function destroy($id)
     {
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('project.delete')){
+            abort(401);
+        }
         $project = Project::findOrFail($id);
         if(Storage::exists($project->files)){
             Storage::delete($project->files);
@@ -309,12 +348,22 @@ class ProjectController extends Controller
     }
 
     public function assignDevelopers(){
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('project.edit')){
+            abort(401);
+        }
         $project = Project::findOrFail(Request::input('projectId'));
         $project->users()->sync(Request::input('users'));
         return back();
     }
 
     public function removeUser(){
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('project.edit')){
+            abort(401);
+        }
+
+
         $query = Request::only(['project_id', 'user_id']);
             if ($query){
                 $project = Project::with('users')->findOrFail($query["project_id"]);
@@ -326,6 +375,12 @@ class ProjectController extends Controller
     }
 
     public function updateProgress(){
+
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('project.edit')){
+            abort(401);
+        }
+
         $project = Project::findOrFail(Request::input('projectId'));
         $project->status = Request::input('status');
         $project->progress = Request::input('progressData');
@@ -334,12 +389,19 @@ class ProjectController extends Controller
     }
 
     public function employeeProjects(){
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('project.employees')){
+            abort(401);
+        }
+
+
         return inertia('Projects/EmployeeProjects',[
             'projects' => Project::query()
-                ->with(['client', 'client', 'users', 'users'])
+                ->with(['client', 'client', 'users'])
                 ->latest()
                 ->whereHas('users', function($user){
-                    $user->id = Auth::id();
+                    $user->where('user_id', Auth::id());
+//                    $user->id = Auth::id();
                 })
                 ->when(Request::input('search'), function ($query, $search) {
                     $query

@@ -110,7 +110,7 @@ import {useDate} from '../../composables/useDate.js'
 import moment from "moment";
 import {computed, ref} from 'vue'
     const props = defineProps({
-        transactions:[]
+        transactions:[]|Object|null
     })
 
 let {formatted} = useDate();

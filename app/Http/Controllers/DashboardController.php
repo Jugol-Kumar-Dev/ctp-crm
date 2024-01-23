@@ -229,7 +229,14 @@ class DashboardController extends Controller
 //
     public function __invoke(Request $request){
 
-        if (Auth::user()->roles()->where('name', 'administrator')->exists()) {
+
+        if (!auth()->user()->can('dashboard.show') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
+
+
+
+        if (auth()->user()->hasRole('administrator')) {
             $notes = Note::with(['users','noteCategory'])->get();
         } else {
             $notes = Note::with(['users','noteCategory'])->where(function($query) {
@@ -243,12 +250,14 @@ class DashboardController extends Controller
 
 
         $clients = Client::query()
+            ->with(['createdBy'])
             ->whereNotNull('follow_up')
             ->whereDate('follow_up',Carbon::today())
             ->where('is_client', true)
             ->get();
 
         $othersFollowUpClients = Client::query()
+            ->with(['createdBy'])
             ->whereNotNull('follow_up')
             ->whereDate('follow_up', "!=", Carbon::today())
             ->where('is_client', true)
@@ -256,12 +265,14 @@ class DashboardController extends Controller
 
 
         $leads = Client::query()
+            ->with(['createdBy'])
             ->whereNotNull('follow_up')
             ->whereDate('follow_up', Carbon::today())
             ->where('is_client', false)
             ->get();
 
         $othersFollowUpLeads = Client::query()
+            ->with(['createdBy'])
             ->whereNotNull('follow_up')
             ->whereDate('follow_up', "!=", Carbon::today())
             ->where('is_client', false)
@@ -269,11 +280,11 @@ class DashboardController extends Controller
 
 
 
-
-
         $todos = Todo::query()
             ->with('user')
-            ->where('user_id', Auth::id())
+            ->when(!auth()->user()->hasRole('administrator'), function ($q){
+                $q->where('user_id', Auth::id());
+            })
             ->whereNull('todo_id')
             ->where('priority', '!=', 'Complete')
             ->latest()

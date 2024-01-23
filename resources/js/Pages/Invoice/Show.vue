@@ -19,7 +19,8 @@
                         <!-- Invoice Edit Right starts -->
                         <div class="col-xl-3 col-md-4 col-12" v-if="props.isShowSidebar">
                             <div class="card">
-                                <div class="card-body">
+                                <div class="card-body"  v-if="this.$page.props.auth.user.can.includes('invoice.edit') ||
+                                                this.$page.props.auth.user.role.includes('Administrator')">
                                     <a v-if="props.invoice.invoice_type === 'custom'" :href="props.url.edit_url" class="btn btn-primary w-100 mb-75">
                                         Edit Invoice
                                     </a>
@@ -27,7 +28,6 @@
                                         Send Email
                                     </button>
                                     <a :href="props.url.invoice_url"  class="btn btn-outline-primary w-100 mb-75">Download PDF</a>
-<!--                                    <a :href="props.url.show_url+'?print=true'"  class="btn btn-outline-primary w-100 mb-75">Print Invoice</a>-->
                                     <button type="button" class="btn btn-outline-primary w-100 mb-75" data-bs-toggle="modal"
                                             data-bs-target="#givenDiscount">Give Discount</button>
 
@@ -36,6 +36,9 @@
 
                                     <button type="button" class="btn btn-success w-100 mb-75" data-bs-toggle="modal"
                                             data-bs-target="#addPayment">Add Payment</button>
+                                </div>
+                                <div class="card-body" v-else>
+                                    <a :href="props.url.invoice_url"  class="btn btn-outline-primary w-100 mb-75">Download PDF</a>
                                 </div>
                             </div>
                             <!--                            <div class="mt-2">

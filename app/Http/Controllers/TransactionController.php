@@ -23,6 +23,12 @@ class TransactionController extends Controller
      */
     public function index()
     {
+
+        if (!auth()->user()->can('transaction.index') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
+
+
         $transactions = Transaction::query()
             ->latest()
             ->with(['receivedBy', 'paymentBy', 'method'])
@@ -79,6 +85,12 @@ class TransactionController extends Controller
     }
 
     protected function loadDownload($data, $dateRange=null){
+
+        if (!auth()->user()->can('transaction.export') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
+
+
         Pdf::setOption(['enable_php', true]);
 //        return view('reports.pdf_transaction_list', compact('data', 'dateRange'));
         $pdf = Pdf::loadView('reports.pdf_transaction_list', compact('data', 'dateRange'));

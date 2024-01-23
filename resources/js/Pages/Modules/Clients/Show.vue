@@ -12,10 +12,10 @@
 
 <script setup>
 import VueLink from '../../../components/ViewLink'
-import UserProfile from "../../../components/UserProfile";
+import UserProfile from "../../../components/Uerprofile/ClientUserProfile";
 let props = defineProps({
-    user:[],
-    users:[],
+    user:[]|Object|null,
+    users:[]|Object|null,
     image:'',
     show_url:String,
     errors:Object,

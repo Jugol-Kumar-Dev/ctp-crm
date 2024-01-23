@@ -1,7 +1,15 @@
-<template>
-    <Head title="Show Lead"/>
 
-    <UserProfile :user="props.user" :image="props.image"/>
+
+
+<template>
+
+    <UserProfile
+        :user="props.user"
+        :image="props.image"
+        :showUrl="props.show_url"
+        :errors="props.errors"
+        :users="props.users"
+    />
 
 </template>
 
@@ -9,7 +17,10 @@
 import VueLink from '../../../components/ViewLink'
 import UserProfile from "../../../components/UserProfile";
 let props = defineProps({
-    user:[],
-    image:''
+    user:[]|Object,
+    users:[]|Object,
+    image:'',
+    show_url:String,
+    errors:Object,
 })
 </script>

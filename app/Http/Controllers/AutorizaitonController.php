@@ -21,10 +21,9 @@ class AutorizaitonController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()->can('user.index')){
-            abort(404);
+        if (!auth()->user()->can('authorization.index') || auth()->user()->hasRole('administrator')){
+            abort(401);
         }
-//        return Role::with(["users"])->withCount("users")->get();
 
         $roles = Role::with(["users"])->withCount("users")->get();
 
@@ -63,9 +62,11 @@ class AutorizaitonController extends Controller
     public function store()
     {
 
-        if (!auth()->user()->can('user.create')){
-            abort(404);
+        if (!auth()->user()->can('authorization.create') || auth()->user()->hasRole('administrator')){
+            abort(401);
         }
+
+
         Request::validate([
            'roleName' => 'required|unique:roles,name',
            'selectedPermissions' => 'required'
@@ -99,9 +100,11 @@ class AutorizaitonController extends Controller
      */
     public function edit($id)
     {
-        if (!auth()->user()->can('user.edit')){
-            abort(404);
+
+        if (!auth()->user()->can('authorization.edit') || auth()->user()->hasRole('administrator')){
+            abort(401);
         }
+
         return Response::json([
             'permissions' => Permission::with(['roles', 'users'])->get()->groupBy('module_name'),
             'edited' => Role::with('permissions')->find($id),
@@ -113,13 +116,15 @@ class AutorizaitonController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return array
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, $id)
     {
-        if (!auth()->user()->can('user.edit')){
-            abort(404);
+        if (!auth()->user()->can('authorization.edit') || auth()->user()->hasRole('administrator')){
+            abort(401);
         }
+
+
         Request::validate([
             "roleName" => ['required', Rule::unique('roles', 'name')->ignore($id)],
             'selectedPermissions' => 'required'
@@ -128,8 +133,6 @@ class AutorizaitonController extends Controller
         $role = Role::findOrFail($id);
 
         $role->update(['name' => Request::input('roleName')]);
-//        foreach ( as $permission) {
-//        };
         $role->syncPermissions(Request::input('selectedPermissions'));
 
         return back();
@@ -145,9 +148,10 @@ class AutorizaitonController extends Controller
     public function destroy($id)
     {
 
-        if (!auth()->user()->can('user.delete')){
-            abort(404);
+        if (!auth()->user()->can('authorization.delete') || auth()->user()->hasRole('administrator')){
+            abort(401);
         }
+
 
         $role = Role::findById($id);
         $role->delete();

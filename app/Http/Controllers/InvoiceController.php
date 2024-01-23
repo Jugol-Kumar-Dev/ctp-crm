@@ -36,7 +36,9 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.index')){
+            abort(401);
+        }
         return inertia('Invoice/Index',[
             'invoices' => Invoice::query()
                 ->with(['client', 'user', 'quotation', 'transactions'])
@@ -86,6 +88,10 @@ class InvoiceController extends Controller
 
     public function create()
     {
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.create')){
+            abort(401);
+        }
         return Inertia::render('Invoice/Create', [
             "quotations" => Quotation::all(),
             "clients"   => Client::query()->latest()->get(), //where('is_client', true)-> only for converted clients
@@ -101,6 +107,9 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.create')){
+            abort(401);
+        }
         Request::validate([
             'clientId' => 'required',
             'date' => 'required',
@@ -142,6 +151,12 @@ class InvoiceController extends Controller
 
 
     public function invoiceItemsGenerate($invoice){
+
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.show')){
+            abort(401);
+        }
+
         $pref = [];
         if (!is_null($invoice) && !is_null($invoice->quotation_id)){
             foreach (json_decode($invoice->quotation?->items) as $item){
@@ -190,6 +205,11 @@ class InvoiceController extends Controller
 
     public function show(Invoice $invoice)
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.show')){
+            abort(401);
+        }
+
+
         $invoice = $invoice->load('user', 'client', 'quotation', 'transactions', 'transactions.receivedBy:id,name', 'transactions.method:id,name');
         $pref = $this->invoiceItemsGenerate($invoice);
 
@@ -211,6 +231,14 @@ class InvoiceController extends Controller
     }
 
     public function addDiscount($id){
+
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.edit')){
+            abort(401);
+        }
+
+
+
         $invoice = Invoice::findOrFail($id);
         $invoice->discount = $invoice->discount + (int)Request::input('discount');
         $invoice->grand_total = $invoice->total_price - $invoice->discount;
@@ -230,6 +258,12 @@ class InvoiceController extends Controller
 
     public function createInvoice($id)
     {
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.edit')){
+            abort(401);
+        }
+
+
         if (Request::input("pay") != null){
             Request::validate([
                 'payment_method' => 'required'
@@ -347,6 +381,14 @@ class InvoiceController extends Controller
     }
 
     public function generateInvoicePDFFile($id){
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.edit')){
+            abort(401);
+        }
+
+
+
+
         $invoice = CustomInvoice::findOrFail($id);
 
         $transactions = [];
@@ -395,6 +437,10 @@ class InvoiceController extends Controller
 
     public function edit($id){
 
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.edit')){
+            abort(401);
+        }
+
         $invoice = Invoice::with('client')->findOrFail($id);
         $clients = Client::where('is_client', true)->latest()->get();
 
@@ -409,6 +455,10 @@ class InvoiceController extends Controller
     public function updateInvoice(Request $request, $id){
 
 
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.edit')){
+            abort(401);
+        }
+
         $invoice = Invoice::findOrFail($id);
 
         Request::validate([
@@ -422,7 +472,7 @@ class InvoiceController extends Controller
 
         $invoice->update([
             'invoice_id' => now()->format('Ymd'),
-            'client_id' => Request::input('clientId')['id'],
+            'client_id' => Request::input('clientId')['id'] ?? Request::input("clientId"),
             'user_id' => Auth::id(),
             'invoice_type' => 'custom',
             'items' => json_encode(Request::input('items')),
@@ -449,6 +499,10 @@ class InvoiceController extends Controller
      */
     public function update(Request $request, Invoice $invoice)
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.edit')){
+            abort(401);
+        }
+
         dd($request);
     }
 
@@ -460,6 +514,10 @@ class InvoiceController extends Controller
      */
     public function destroy($id)
     {
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.delete')){
+            abort(401);
+        }
+
         $invoice = Invoice::findOrFail($id);
         if ($invoice->transactions){
             $invoice->transactions()->delete();
@@ -473,6 +531,10 @@ class InvoiceController extends Controller
 
 
     public function addPayment(){
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.edit')){
+            abort(401);
+        }
 
         $invoice = CustomInvoice::with(['client'])->findOrFail(Request::input('invoice_id'));
 
@@ -511,6 +573,11 @@ class InvoiceController extends Controller
     }
 
     public function sendMail($id=null){
+
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.edit')){
+            abort(401);
+        }
+
         Request::validate([
             'email' => 'required|email'
         ]);

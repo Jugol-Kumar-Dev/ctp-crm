@@ -17,9 +17,9 @@
                                 <div class="d-flex align-items-start flex-column">
                                     <h2 class="card-title text-capitalize mb-1">{{ props.todo.title }}</h2>
                                     <div>
-                                        Created <strong class="text-capitalize">{{ props.todo.user.name }}</strong>
+                                        Created <strong class="text-capitalize">{{ props.todo?.user?.name }}</strong>
                                         at
-                                        <strong>{{ moment(props.todo.created_at).format('lll') }}</strong>
+                                        <strong>{{ moment(props.todo?.created_at)?.format('lll') }}</strong>
                                     </div>
                                 </div>
                                 <div class="d-flex flex-column">
@@ -48,11 +48,11 @@
 
                             <div class="card-body chat-bg p-0 min-chat-height" >
                                 <ul id="chat" ref="scrollContainer">
-                                    <li :class="props.todo.user.id === $page.props.auth.user.id ? 'me' : 'you'">
-                                        <TodoContent :todo="props.todo"/>
+                                    <li :class="props.todo?.user?.id === $page.props?.auth?.user.id ? 'me' : 'you'">
+                                        <TodoContent :todo="props?.todo"/>
                                     </li>
                                     <span v-for="(todo, index) in props.replays">
-                                        <li class="you" v-if="todo.user.id != $page.props.auth.user.id">
+                                        <li class="you" v-if="todo?.user?.id != $page.props?.auth?.user?.id">
                                             <TodoContent :todo="todo"/>
                                         </li>
                                         <li class="me" v-else>
