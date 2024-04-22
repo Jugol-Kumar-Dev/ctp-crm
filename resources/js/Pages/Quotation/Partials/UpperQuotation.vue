@@ -330,48 +330,101 @@
                     </div>
                     <!-- /Add Payment Sidebar -->
 
-                    <Modal id="paymentPolicy" title="Edit Payment Policy" v-vb-is:modal size="lg">
-                        <div class="modal-body">
-                            <div class="row mb-1">
-                                <div class="col-md">
-                                    <textarea v-model="formData.paymentPolicy" type="text"
-                                              placeholder="Domain Full Description"
-                                              rows="5" class="form-control"></textarea>
+<!--                    <Modal id="paymentPolicy" title="Edit Payment Policy" v-vb-is:modal size="lg">-->
+                    <div  id="paymentPolicy" class="modal fade" aria-hidden="true" v-vb-is:modal>
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content p-0">
+                                <div class="modal-header">
+                                    <div class="d-flex align-items-start gap-1">
+                                        <h4 class="modal-title" id="exampleModalLongTitle">Edit Payment Policy</h4>
+                                        <button class="btn btn-sm btn-primary btn-icon" title="Load Main Data..." @click="loadMaindata('paymentPolicy')">
+                                            <vue-feather type="refresh-ccw" size="12"/>
+                                        </button>
+                                    </div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                        <div class="row mb-1">
+                            <div class="col-md">
+                                <textarea v-model="formData.paymentPolicy" type="text"
+                                          placeholder="Domain Full Description"
+                                          rows="5" class="form-control"></textarea>
+                            </div>
+                        </div>
+                                </div>
+                                <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary waves-effect waves-float waves-light" data-bs-dismiss="modal">ok</button>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+<!--                    </Modal>-->
+
+<!--                    <Modal id="servicePolicy" title="Edit Service Policy" v-vb-is:modal size="lg">-->
+                    <div  id="servicePolicy" class="modal fade" aria-hidden="true" v-vb-is:modal>
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content p-0">
+                                <div class="modal-header">
+                                    <div class="d-flex align-items-start gap-1">
+                                        <h4 class="modal-title" id="exampleModalLongTitle">Edit Service Policy</h4>
+                                        <button class="btn btn-sm btn-primary btn-icon" title="Load Main Data..." @click="loadMaindata('servicePolicy')">
+                                            <vue-feather type="refresh-ccw" size="12"/>
+                                        </button>
+                                    </div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row mb-1">
+                                        <div class="col-md">
+                                            <textarea v-model="formData.servicePolicy" type="text"
+                                                      placeholder="Domain Full Description"
+                                                      rows="5" class="form-control"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary waves-effect waves-float waves-light" data-bs-dismiss="modal">ok</button>
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer">
+                    </div>
+<!--                    </Modal>-->
+
+
+
+
+
+<!--                    <Modal id="payemntMethos" title="Edit Payment Methods" v-vb-is:modal size="lg">-->
+                    <div  id="payemntMethos" class="modal fade" aria-hidden="true" v-vb-is:modal>
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content p-0">
+                                <div class="modal-header">
+                                    <div class="d-flex align-items-start gap-1">
+                                        <h4 class="modal-title" id="exampleModalLongTitle">Edit Payment Methods</h4>
+                                        <button class="btn btn-sm btn-primary btn-icon" title="Load Main Data..." @click="loadMaindata('payemntMethos')">
+                                            <vue-feather type="refresh-ccw" size="12"/>
+                                        </button>
+                                    </div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row mb-1">
+                                        <div class="col-md">
+                                            <textarea v-model="formData.paymentMethos" type="text"
+                                                      placeholder="Edit Payment Policy"
+                                                      rows="5" class="form-control"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
                             <button type="submit" class="btn btn-primary waves-effect waves-float waves-light" data-bs-dismiss="modal">ok</button>
                         </div>
-                    </Modal>
-                    <Modal id="servicePolicy" title="Edit Service Policy" v-vb-is:modal size="lg">
-                        <div class="modal-body">
-                            <div class="row mb-1">
-                                <div class="col-md">
-                                    <textarea v-model="formData.servicePolicy" type="text"
-                                              placeholder="Domain Full Description"
-                                              rows="5" class="form-control"></textarea>
-                                </div>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary waves-effect waves-float waves-light" data-bs-dismiss="modal">ok</button>
-                        </div>
-                    </Modal>
-                    <Modal id="payemntMethos" title="Edit Payment Methods" v-vb-is:modal size="lg">
-                        <div class="modal-body">
-                            <div class="row mb-1">
-                                <div class="col-md">
-                                    <textarea v-model="formData.paymentMethos" type="text"
-                                              placeholder="Edit Payment Policy"
-                                              rows="5" class="form-control"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary waves-effect waves-float waves-light" data-bs-dismiss="modal">ok</button>
-                        </div>
-                    </Modal>
+                    </div>
+
+<!--                    </Modal>-->
 
 
                     <div class="modal modal-slide-in fade" id="givenDiscount" aria-hidden="true">
@@ -405,8 +458,6 @@
                             </div>
                         </div>
                     </div>
-
-
                 </section>
             </div>
         </div>
@@ -425,9 +476,9 @@ import Modal from "../../../components/Modal.vue";
 import {storeToRefs} from "pinia";
 
 const quotationStore = useQuotationStore();
-const policyStore = usePolicyStore()
-policyStore.setServicePolicy();
-const servicePolicy  = storeToRefs(policyStore);
+const servicePolicy = usePolicyStore()
+servicePolicy.setServicePolicy();
+// const servicePolicy  = storeToRefs(policyStore);
 
 const props = defineProps({
     subtotal:{
@@ -455,21 +506,16 @@ const formData = useForm({
     due_date:props.quotation.due_date,
     subject:props.quotation.subject,
     note:props.quotation.note,
-    // paymentPolicy:props.quotation.payment_policy,
-    // servicePolicy:props.quotation.trams_of_service,
-    // paymentMethos:props.quotation.payment_methods,
+    paymentPolicy:props.quotation.payment_policy,
+    servicePolicy:props.quotation.trams_of_service,
+    paymentMethos:props.quotation.payment_methods,
 
-
-    servicePolicy:servicePolicy.tramsAndCondition,
-    paymentPolicy:servicePolicy.paymentPolicy,
-    paymentMethos:servicePolicy.paymentMethods,
 
     attachPaymentPolicy:props.quotation.payment_policy !== null,
     attachServicePolicy:props.quotation.trams_of_service !== null,
     attachPaymentMethods:props.quotation.payment_methods !== null,
 
     currency: props.quotation.currency,
-
 })
 
 
@@ -486,9 +532,31 @@ const fuseSearch = (options, search) => {
 const clientDetails = ref(null)
 const loadClient = (clientId)=> clientDetails.value = props.clients.filter(item => item.id === clientId)[0];
 
-const editPaymentPolicy = () => document.getElementById('paymentPolicy').$vb.modal.show()
-const editServicePolicy = () => document.getElementById('servicePolicy').$vb.modal.show()
-const editPaymentMethods = () => document.getElementById('payemntMethos').$vb.modal.show()
+const editPaymentPolicy = () => {
+    formData.paymentPolicy = props.quotation.payment_policy
+    document.getElementById('paymentPolicy').$vb.modal.show()
+}
+const editServicePolicy = () => {
+    formData.servicePolicy = props.quotation.trams_of_service
+    document.getElementById('servicePolicy').$vb.modal.show()
+}
+const editPaymentMethods = () => {
+    formData.paymentMethos = props.quotation.payment_methods
+    document.getElementById('payemntMethos').$vb.modal.show()
+}
+
+const loadMaindata = (type) =>{
+    if(type === 'servicePolicy'){
+        formData.servicePolicy = servicePolicy.tramsAndCondition
+    }
+    if(type === 'payemntMethos'){
+        formData.paymentMethos = servicePolicy.paymentMethods
+    }
+    if(type === 'paymentPolicy'){
+        formData.paymentPolicy = servicePolicy.paymentPolicy
+    }
+}
+
 
 let afterDiscount = ref(0);
 const discountInput = (event) =>{

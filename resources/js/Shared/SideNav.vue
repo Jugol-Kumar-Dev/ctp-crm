@@ -48,7 +48,7 @@
                         this.$page.props.auth.user.can.includes('user.index') ||
                         this.$page.props.auth.user.can.includes('authorization.index')">
                         <a preserve-scroll class="d-flex align-items-center">
-                            <vue-feather type="users" size="8"/>
+                            <vue-feather type="user-check" size="8"/>
                             <span class="menu-title text-truncate"
                                   data-i18n="Authentication">User Management</span>
                         </a>
@@ -68,10 +68,27 @@
                         </ul>
                     </li>
 
-                    <li class=" nav-item has-sub" :class="{'open' : clickMenu === 2}"  @click="toggleSubMenu(2)"
+                    <li class=" nav-item" v-if="this.$page.props.auth.user.can.includes('leads.index') ||
+                            this.$page.props.auth.user.can.includes('leads.ownonly') ||
+                            this.$page.props.auth.user.role.includes('Administrator') ">
+                        <Link preserve-scroll class="d-flex align-items-center" href="/admin/leads">
+                            <vue-feather type="users" />
+                            <span class="menu-title text-truncate" data-i18n="Chat">Leads</span>
+                        </Link>
+                    </li>
+                    <li class=" nav-item" v-if="this.$page.props.auth.user.can.includes('client.index') ||
+                            this.$page.props.auth.user.can.includes('client.ownonly') ||
+                             this.$page.props.auth.user.role.includes('Administrator') ">
+                        <Link preserve-scroll class="d-flex align-items-center" href="/admin/clients">
+                            <vue-feather type="list" />
+                            <span class="menu-title text-truncate" data-i18n="Chat">Clients</span>
+                        </Link>
+                    </li>
+<!--                    <li class=" nav-item has-sub" :class="{'open' : clickMenu === 2}"  @click="toggleSubMenu(2)"
                         v-if="this.$page.props.auth.user.can.includes('client.index') ||
                         this.$page.props.auth.user.can.includes('leads.index') ||
                         this.$page.props.auth.user.can.includes('leads.ownonly') ||
+                        this.$page.props.auth.user.can.includes('client.ownonly') ||
                         this.$page.props.auth.user.role.includes('Administrator') ">
                         <a preserve-scroll class="d-flex align-items-center">
                             <vue-feather type="radio" size="8"/>
@@ -96,7 +113,7 @@
                                 </Link>
                             </li>
                         </ul>
-                    </li>
+                    </li>-->
 
 <!--                    <li class=" nav-item has-sub" :class="{'open' : clickMenu === 3}"  @click="toggleSubMenu(3)"
                         v-if="
@@ -165,36 +182,44 @@
                     </li>
 
 
-                    <li class=" nav-item" v-if="this.$page.props.auth.user.can.includes('quotation.index') || this.$page.props.auth.user.role.includes('Administrator') ">
+                    <li class=" nav-item" v-if="this.$page.props.auth.user.can.includes('quotation.index') ||
+                    this.$page.props.auth.user.can.includes('quotation.ownonly') ||
+                    this.$page.props.auth.user.role.includes('Administrator') ">
                         <Link preserve-scroll class="d-flex align-items-center" href="/admin/quotations">
                             <vue-feather type="aperture" />
                             <span class="menu-title text-truncate" data-i18n="Chat">Quotations</span>
                         </Link>
                     </li>
 
-                    <li class=" nav-item" v-if="this.$page.props.auth.user.can.includes('invoice.index') || this.$page.props.auth.user.role.includes('Administrator') ">
+                    <li class=" nav-item" v-if="this.$page.props.auth.user.can.includes('invoice.index') ||
+                    this.$page.props.auth.user.can.includes('invoice.ownonly') ||
+                    this.$page.props.auth.user.role.includes('Administrator') ">
                         <Link preserve-scroll class="d-flex align-items-center" href="/admin/invoices">
                             <vue-feather type="archive" />
                             <span class="menu-title text-truncate" data-i18n="Chat">Invoices</span>
                         </Link>
                     </li>
 
-                    <li class=" nav-item" v-if="this.$page.props.auth.user.can.includes('project.index') || this.$page.props.auth.user.role.includes('Administrator') ">
+                    <li class=" nav-item" v-if="this.$page.props.auth.user.can.includes('project.index') ||
+                     this.$page.props.auth.user.can.includes('project.employees') ||
+                     this.$page.props.auth.user.role.includes('Administrator') ">
                         <Link preserve-scroll class="d-flex align-items-center" href="/admin/projects">
                             <vue-feather type="package" />
                             <span class="menu-title text-truncate" data-i18n="Chat">Projects</span>
                         </Link>
                     </li>
 
-                    <li class=" nav-item"  v-if="this.$page.props.auth.user.can.includes('project.employees')">
-                        <Link preserve-scroll class="d-flex align-items-center" href="/admin/project/employee-projects">
-                            <vue-feather type="package" />
-                            <span class="menu-title text-truncate" data-i18n="Chat">Projects</span>
-                        </Link>
-                    </li>
+<!--                    <li class=" nav-item"  v-if="this.$page.props.auth.user.can.includes('project.employees')">-->
+<!--                        <Link preserve-scroll class="d-flex align-items-center" href="/admin/project/employee-projects">-->
+<!--                            <vue-feather type="package" />-->
+<!--                            <span class="menu-title text-truncate" data-i18n="Chat">Projects</span>-->
+<!--                        </Link>-->
+<!--                    </li>-->
 
 
-                    <li class="nav-item" v-if="this.$page.props.auth.user.can.includes('expanse.index') || this.$page.props.auth.user.role.includes('Administrator') ">
+                    <li class="nav-item" v-if="this.$page.props.auth.user.can.includes('expanse.index') ||
+                    this.$page.props.auth.user.can.includes('expanse.own') ||
+                    this.$page.props.auth.user.role.includes('Administrator') ">
                         <Link preserve-scroll class="d-flex align-items-center" href="/admin/expense">
                             <vue-feather type="dollar-sign" />
                             <span class="menu-title text-truncate" data-i18n="Chat">Expense</span>
@@ -203,21 +228,26 @@
 
 
                     <li class="nav-item has-sub" :class="{'open' : clickMenu === 5}"  @click="toggleSubMenu(5)"
-                        v-if="this.$page.props.auth.user.can.includes('note.index') || this.$page.props.auth.user.role.includes('Administrator') ">
+                        v-if="this.$page.props.auth.user.can.includes('note.index') ||
+                        this.$page.props.auth.user.can.includes('note.category') ||
+                        this.$page.props.auth.user.can.includes('note.ownonly') ||
+                        this.$page.props.auth.user.role.includes('Administrator') ">
                         <a preserve-scroll class="d-flex align-items-center">
                             <vue-feather type="cpu" />
                             <span class="menu-title text-truncate"
                                   data-i18n="Authentication">Notes</span>
                         </a>
                         <ul class="menu-content">
-                            <li class=" nav-item" v-if="this.$page.props.auth.user.can.includes('note.index') || this.$page.props.auth.user.role.includes('Administrator') ">
+                            <li class=" nav-item" v-if="this.$page.props.auth.user.can.includes('note.category') || this.$page.props.auth.user.role.includes('Administrator') ">
                                 <Link preserve-scroll class="d-flex align-items-center" href="/admin/notes-category">
                                     <vue-feather type="circle" />
                                     <span class="menu-title text-truncate" data-i18n="Chat">Notes Category</span>
                                 </Link>
                             </li>
 
-                            <li class=" nav-item" v-if="this.$page.props.auth.user.can.includes('note.index') || this.$page.props.auth.user.role.includes('Administrator') ">
+                            <li class=" nav-item" v-if="this.$page.props.auth.user.can.includes('note.index') ||
+                             this.$page.props.auth.user.can.includes('note.ownonly') ||
+                             this.$page.props.auth.user.role.includes('Administrator') ">
                                 <Link preserve-scroll class="d-flex align-items-center" href="/admin/notes">
                                     <vue-feather type="circle" />
                                     <span class="menu-title text-truncate" data-i18n="Chat">Notes</span>
@@ -236,8 +266,11 @@
 
                     <li class=" nav-item has-sub" :class="{'open' : clickMenu === 4}"  @click="toggleSubMenu(4)"
                         v-if="this.$page.props.auth.user.can.includes('transaction.index') ||
+                        this.$page.props.auth.user.can.includes('transaction.own') ||
                         this.$page.props.auth.user.can.includes('purpose.index') ||
                         this.$page.props.auth.user.can.includes('method.index') ||
+                        this.$page.props.auth.user.can.includes('duetrx.index') ||
+                        this.$page.props.auth.user.can.includes('duetrx.own') ||
                         this.$page.props.auth.user.role.includes('Administrator') ">
                         <a preserve-scroll class="d-flex align-items-center">
                             <vue-feather type="trending-up" />
@@ -245,12 +278,7 @@
                                   data-i18n="Authentication">Transactions</span>
                         </a>
                         <ul class="menu-content">
-<!--                            <li class=" nav-item" v-if="this.$page.props.auth.user.can.includes('expanse.index') || this.$page.props.auth.user.role.includes('Administrator') ">-->
-<!--                                <Link preserve-scroll class="d-flex align-items-center" href="/admin/expense">-->
-<!--                                    <vue-feather type="circle" />-->
-<!--                                    <span class="menu-title text-truncate" data-i18n="Chat">Expense</span>-->
-<!--                                </Link>-->
-<!--                            </li>-->
+
                             <li class=" nav-item" v-if="this.$page.props.auth.user.can.includes('method.index') || this.$page.props.auth.user.role.includes('Administrator') ">
                                 <Link preserve-scroll class="d-flex align-items-center" href="/admin/methods">
                                     <vue-feather type="circle" />
@@ -265,7 +293,18 @@
                                 </Link>
                             </li>
 
-                            <li class=" nav-item"  v-if="this.$page.props.auth.user.can.includes('transaction.index') || this.$page.props.auth.user.role.includes('Administrator') ">
+                            <li class=" nav-item" v-if="this.$page.props.auth.user.role.includes('Administrator') ||
+                            this.$page.props.auth.user.can.includes('duetrx.index') ||
+                            this.$page.props.auth.user.can.includes('duetrx.own')">
+                                <Link preserve-scroll class="d-flex align-items-center" href="/admin/due-report">
+                                    <vue-feather type="circle" />
+                                    <span class="menu-title text-truncate" data-i18n="Chat">Due Report</span>
+                                </Link>
+                            </li>
+
+                            <li class=" nav-item"  v-if="this.$page.props.auth.user.can.includes('transaction.index') ||
+                            this.$page.props.auth.user.can.includes('transaction.own') ||
+                            this.$page.props.auth.user.role.includes('Administrator') ">
                                 <Link preserve-scroll class="d-flex align-items-center" href="/admin/transaction">
                                     <vue-feather type="circle" />
                                     <span class="menu-title text-truncate" data-i18n="Chat">All Transactions</span>
@@ -283,7 +322,8 @@
                     </li>
 
 
-                    <li class="nav-item has-sub" v-if="this.$page.props.auth.user.can.includes('show.old_data') || this.$page.props.auth.user.role.includes('Administrator')" :class="{'open' : clickMenu === 6}"  @click="toggleSubMenu(6)">
+<!--
+                    <li class="nav-item has-sub" v-if="this.$page.props.auth.user.can.includes('settings.old_data') || this.$page.props.auth.user.role.includes('Administrator')" :class="{'open' : clickMenu === 6}"  @click="toggleSubMenu(6)">
                         <a preserve-scroll class="d-flex align-items-center">
                             <vue-feather type="anchor" />
                             <span class="menu-title text-truncate"
@@ -305,6 +345,7 @@
 
                         </ul>
                     </li>
+-->
 
 
 

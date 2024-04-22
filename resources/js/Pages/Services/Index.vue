@@ -22,7 +22,8 @@
                                         </div>
                                     </div>
                                     <button class="dt-button add-new btn btn-primary"
-                                            v-if="this.$page.props.auth.user.can.includes('services.create') || this.$page.props.auth.user.role.includes('Administrator')"
+                                            v-if="this.$page.props.auth.user.can.includes('services.create') ||
+                                            this.$page.props.auth.user.role.includes('Administrator')"
                                     @click="addServiceModal">
                                         Add Service
                                     </button>
@@ -53,7 +54,10 @@
                                             <h2 class="card-title">{{ item.name }}</h2>
                                             <small>Position:  {{ item.position }}</small>
                                         </div>
-                                        <CDropdown v-if="this.$page.props.auth.user.can.includes('services.delete') || this.$page.props.auth.user.can.includes('services.edit') || this.$page.props.auth.user.role.includes('Administrator')">
+                                        <CDropdown v-if="this.$page.props.auth.user.can.includes('services.delete') ||
+                                        this.$page.props.auth.user.can.includes('services.show') ||
+                                        this.$page.props.auth.user.can.includes('services.edit') ||
+                                        this.$page.props.auth.user.role.includes('Administrator')">
                                             <CDropdownToggle class="p-0">
                                                 <vue-feather type="more-vertical" />
                                             </CDropdownToggle>

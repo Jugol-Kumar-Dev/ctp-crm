@@ -18,16 +18,33 @@ class BusinessSettingController extends Controller
 {
 
     public function get_setting($key, $default=null){
-        if (!auth()->user()->can('settings.show')){
-            abort(404);
-        }
+//        if (!auth()->user()->can('settings.show')){
+//            abort(404);
+//        }
         $setting = BusinessSetting::where('type', $key)->first();
         return $setting == null ? $default : $setting->value;
     }
 
     public function getAllPolicy(){
-        if (!auth()->user()->can('settings.show') || auth()->user()->hasRole('administrator')){
-            abort(401);
+
+
+//        if (!auth()->user()->can('settings.show') || auth()->user()->hasRole('administrator')){
+//            abort(401);
+//        }
+
+
+        if (!auth()->user()->hasRole('Administrator')){
+            $show =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('settings.show');
+
+            $qCreate =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('quotation.create');
+            $qEdit =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('quotation.edit');
+
+            $iCreate =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('invoice.create');
+            $iEdit =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('invoice.edit');
+
+            if($show && $qCreate && $qEdit && $iCreate && $iEdit){
+                abort(401);
+            }
         }
 
 
@@ -37,6 +54,7 @@ class BusinessSettingController extends Controller
             'payment_policy' => $this->get_setting('payment_policy'),
             'payment_methods' => $this->get_setting('payment_methods'),
         ];
+
         return $data;
     }
 

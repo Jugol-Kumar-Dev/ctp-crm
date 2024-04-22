@@ -12,9 +12,11 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header border-bottom d-flex justify-content-between">
-                                    <div class="d-flex align-items-center">
-                                        <h4 class="card-title me-1">Transactions Information's</h4>
-                                        <span class="text-info cursor-pointer" @click="tranDetails" v-c-tooltip="'Click Me Me Get More Details'"> <vue-feather type="info" size="15"/></span>
+                                    <div class="d-flex flex-column">
+                                        <div class="d-flex align-items-center">
+                                            <h4 class="card-title me-1">Transactions Information's</h4>
+                                        </div>
+                                        <h3 class="mt-3" v-if="dateRange">Date Range <strong>{{ moment(dateRange[0])?.format('l') }}</strong> To <strong>{{ moment(dateRange[1])?.format('l') }}</strong></h3>
                                     </div>
                                     <div v-if="this.$page.props.auth.user.can.includes('transaction.export')|| this.$page.props.auth.user.role.includes('Administrator')">
                                         <CDropdown>
@@ -51,7 +53,7 @@
                                             </select>
 
                                             <div class="ml-2">
-                                                <select v-model="searchByStatus" class="select2 form-select select w-100">
+                                                <select v-model="searchByStatus" class="select2 form-select select w-100" style="min-width: 9rem;">
                                                     <option selected disabled :value="undefined">Filter By Type</option>
                                                     <option :value="null">All</option>
                                                     <option value="Credited" >Credited</option>
@@ -66,6 +68,11 @@
                                                         :format="'d-MM-Y'"
                                                         placeholder="Select Date Range" autoApply
                                                         @update:model-value="handleDate" ></Datepicker>
+
+                                            <select class="form-select" v-model="employee" style="width:100%;" v-if="this.$page.props.auth.user.role.includes('Administrator') || this.$page.props.auth.user.can.includes('transaction.index')">
+                                                <option :value="undefined" disabled selected>Filter By Employee</option>
+                                                <option :value="emp.id" v-for="emp in props.employees" v-text="emp.name"/>
+                                            </select>
 
                                             <a class="btn btn-sm btn-icon btn-primary" v-if="isReset"
                                                href="/admin/transaction">
@@ -114,7 +121,7 @@
                                                 {{ tra.tran?.purpose }}
                                             </td>
                                             <td>
-                                                {{ tra.tran?.pay }} Tk
+                                                <span v-if="tra.tran?.pay">{{ tra.tran?.pay }} Tk</span>
                                             </td>
                                             <td class="cursor-pointer" v-if="tra.tran?.transaction_type ==='Credited'"
                                                 v-c-tooltip="`Cash In  ${tra.tran?.pay} Tk \n Rechived By ${tra.tran.received_by?.name}`">
@@ -140,6 +147,18 @@
                                             </td>
                                         </tr>
                                         </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th colspan="3">Total</th>
+                                                <th>
+                                                    <div class="d-flex flex-column">
+                                                        <div>Credited: {{ props.credited }} Tk</div>
+                                                        <div>Debited: {{ props.debited }} Tk</div>
+                                                    </div>
+                                                </th>
+                                                <th colspan="4"></th>
+                                            </tr>
+                                        </tfoot>
                                     </table>
 
                                     <Pagination :links="transactions.links" :from="transactions.from" :to="transactions.to" :total="transactions.total" />
@@ -153,17 +172,6 @@
     </div>
 
 
-
-    <Modal id="showData" title="Total Transactions" v-vb-is:modal size="sm">
-        <div class="modal-body">
-            <div class="row mb-1">
-                <div class="col-md">
-                    <h3>Total Credited : {{ credited }} Tk</h3>
-                    <h3>Total Debited : {{ debited }} Tk</h3>
-                </div>
-            </div>
-        </div>
-    </Modal>
 
 <!--    <Modal id="updateData" title="Expanse Details" v-vb-is:modal size="lg">
         <div class="modal-body">
@@ -227,6 +235,7 @@ const props = defineProps({
     transactions: []|null,
     credited:null,
     debited:null,
+    employees:[]|null,
     filters: Object,
     main_url: String,
 });
@@ -245,6 +254,7 @@ const editItem = (url) =>{
 }
 
 const dateRange = ref(props.filters.dateRange)
+const employee = ref(props.filters.employee)
 const isCustom =ref(false);
 const changeDateRange = (event) => {
     if(event=== 'custom'){
@@ -259,8 +269,9 @@ const searchByStatus = ref(props.filters.byStatus)
 
 let search = ref(props.filters.search);
 let perPage = ref(props.filters.perPage);
-watch([search, perPage, searchByStatus, dateRange], debounce(function ([val, val2, val3, val4]) {
-    Inertia.get(props.main_url, { search: val, perPage: val2, byStatus: val3 , dateRange: val4}, { preserveState: true, replace: true });
+
+watch([search, perPage, searchByStatus, dateRange, employee], debounce(function ([val, val2, val3, val4, val5]) {
+    Inertia.get(props.main_url, { search: val, perPage: val2, byStatus: val3 , dateRange: val4, employee:val5}, { preserveState: true, replace: true });
 }, 300));
 
 const exportPDF =() =>{
@@ -272,7 +283,13 @@ const exportPDF =() =>{
 }
 
 const isReset = computed(() => {
-    return !!props.filters?.perPage || props.filters?.byStatus || props.filters?.dateRange;
+    return !!props.filters?.perPage || props.filters?.byStatus || props.filters?.dateRange || props.filters?.employee;
+})
+
+const totalDebided = computed(()=>{
+    return props.transactions.map(item =>{
+        console.log(item)
+    })
 })
 
 

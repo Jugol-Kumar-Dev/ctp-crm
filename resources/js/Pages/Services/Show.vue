@@ -33,12 +33,25 @@
                                 <div class="card">
                                     <div class="card-body d-flex align-items-center justify-content-between">
                                         <h2>Packages</h2>
+                                        <div
+                                            class="d-flex align-items-center justify-content-center justify-content-lg-end flex-lg-nowrap flex-wrap">
+                                            <div class="select-search-area">
+                                                <label>Search
+                                                    <input
+                                                        v-model="filterWordPackage"
+                                                        type="search"
+                                                        class="form-control"
+                                                        placeholder="Search Now"
+                                                        aria-controls="DataTables_Table_0">
+                                                </label>
+                                            </div>
+                                        </div>
                                         <button v-if="this.$page.props.auth.user.can.includes('packages.create') || this.$page.props.auth.user.role.includes('Administrator')"
                                                                                            @click="addDataModal" class="btn btn-primary">Add New</button>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-4" v-for="pac in service?.packages">
+                                    <div class="col-md-4" v-for="pac in filterPackage">
                                         <div class="card">
                                             <div class="card-body">
                                                 <div class="d-flex align-items-center justify-content-between">
@@ -79,7 +92,23 @@
                                 <div class="card">
                                     <div class="card-body d-flex align-items-center justify-content-between">
                                         <h2>Features</h2>
-                                        <button @click="addNewFeture" class="btn btn-primary">Add New</button>
+
+
+                                        <div
+                                            class="d-flex align-items-center justify-content-center justify-content-lg-end flex-lg-nowrap flex-wrap">
+                                            <div class="select-search-area">
+                                                <label>Search
+                                                    <input
+                                                        v-model="filterWordFeatured"
+                                                        type="search"
+                                                        class="form-control"
+                                                        placeholder="Search Now"
+                                                        aria-controls="DataTables_Table_0">
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <button @click="addNewFeture" class="btn btn-primary" v-if="this.$page.props.auth.user.can.includes('features.create') || this.$page.props.auth.user.role.includes('Administrator')">Add New</button>
                                     </div>
                                 </div>
 
@@ -87,47 +116,7 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="card-datatable table-responsive pt-0 px-2">
-                                            <!--
-                                                                                            <div class="d-flex align-items-center justify-content-between border-bottom">
-                                                                                                <div class="select-search-area d-flex align-items-center">
-                                                                                                    <select class="form-select" v-model="perPage">
-                                                                                                        <option :value="undefined">10</option>
-                                                                                                        <option value="25">25</option>
-                                                                                                        <option value="50">50</option>
-                                                                                                        <option value="100">100</option>
-                                                                                                    </select>
-
-                                            &lt;!&ndash;                                                        <div v-if="!isCustom">
-                                                                                                        <select v-model="dateRange" @update:modelValue="changeDateRange" class="select2 form-select select w-100" id="select2-basic">
-                                                                                                            <option selected disabled :value="undefined">Filter By Date</option>
-                                                                                                            <option :value="null">All</option>
-                                                                                                            <option v-for="(type, index) in range.ranges" :value="type">
-                                                                                                                {{ index }}
-                                                                                                            </option>
-                                                                                                            <option value="custom">Custom Range</option>
-                                                                                                        </select>
-                                                                                                    </div>
-                                                                                                    <div v-else>
-                                                                                                        <Datepicker v-model="dateRange" :monthChangeOnScroll="false" range multi-calendars
-                                                                                                                    placeholder="Select Date Range" autoApply  @update:model-value="handleDate" ></Datepicker>
-                                                                                                    </div>&ndash;&gt;
-                                                                                                </div>
-                                                                                                <div
-                                                                                                    class="d-flex align-items-center justify-content-center justify-content-lg-end flex-lg-nowrap flex-wrap">
-                                                                                                    <div class="select-search-area">
-                                                                                                        <label>Search
-                                                                                                            <input
-                                                                                                                   type="search"
-                                                                                                                   class="form-control"
-                                                                                                                   placeholder="What You Find ?"
-                                                                                                                   aria-controls="DataTables_Table_0">
-                                                                                                        </label>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            </div>
-                                            -->
-
-                                            <table class="user-list-table table">
+                                            <table class="user-list-table table table-striped">
                                                 <thead class="table-light">
                                                 <tr class=null>
                                                     <th class="sorting">Id</th>
@@ -137,7 +126,7 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                <tr v-for="feature in service?.features" :key="feature.id">
+                                                <tr v-for="feature in filterFeatured" :key="feature.id">
                                                     <td>{{ feature?.id }}</td>
                                                     <td>
                                                         <div class="d-flex flex-column">
@@ -147,18 +136,20 @@
                                                     </td>
                                                     <td>{{ feature?.price }}</td>
                                                     <td>
-                                                        <CDropdown>
+                                                        <CDropdown  v-if="this.$page.props.auth.user.can.includes('features.edit') ||
+                                                        this.$page.props.auth.user.can.includes('features.delete') ||
+                                                        this.$page.props.auth.user.role.includes('Administrator')">
                                                             <CDropdownToggle>
                                                                 <vue-feather type="more-vertical" />
                                                             </CDropdownToggle>
                                                             <CDropdownMenu>
-                                                                <CDropdownItem  @click="editFeatured(feature.id)"   v-if="this.$page.props.auth.user.can.includes('client.edit') || this.$page.props.auth.user.role.includes('Administrator')">
+                                                                <CDropdownItem  @click="editFeatured(feature.id)"   v-if="this.$page.props.auth.user.can.includes('features.edit') || this.$page.props.auth.user.role.includes('Administrator')">
                                                                     <Icon title="pencil" />
                                                                     <span class="ms-1">Edit</span>
                                                                 </CDropdownItem>
 
                                                                 <CDropdownItem @click="deleteItem(`${props.main_url}/delete-feature`, feature?.id)" type="button"
-                                                                               v-if="this.$page.props.auth.user.can.includes('client.delete') || this.$page.props.auth.user.role.includes('Administrator') ">
+                                                                               v-if="this.$page.props.auth.user.can.includes('features.delete') || this.$page.props.auth.user.role.includes('Administrator') ">
                                                                     <Icon title="trash" />
                                                                     <span class="ms-1">Delete</span>
                                                                 </CDropdownItem>
@@ -168,6 +159,7 @@
                                                 </tr>
                                                 </tbody>
                                             </table>
+<!--                                            <Pagination :links="service?.features.links" :from="service?.features.from" :to="service?.features.to" :total="service?.features.total"/>-->
                                         </div>
                                     </div>
                                 </div>
@@ -259,7 +251,7 @@
 import Modal from "../../components/Modal.vue";
 
 import {useAction} from "../../composables/useAction";
-import {ref, watch} from "vue";
+import {computed, ref, watch} from "vue";
 import {useForm} from "@inertiajs/inertia-vue3";
 import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
 import {Inertia} from "@inertiajs/inertia";
@@ -393,12 +385,39 @@ const reset =()=>{
 }
 
 
-
 /*
 *
 * this is for featured sections
 *
 * */
+
+const filterWordFeatured = ref(null)
+const filterFeatured = computed(()=>{
+    if(filterWordFeatured.value){
+        return props.service?.features?.filter(item => {
+            const allProperties = Object.values(item).join(' ').toLowerCase();
+            return allProperties.includes(filterWordFeatured.value?.toLowerCase());
+        })
+    }else{
+        return props.service?.features;
+    }
+})
+
+
+
+const filterWordPackage = ref(null)
+const filterPackage = computed(()=>{
+    if(filterWordPackage.value){
+        return props.service?.packages?.filter(item => {
+            const allProperties = Object.values(item).join(' ').toLowerCase();
+            return allProperties.includes(filterWordPackage.value?.toLowerCase());
+        })
+    }else{
+        return props.service?.packages;
+    }
+})
+
+
 
 </script>
 

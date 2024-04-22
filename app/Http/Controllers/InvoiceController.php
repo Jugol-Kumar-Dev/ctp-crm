@@ -36,13 +36,23 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.index')){
-            abort(401);
+
+
+        if (!auth()->user()->hasRole('Administrator')){
+            $show =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('invoice.index');
+            $my =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('invoice.ownonly');
+            if($show && $my){
+                abort(401);
+            }
         }
+
         return inertia('Invoice/Index',[
             'invoices' => Invoice::query()
                 ->with(['client', 'user', 'quotation', 'transactions'])
                 ->latest()
+                ->when(!Auth::user()->hasRole('Administrator') && auth()->user()->can('invoice.ownonly'), function($query){
+                    $query->where('user_id', Auth::id());
+                })
                 ->when(Request::input('search'), function ($query, $search) {
                     $query->whereHas('client', function ($client) use($search){
                             $client
@@ -92,13 +102,34 @@ class InvoiceController extends Controller
         if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.create')){
             abort(401);
         }
+
+          if(auth()->user()->can('invoice.ownonly')){
+              $clients = Client::query()
+                  ->with(['users'])
+                  ->where(function ($query) {
+                      $query->where('is_client', true)
+                          ->where('created_by', Auth::id());
+                  })
+                  ->orWhereHas('users', function ($query) {
+                      $query->where('user_id', Auth::id());
+                  })->where('is_client', true)
+                  ->latest()->get();
+          }else{
+              $clients = Client::query()->where('is_client', true)
+                  ->latest()->get();
+          }
+
+
+
+
         return Inertia::render('Invoice/Create', [
             "quotations" => Quotation::all(),
-            "clients"   => Client::query()->latest()->get(), //where('is_client', true)-> only for converted clients
+            "clients"   => $clients,
             "paymentMethods" => Method::all(),
             "store_url" => URL::route('invoices.store')
         ]);
     }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -209,6 +240,12 @@ class InvoiceController extends Controller
             abort(401);
         }
 
+        if(auth()->user()->can('invoice.ownonly')){
+            if($invoice->user_id != Auth::id()){
+                abort(401);
+            }
+        }
+
 
         $invoice = $invoice->load('user', 'client', 'quotation', 'transactions', 'transactions.receivedBy:id,name', 'transactions.method:id,name');
         $pref = $this->invoiceItemsGenerate($invoice);
@@ -259,66 +296,64 @@ class InvoiceController extends Controller
     public function createInvoice($id)
     {
 
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.edit')){
+        if(auth()->user()->hasRole('Administrator')  || auth()->user()->can('invoice.edit') || auth()->user()->can('quotation.show')) {
+            if (Request::input("pay") != null) {
+                Request::validate([
+                    'payment_method' => 'required'
+                ]);
+            }
+            $quotation = Quotation::findOrFail(Request::input('quotationId'));
+            $discount = $quotation->discount + Request::input('discount') ?? 0;
+            $grandTotal = $quotation->total_price - $discount;
+            $due = $grandTotal - (int)Request::input('pay');
+
+            $invoice = Invoice::create([
+                'invoice_id' => now()->format('Ymd'),
+                'quotation_id' => $quotation->id,
+                'client_id' => Request::input('clientId'),
+                'user_id' => Auth::id(),
+                'invoice_type' => 'quotation',
+                'total_price' => $quotation->total_price,
+                'discount' => $discount,
+                'grand_total' => $grandTotal,
+                'pay' => Request::input('pay'),
+                'due' => $due,
+                'currency' => $quotation->currency ?? 'Taka',
+                'invoice_date' => now(),
+                'note' => Request::input('note'),
+                'payment_policy' => $quotation?->payment_policy ?? NULL,
+                'trams_of_service' => $quotation?->trams_of_service ?? NULL,
+                'payment_methods' => $quotation?->payment_methods ?? NULL,
+            ]);
+
+            Transaction::create([
+                'transaction_id' => now()->format('Ymd'),
+                'transactionable_id' => $invoice->id,
+                'transactionable_type' => "App\\Models\\Invoice",
+                "purpose" => "#" . env('INV_PREFIX') . "_" . $invoice->invoice_id ?? NULL,
+                'received_by' => Auth::id(),
+                'payment_by' => Request::input('clientId'),
+                "transaction_type" => "Credited",
+                "amount" => $quotation->total_price,
+                "pay" => Request::input('pay'),
+                "due" => $due,
+                "payment_date" => now(),
+                "method_id" => Request::input('payment_method')
+            ]);
+
+            $data = $this->downloadInvoice($invoice->id, true);
+            $clientEmail = $invoice->quotation?->client?->email ?? $invoice->client?->email;
+
+            if (Request::input('sendEmail') || Request::input('sendEmail') == true || Request::input('sendEmail') == 'true') {
+                if (is_array($data) && $clientEmail) {
+                    Mail::to($clientEmail)->send(new InvoiceMail($data['invoice'], $data['pref']));
+                }
+            }
+            return back();
+        }else{
             abort(401);
         }
 
-
-        if (Request::input("pay") != null){
-            Request::validate([
-                'payment_method' => 'required'
-            ]);
-        }
-        $quotation = Quotation::findOrFail(Request::input('quotationId'));
-        $discount = $quotation->discount + Request::input('discount') ?? 0;
-        $grandTotal = $quotation->total_price - $discount;
-        $due = $grandTotal - (int)Request::input('pay');
-
-
-        $invoice = Invoice::create([
-            'invoice_id' => now()->format('Ymd'),
-            'quotation_id' => $quotation->id,
-            'client_id' => Request::input('clientId'),
-            'user_id' => Auth::id(),
-            'invoice_type' => 'quotation',
-            'total_price' => $quotation->total_price,
-            'discount' => $discount,
-            'grand_total' => $grandTotal,
-            'pay' => Request::input('pay'),
-            'due' => $due,
-            'currency'=> $quotation->currency ?? 'Taka',
-            'invoice_date' => now(),
-            'note' => Request::input('note'),
-            'payment_policy' => $quotation?->payment_policy ?? NULL,
-            'trams_of_service' => $quotation?->trams_of_service ?? NULL,
-            'payment_methods' => $quotation?->payment_methods ??  NULL,
-        ]);
-
-        Transaction::create([
-            'transaction_id' =>  now()->format('Ymd'),
-            'transactionable_id' => $invoice->id,
-            'transactionable_type' => "App\\Models\\Invoice",
-            "purpose" => "#".env('INV_PREFIX')."_".$invoice->invoice_id ?? NULL,
-            'received_by' => Auth::id(),
-            'payment_by' => Request::input('clientId'),
-            "transaction_type" => "Credited",
-            "amount" => $quotation->total_price,
-            "pay" => Request::input('pay'),
-            "due" => $due,
-            "payment_date" => now(),
-            "method_id" => Request::input('payment_method')
-        ]);
-
-        $data = $this->downloadInvoice($invoice->id, true);
-        $clientEmail = $invoice->quotation?->client?->email ?? $invoice->client?->email;
-
-        if(Request::input('sendEmail') || Request::input('sendEmail') == true || Request::input('sendEmail') == 'true'){
-            if (is_array($data) && $clientEmail){
-                Mail::to($clientEmail)->send(new InvoiceMail($data['invoice'], $data['pref']));
-            }
-        }
-
-        return back();
     }
 
     public function downloadInvoice($id, $emailData=false){
@@ -442,7 +477,24 @@ class InvoiceController extends Controller
         }
 
         $invoice = Invoice::with('client')->findOrFail($id);
-        $clients = Client::where('is_client', true)->latest()->get();
+
+
+        if(auth()->user()->can('invoice.ownonly')){
+            $clients = Client::query()
+                ->with(['users'])
+                ->where(function ($query) {
+                    $query->where('is_client', true)
+                        ->where('created_by', Auth::id());
+                })
+                ->orWhereHas('users', function ($query) {
+                    $query->where('user_id', Auth::id());
+                })->where('is_client', true)
+                ->latest()->get();
+        }else{
+            $clients = Client::query()->where('is_client', true)
+                ->latest()->get();
+        }
+
 
         return Inertia::render('Invoice/Edit', [
             "clients"   => $clients,

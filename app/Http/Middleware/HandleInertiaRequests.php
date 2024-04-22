@@ -42,7 +42,7 @@ class HandleInertiaRequests extends Middleware
             $roles_permissions = array_map(function ($item){
                 return $item['name'];
             },
-            $user->getPermissionsViaRoles()->toArray());
+                $user->getPermissionsViaRoles()->toArray());
             $can = array_diff($roles_permissions, $user->getRoleNames()->toArray());
         }
 

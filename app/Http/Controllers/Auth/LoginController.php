@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +23,6 @@ class LoginController extends Controller
                 'password' => ['required'],
             ]);
 
-
             if (Auth::attempt($credentials, $request->remember)) {
                 $request->session()->regenerate();
                 return redirect()->intended();
@@ -36,6 +36,18 @@ class LoginController extends Controller
             return back()->withErrors($e->getMessage());
         }
 
+    }
+
+
+    public function loginAs(Request $request){
+        $user = User::findOrFail($request->input('userId'));
+        if($user){
+            Auth::logout();
+            Auth::login($user);
+            $request->session()->regenerate();
+
+            return redirect('/admin/dashboard');
+        }
     }
 
     public function destroy()

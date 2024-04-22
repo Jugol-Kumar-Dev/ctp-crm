@@ -15,6 +15,13 @@ class NoteCategoryController extends Controller
      */
     public function index()
     {
+
+
+
+        if (!auth()->user()->can('note.category') || auth()->user()->hasRole('administrator')){
+            abort(401);
+        }
+
         return inertia('Notes/Category', [
             $search = Request::input('search'),
             'categories' => NoteCategory::query()

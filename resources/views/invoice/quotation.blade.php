@@ -204,9 +204,13 @@
                 <tbody>
 
                 @foreach ($pref as $item)
-{{--                    <tr @if($loop->last) style="border-bottom:1px solid #e7e7e7" @endif>--}}
+                    {{--                    <tr @if($loop->last) style="border-bottom:1px solid #e7e7e7" @endif>--}}
                     <tr style="border-bottom:1px solid #e7e7e7">
                         <td class="border text-left"  colspan="3" @if($loop->last) style="padding-bottom: 7px" @endif>
+                            @if(isset($item['packageName']))
+                                <h4 style="margin:0;border-bottom:1px dashed #e7e7e7;display:inline;">{{ $item['packageName'] ?? '' }}</h4>
+                                </br>
+                            @endif
                             {!! nl2br($item['name']) !!}
                         </td>
                         <td class="border text-right" @if($loop->last) style="padding-bottom: 7px" @endif>
@@ -273,8 +277,8 @@
             @if (!is_null($quotation->payment_methods))
                 <h3>Payment Mehod:</h3>
                 {!! nl2br($quotation->payment_methods) !!}
+                <h3>Direct Payment Bill Online at <a href="https://creativetechpark.com/pay" target="_blank">https://creativetechpark.com/pay</a></h3>
             @endif
-            <h3>Direct Payment Bill Online at <a href="https://creativetechpark.com/pay" target="_blank">https://creativetechpark.com/pay</a></h3>
         </div>
     </div>
     @if (!is_null($quotation->payment_policy))

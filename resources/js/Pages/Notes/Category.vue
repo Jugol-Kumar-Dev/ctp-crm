@@ -76,7 +76,7 @@
                         </div>
 
                         <div class="col-4"
-                             v-if="this.$page.props.auth.user.can.includes('note.create') || this.$page.props.auth.user.role == 'Administrator' ">
+                             v-if="this.$page.props.auth.user.can.includes('note.category') || this.$page.props.auth.user.role.includes('Administrator') ">
                         <div class="card">
                                 <div class="card-header d-flex justify-content-between">
                                     <h4 class="card-title">Create Categories</h4>

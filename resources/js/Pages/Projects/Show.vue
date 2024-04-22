@@ -11,9 +11,9 @@
                         <!-- Page header -->
                         <div class="d-lg-flex align-items-center justify-content-between">
                             <div class="mb-2 mb-lg-0">
-                                <a :href="info.name" target="_blank">
+<!--                                <a :href="info.name" target="_blank">-->
                                     <h1 class="mb-0 h2 fw-bold text-capitalize">{{ info.name }}</h1>
-                                </a>
+<!--                                </a>-->
                             </div>
                             <div class="d-flex align-items-center">
                                 <!-- avatar group -->
@@ -27,7 +27,11 @@
                                         <img :src="developer.photo" alt="Avatar" height="30" width="30">
                                     </div>
                                 </div>
-                                <div class="pull-up add-new-user ms-2"  v-c-tooltip="'Assign New User'" data-bs-toggle="modal"
+                                <div class="pull-up add-new-user ms-2"
+                                     v-if="this.$page.props.auth.user.can.includes('project.edit') ||
+                                     this.$page.props.auth.user.role.includes('Administrator')"
+                                     v-c-tooltip="'Assign New User'"
+                                     data-bs-toggle="modal"
                                      data-bs-target="#assignedDeveloper">
                                     +
                                 </div>
@@ -57,7 +61,8 @@
                         </li>
                         <li class="nav-item" role="presentation" v-if="props.info.invoice">
                             <button class="nav-link"
-                                    v-if="this.$page.props.auth.user.can.includes('project.budget') || this.$page.props.auth.user.role.includes('Administrator')"
+                                    v-if="this.$page.props.auth.user.can.includes('project.budget') ||
+                                    this.$page.props.auth.user.role.includes('Administrator')"
                                     id="billing-tab" data-bs-toggle="tab"
                                     data-bs-target="#billing" type="button"
                                     role="tab" aria-controls="billing"
@@ -65,6 +70,8 @@
                         </li>
                         <li class="nav-item" role="presentation" v-if="props.info.invoice">
                             <button class="nav-link"
+                                    v-if="this.$page.props.auth.user.can.includes('invoice.show') ||
+                                    this.$page.props.auth.user.role.includes('Administrator')"
                                     id="invoice-tab" data-bs-toggle="tab"
                                     data-bs-target="#invoice" type="button"
                                     role="tab" aria-controls="invoice"
@@ -72,18 +79,20 @@
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link"
+                                    v-if="this.$page.props.auth.user.can.includes('project.edit') ||
+                                    this.$page.props.auth.user.role.includes('Administrator')"
                                     id="mambers-tab" data-bs-toggle="tab"
                                     data-bs-target="#mambers" type="button"
                                     role="tab" aria-controls="mambers"
                                     aria-selected="false">Team</button>
                         </li>
-                        <li class="nav-item" role="presentation">
+<!--                        <li class="nav-item" role="presentation">
                             <button class="nav-link"
                                     id="progress-tab" data-bs-toggle="tab"
                                     data-bs-target="#progress" type="button"
                                     role="tab" aria-controls="progress"
                                     aria-selected="false">Progressment</button>
-                        </li>
+                        </li>-->
                         <li class="nav-item" role="presentation">
                             <button class="nav-link"
                                     id="operation-tab" data-bs-toggle="tab"
@@ -111,7 +120,11 @@
                                                 <p class="mb-0">{{ props.info.client?.phone ?? '' }}</p>
                                                 <p class="mb-0">{{ props.info.client?.secondary_phone ?? '' }}</p>
                                                 <p class="mb-0">{{ props.info.client?.address }}</p>
-                                                <a :href="`/admin/clients/${ props.info.client?.id}`" class="btn btn-primary mt-3">Profile</a>
+
+                                                <a :href="`/admin/clients/${ props.info.client?.id}`"
+                                                   v-if="this.$page.props.auth.user.can.includes('client.show') ||
+                                                   this.$page.props.auth.user.role.includes('Administrator')"
+                                                   class="btn btn-primary mt-3">Profile</a>
                                             </div>
                                         </div>
                                     </div>

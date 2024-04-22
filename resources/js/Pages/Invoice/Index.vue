@@ -103,7 +103,7 @@
                                                         </CDropdownItem>
 
                                                         <CDropdownItem :href="invoice.edit_url" target="_blank"
-                                                                       v-if="this.$page.props.auth.user.can.includes('invoice.edit') || this.$page.props.auth.user.role.includes('Administrator') && !invoice.quotation_id">
+                                                                       v-if="invoice.invoice_type === 'custom' && (this.$page.props.auth.user.can.includes('invoice.edit') || this.$page.props.auth.user.role.includes('Administrator'))">
                                                             <vue-feather type="edit" size="15"/>
                                                             <span class="ms-1">Edit</span>
                                                         </CDropdownItem>

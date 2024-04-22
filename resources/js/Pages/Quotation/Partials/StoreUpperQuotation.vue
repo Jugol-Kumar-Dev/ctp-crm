@@ -346,6 +346,7 @@
                             <button type="submit" class="btn btn-primary waves-effect waves-float waves-light" data-bs-dismiss="modal">ok</button>
                         </div>
                     </Modal>
+
                     <Modal id="paymentPolicy" title="Edit Payment Policy" v-vb-is:modal size="lg">
                         <div class="modal-body">
                             <div class="row mb-1">

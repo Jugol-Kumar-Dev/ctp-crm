@@ -83,19 +83,6 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="d-flex flex-column">
-                                                    <label class="form-check-label mb-50"
-                                                           for="customSwitch10">Primary</label>
-                                                    <div class="form-check form-switch form-check-primary">
-                                                        <input type="checkbox" class="form-check-input"
-                                                               v-model="createForm.status" id="customSwitch10" checked/>
-                                                        <label class="form-check-label" for="customSwitch10">
-                                                            <span class="switch-icon-left"><i
-                                                                data-feather="check"></i></span>
-                                                            <span class="switch-icon-right"><i data-feather="x"></i></span>
-                                                        </label>
-                                                    </div>
-                                                </div>
                                             </div>
                                         </div>
                                     </div>

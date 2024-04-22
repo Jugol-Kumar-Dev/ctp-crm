@@ -64,7 +64,7 @@
                                         </div>
                                     </div>
                                 </li>
-                                <li class="list-group-item px-0 pb-0" v-if="props.info.invoice">
+                                <li class="list-group-item px-0 pb-0" v-if="props.info.invoice && this.$page.props.auth.user.can.includes('project.budget')">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="d-flex align-items-center">
                                             <vue-feather type="dollar-sign"/>
@@ -140,10 +140,9 @@
                             </div>
                         </div>
                         <!-- row -->
-
                     </div>
                 </div>
-                <div class="col-md-12 mb-2" v-if="props.info.invoice">
+                <div class="col-md-12 mb-2" v-if="props.info.invoice && this.$page.props.auth.user.can.includes('project.budget')">
                     <!-- card -->
                     <div class="card">
                         <!-- card body -->
@@ -224,8 +223,9 @@
                     </div>
                 </div>
                 <!-- Card body -->
-                <div class="card-body">
-                    <img :src="`/storage/${props.info.files}`" alt="" class="w-100 h-100 object-fit-contain" style="max-height:120px;">
+                <div class="card-body" style="min-height:50vh;" v-if="props.info.files">
+                    <iframe :src="`/storage/${props.info.files}`" @error="fileError" alt="" id="attatchmentFile"
+                            class="w-100 h-100 object-fit-contain" style="min-height:50vh;"></iframe>
                 </div>
             </div>
         </div>
@@ -279,7 +279,7 @@
                             <textarea v-model="formData.project_details" class="form-control" rows="6" placeholder="e.g Project description explain here help for developer..."></textarea>
                         </div>
                     </div>
-                    <div class="col-md-12 mt-2">
+                    <div class="col-md-12 mt-2" v-if="this.$page.props.auth.user.can.includes('project.credentials')">
                         <label>Project Credential's : </label>
                         <div class="">
                             <textarea v-model="formData.credintials" class="form-control" rows="6" placeholder="e.g Details explain about this project credentials..."></textarea>
@@ -406,7 +406,6 @@ const props = defineProps({
             }
         })
     }
-
 
 </script>
 

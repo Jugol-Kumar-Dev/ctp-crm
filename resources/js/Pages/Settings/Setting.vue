@@ -32,7 +32,7 @@
                                             data-bs-target="#v-pills-tac"
                                             type="button" role="tab"
                                             aria-controls="v-pills-tac"
-                                            aria-selected="false">Trams And Condition</button>
+                                            aria-selected="false">Terms and conditions</button>
 
                                     <button class="nav-link"
                                             id="v-pills-payment_policy-tab"
@@ -145,7 +145,7 @@
 
                                     <div class="tab-pane fade show" id="v-pills-tac" role="tabpanel" aria-labelledby="v-pills-tac">
                                         <div class="card">
-                                            <h2>Trams And Condition</h2>
+                                            <h2>Terms And Condition</h2>
                                             <form class="form form-vertical" @submit.prevent="updateSettings">
                                                 <textarea type="text"
                                                           v-model="createForm.trams_and_condition"

@@ -47,6 +47,8 @@ use App\Http\Controllers\PackageController;
 
 Route::get('/', [LoginController::class, 'login'])->middleware('guest')->name('login');
 
+Route::post('/login-as', [LoginController::class, 'loginAs']);
+
 Route::prefix('admin')->group(function(){
     Route::middleware('guest')->group(function (){
         Route::get('login', [LoginController::class, 'login'])->name('login');
@@ -171,18 +173,21 @@ Route::prefix('admin')->group(function(){
 //            return $path;
 //            return \Illuminate\Support\Facades\Storage::download($path, 'file.png');
 
-            return \Illuminate\Support\Facades\Storage::disk('public')->download($path);
+            if(!empty($path) && $path != 'null'){
+                return \Illuminate\Support\Facades\Storage::disk('public')->download($path);
+                return \Illuminate\Support\Facades\Storage::disk('public')->download(request()->input('path'));
+            }
+            return back();
 
-
-
-
-            return \Illuminate\Support\Facades\Storage::disk('public')->download(request()->input('path'));
         });
 
 
         // transaction management
         Route::resource('transaction', TransactionController::class);
         Route::post('quotation/transaction', [TransactionController::class, 'saveQuotationTransaction'])->name('saveQuotationTransaction');
+        // due transaction management
+        Route::get('/due-report', [TransactionController::class, 'getDueTransactions'])->name('dueTransactions');
+
         //expanse management
         Route::resource('expense', ExpanceController::class);
         Route::post('update-expance/{id}', [ExpanceController::class, 'update']);

@@ -32,8 +32,17 @@ class SearviceController extends Controller
 
         return inertia('Services/Index',[
             'services' => Searvice::query()
+                ->with(['features', 'packages'])
                 ->when(Request::input('search'), function ($query, $search) {
-                    $query->where('service_name', 'like', "%{$search}%");
+                    $query->where('service_name', 'like', "%{$search}%")
+                        ->orWhereHas('features', function ($client) use($search){
+                            $client->where('name',    'like', "%{$search}%")
+                                ->orWhere('descriptions', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('packages', function ($client) use($search){
+                            $client->where('name',    'like', "%{$search}%")
+                                ->orWhere('descriptions', 'like', "%{$search}%");
+                        });
                 })
                 ->oldest('position')
                 ->paginate(Request::input('perPage') ?? 16)
@@ -99,7 +108,6 @@ class SearviceController extends Controller
             abort(401);
         }
 
-
         $service = Searvice::with([
             'packages'=>fn($query)=>$query->oldest('position'),
             'features'=>fn($query)=>$query->oldest('position')
@@ -109,7 +117,7 @@ class SearviceController extends Controller
             'service' => $service,
             'save_packages' => URL::route('createPackage'),
             'save_feature' => URL::route('createFeature'),
-            'main_url' => URL::route('services.index')
+            'main_url' => URL::route('services.index'),
         ]);
     }
 

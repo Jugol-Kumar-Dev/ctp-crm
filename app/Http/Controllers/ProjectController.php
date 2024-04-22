@@ -24,13 +24,48 @@ class ProjectController extends Controller
     public function index()
     {
 
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('project.index')){
-            abort(401);
+        if (!auth()->user()->hasRole('Administrator')){
+            $show =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('project.index');
+            $my =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('project.employees');
+            if($show && $my){
+                abort(401);
+            }
         }
+
+        $clients =[];
+        $invoices = [];
+
+        if(auth()->user()->can('project.employees')){
+            $clients = Client::query()
+                ->with(['users'])
+                ->where(function ($query) {
+                    $query->where('is_client', true)
+                        ->where('created_by', Auth::id());
+                })
+                ->orWhereHas('users', function ($query) {
+                    $query->where('user_id', Auth::id());
+                })->where('is_client', true)
+                ->latest()->get();
+
+            $invoices = Invoice::query()->where('user_id', Auth::id())->with(['quotation', 'client'])->get();
+
+        }else{
+            $clients = Client::query()->where('is_client', true)
+                ->latest()->get();
+            $invoices = Invoice::query()->with(['quotation', 'client'])->get();
+        }
+
+
         return inertia('Projects/Index', [
             'projects' => Project::query()
                 ->with(['user', 'users', 'client', 'invoice'])
                 ->latest()
+                ->when(!Auth::user()->hasRole('Administrator') && auth()->user()->can('project.employees'), function($query){
+                    $query->where('user_id', Auth::id())
+                        ->orWhereHas('users', function ($developer){
+                            $developer->where('user_id', Auth::id());
+                        });
+                })
                 ->when(Request::input('search'), function ($query, $search) {
                     $query
                         ->where('name', 'like', "%{$search}%")
@@ -66,9 +101,14 @@ class ProjectController extends Controller
                     "edit_url"      => URL::route('projects.edit', $project->id),
                     "show_url"      => URL::route('projects.show', $project->id),
                 ]),
-            'clients'  => Client::all(['id','name', 'email', 'phone']),
+
+
+
+
+            'clients'  => $clients, //Client::all(['id','name', 'email', 'phone']),
+            'invoice' => $invoices, //Invoice::with(['quotation', 'client'])->get(),
             'users'    => User::all(['id','name', 'email', 'photo']),
-            'invoice' => Invoice::with(['quotation', 'client'])->get(),
+
             'filters'  => Request::only(['search','perPage']),
             'main_url' => URL::route('projects.index'),
         ]);
@@ -107,8 +147,6 @@ class ProjectController extends Controller
 
     public function store(Request $request)
     {
-
-
         if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('project.create')){
             abort(401);
         }
@@ -118,7 +156,7 @@ class ProjectController extends Controller
            'date' => 'required',
            'start_date' => 'required',
            'end_date' => 'required',
-            'url' => 'nullable|string'
+           'url' => 'nullable|string'
         ]);
 
         if(empty(Request::input('invoiceId')) && empty(Request::input('clientId'))){
@@ -197,6 +235,27 @@ class ProjectController extends Controller
         if(file_exists('storage/'.$project->files)){
             $fileInfo = stat('storage/'.$project->files);
         }
+
+
+
+        if(!auth()->user()->hasRole('Administrator') && auth()->user()->can('project.employees')){
+
+            $exist = $project->users->where('id', Auth::id())->first();
+
+            if(empty($exist) || $project->user_id == Auth::id()){
+                abort(401);
+            }
+
+            // if($project->user_id != Auth::id() && !$exist->count()){
+            //     abort(401);
+            // }
+        }
+//
+//        if(auth()->user()->can('project.employees')){
+//            if($project->user_id != Auth::id()){
+//                abort(401);
+//            }
+//        }
 
 
         return inertia('Projects/Show', [
@@ -318,7 +377,10 @@ class ProjectController extends Controller
 
         $project = Project::findOrFail($id);
         if (Request::hasFile('files')) {
-            Storage::disk('public')->delete($project->files);
+            if(!empty($project->files) && Storage::disk('public')->exists($project->files)){
+                Storage::disk('public')->delete($project->files);
+            }
+
             $filePath = Request::file('files')->store('project', 'public');
 //            $filePath = Storage::putFile('project', Request::file('files'));
             $project->files = $filePath;
@@ -340,7 +402,7 @@ class ProjectController extends Controller
             abort(401);
         }
         $project = Project::findOrFail($id);
-        if(Storage::exists($project->files)){
+        if(!empty($project->files) && Storage::exists($project->files)){
             Storage::delete($project->files);
         }
         $project->delete();
@@ -376,10 +438,12 @@ class ProjectController extends Controller
 
     public function updateProgress(){
 
-
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('project.edit')){
-            abort(401);
+        if (!auth()->user()->hasRole('Administrator')){
+            if(!auth()->user()->can('project.show')){
+                abort(401);
+            }
         }
+
 
         $project = Project::findOrFail(Request::input('projectId'));
         $project->status = Request::input('status');

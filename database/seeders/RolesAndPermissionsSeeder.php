@@ -37,14 +37,16 @@ class RolesAndPermissionsSeeder extends Seeder
                     'user.index',
                     'user.create',
                     'user.edit',
-                    'user.delete'
+                    'user.delete',
+                    'user.loginas',
                 ],
                 'name' => [
                     'Show User',
-                    'Manage User',
+                    'List User',
                     'Create User',
                     'Edit User',
-                    'Delete User'
+                    'Delete User',
+                    'Login As User',
                 ]
             ],
             [
@@ -56,7 +58,7 @@ class RolesAndPermissionsSeeder extends Seeder
                     'authorization.delete'
                 ],
                 'name' => [
-                    'Manage Authorization',
+                    'List Authorization',
                     'Create Authorization',
                     'Edit Authorization',
                     'Delete Authorization'
@@ -74,8 +76,8 @@ class RolesAndPermissionsSeeder extends Seeder
                 ],
                 'name' => [
                     'Show Leads',
-                    'Manage Leads',
-                    'Manage Own Leads',
+                    'List Leads',
+                    'List Own Leads',
                     'Create Leads',
                     'Edit Leads',
                     'Delete Leads',
@@ -93,8 +95,8 @@ class RolesAndPermissionsSeeder extends Seeder
                 ],
                 'name' => [
                     'Show Client',
-                    'Manage Client',
-                    'Manage Own Client',
+                    'List Client',
+                    'List Own Client',
                     'Create Client',
                     'Edit Client',
                     'Delete Client',
@@ -111,7 +113,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 ],
                 'name' => [
                     'Show Services',
-                    'Manage Services',
+                    'List Services',
                     'Create Services',
                     'Edit Services',
                     'Delete Services'
@@ -148,13 +150,15 @@ class RolesAndPermissionsSeeder extends Seeder
                 'permissions' => [
                     'quotation.show',
                     'quotation.index',
+                    'quotation.ownonly',
                     'quotation.create',
                     'quotation.edit',
                     'quotation.delete',
                 ],
                 'name' => [
                     'Show Quotation',
-                    'Manage Quotation',
+                    'List Quotation',
+                    'Own Quotation',
                     'Create Quotation',
                     'Edit Quotation',
                     'Delete Quotation',
@@ -165,13 +169,15 @@ class RolesAndPermissionsSeeder extends Seeder
                 'permissions' => [
                     'invoice.show',
                     'invoice.index',
+                    'invoice.ownonly',
                     'invoice.create',
                     'invoice.edit',
                     'invoice.delete'
                 ],
                 'name' => [
                     'Show Invoice',
-                    'Manage Invoice',
+                    'List Invoice',
+                    'Own Invoice',
                     'Create Invoice',
                     'Edit Invoice',
                     'Delete Invoice'
@@ -182,26 +188,26 @@ class RolesAndPermissionsSeeder extends Seeder
                 'permissions' => [
                     'project.show',
                     'project.index',
+                    'project.employees',
                     'project.create',
                     'project.edit',
                     'project.delete',
                     'project.budget',
-                    'project.employees',
                     'project.credentials',
                     'project.clients',
                     'project.attachment',
                 ],
                 'name' => [
                     'Show Project',
-                    'Manage Project',
+                    'List Project',
+                    'List Own Project',
                     'Create Project',
                     'Edit Project',
                     'Delete Project',
                     'Show Budget',
-                    'Employees Project',
-                    'Show Project Credentials',
-                    'Show Project Client',
-                    'Show Project Attachments'
+                    'Show Credentials',
+                    'Client Details',
+                    'Show Attachments'
                 ]
             ],
             [
@@ -215,7 +221,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 ],
                 'name' => [
                     'Show Expanse',
-                    'Manage Expanse',
+                    'List Expanse',
                     'Create Expanse',
                     'Edit Expanse',
                     'Delete Expanse'
@@ -226,6 +232,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'permissions' => [
                     'note.show',
                     'note.index',
+                    'note.ownonly',
                     'note.create',
                     'note.edit',
                     'note.delete',
@@ -233,11 +240,12 @@ class RolesAndPermissionsSeeder extends Seeder
                 ],
                 'name' => [
                     'Show Note',
-                    'Manage Note',
+                    'List Note',
+                    'List Own Note',
                     'Create Note',
                     'Edit Note',
                     'Delete Note',
-                    'Manage Note Category'
+                    'Mange Note Category'
                 ]
             ],
             [
@@ -251,7 +259,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 ],
                 'name' => [
                     'Show Method',
-                    'Manage Method',
+                    'List Method',
                     'Create Method',
                     'Edit Method',
                     'Delete Method'
@@ -268,7 +276,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 ],
                 'name' => [
                     'Show Purpose',
-                    'Manage Purpose',
+                    'List Purpose',
                     'Create Purpose',
                     'Edit Purpose',
                     'Delete Purpose'
@@ -278,10 +286,12 @@ class RolesAndPermissionsSeeder extends Seeder
                 'module' => "Transaction",
                 'permissions' => [
                     'transaction.index',
+                    'transaction.own',
                     'transaction.export'
                 ],
                 'name' => [
-                    'Manage Transaction',
+                    'List Transaction',
+                    'List Own Transaction',
                     'Export Transaction',
                 ]
             ],
@@ -302,7 +312,19 @@ class RolesAndPermissionsSeeder extends Seeder
                 'name' => [
                     'Show Old Data',
                 ]
-            ]
+            ],
+
+            [
+                'module' => "Due Transaction",
+                'permissions' => [
+                    'duetrx.index',
+                    'duetrx.own',
+                ],
+                'name' => [
+                    'List Due Transaction',
+                    'List Own Due Transaction',
+                ]
+            ],
         ];
 
         foreach ($all as $item) {
@@ -321,7 +343,12 @@ class RolesAndPermissionsSeeder extends Seeder
             }
         };
 
-        Role::updateOrCreate(['name' => 'Administrator', 'is_delete' => false]);
+        Role::create([
+            'name' => 'Administrator', 'is_delete' => false
+        ],
+            [
+                'name' => 'Customer', 'is_delete' => false
+            ]);
 
 
         User::updateOrCreate([
@@ -349,6 +376,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'password' => bcrypt('creativetechpark'),
         ])->assignRole('Administrator');
 
-
     }
 }
+

@@ -74,7 +74,8 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <a href="https://jugolkumar.com" target="_blank">{{ projects.project.name }}</a>
+                                                <a v-if="projects?.project?.url" :href="projects?.project?.url" target="_blank">{{ projects.project.name }}</a>
+                                                <span v-else>{{ projects.project.name }}</span>
                                             </td>
                                             <th>
                                                 <div class="avatar-group mt-50">
@@ -104,7 +105,7 @@
                                             <td>
                                                 <div class="progress" style="height: 7px;">
                                                     <div role="progressbar"
-                                                         v-c-tooltip="`Project Complate ${projects.project.progress} %`"
+                                                         v-c-tooltip="`Project ${projects.project.status} ${projects.project.progress} %`"
                                                          aria-valuemin="0"
                                                          aria-valuemax="100"
                                                          aria-valuenow="50"
@@ -113,7 +114,7 @@
                                                                 'bg-primary'   : projects.project.status === 'New Project',
                                                                 'bg-warning'   : projects.project.status === 'Testing',
                                                                 'bg-success'   : projects.project.status === 'Complete',
-                                                                'bg-secandery' : projects.project.status === 'Revision',
+                                                                'bg-secondary' : projects.project.status === 'Revision',
                                                                 'bg-danger'    : projects.project.status === 'Canceled',
                                                                 'bg-indego'    : projects.project.status === 'Development',
                                                             }"
@@ -176,14 +177,14 @@
                             <span v-if="errors.name" class="error text-sm text-danger">{{ errors.name }}</span>
                         </div>
                     </div>
-                    <div class="col-md">
-                        <label>Project Domain Name <small>(Optional)</small>:
-                        </label>
-                        <div class="">
-                            <input v-model="createForm.url" type="text" placeholder="project url" class="form-control">
-                            <InputFieldError :errors="errors.url"/>
-                        </div>
-                    </div>
+<!--                    <div class="col-md">-->
+<!--                        <label>Project Domain Name <small>(Optional)</small>:-->
+<!--                        </label>-->
+<!--                        <div class="">-->
+<!--                            <input v-model="createForm.url" type="text" placeholder="project url" class="form-control">-->
+<!--                            <InputFieldError :errors="errors.url"/>-->
+<!--                        </div>-->
+<!--                    </div>-->
                     <div class="col-md">
                         <label>{{ isClient ? 'Invoice' : 'Client' }}: <span class="text-danger">*</span></label>
                         <a href="javascript:void(0)" @click="changeSelect">{{  isClient ? 'Use Clients' : 'Use Invoice' }}</a>
@@ -483,6 +484,6 @@
         min-height: 15rem !important;
     }
     .bg-indego{
-        background: #fdb568;
+        background: #02fa34;
     }
 </style>

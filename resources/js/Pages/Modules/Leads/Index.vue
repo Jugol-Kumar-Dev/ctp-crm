@@ -175,7 +175,7 @@
                                                 'badge-light-indego' : user.status === 'Follow Up',
                                             }">{{ user.status }}
                                             </span>
-                                                <span v-if="user.followUp">
+                                                <span v-if="user.followUp && user.status === 'Follow Up'">
                                                     {{ moment(user.followUp).format('ll') }}
                                                 </span>
                                             </td>

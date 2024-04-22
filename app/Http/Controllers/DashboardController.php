@@ -239,15 +239,14 @@ class DashboardController extends Controller
         if (auth()->user()->hasRole('administrator')) {
             $notes = Note::with(['users','noteCategory'])->get();
         } else {
-            $notes = Note::with(['users','noteCategory'])->where(function($query) {
-                $query->whereHas('users', function($q) {
-                    $q->where('user_id', Auth::id());
-                });
+            $notes = Note::with(['users','noteCategory'])
+             ->where(function ($query) {
+                 $query->whereHas('users', function ($query) {
+                     $query->where('users.id', Auth::id());
+                 });
             })->get();
         }
 
-
-//        return dd(auth()->user()->hasRole('administrator'));
 
 
         $clients = Client::query()

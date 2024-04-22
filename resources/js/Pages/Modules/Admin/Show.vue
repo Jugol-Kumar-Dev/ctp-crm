@@ -126,7 +126,8 @@
     }
 
     const updateProfileImage = () =>{
-        Inertia.post('/admin/user/update-profile-image', {image:uploadImageData.value},{
+
+        Inertia.post('/admin/user/update-profile-image', {image:uploadImageData.value, userId:props.user.id},{
             preserveState: true,
             replace: true,
             onSuccess: page => {

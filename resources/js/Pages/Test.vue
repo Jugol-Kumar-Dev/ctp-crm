@@ -11,6 +11,9 @@
                     <div class="card">
                         <div class="card-body">
                             <h1 class="text-capitalize">Welcome {{ this.$page.props.auth.user.username }}</h1>
+<!--                            <pre>
+                                {{ this.$page.props.auth.user.can }}
+                            </pre>-->
                         </div>
                     </div>
                 </div>
@@ -122,7 +125,7 @@
             </div>
         </div>
 
-        <div class="row" v-if="this.$page.props.auth.user.can.includes('note.employees')
+        <div class="row" v-if="this.$page.props.auth.user.can.includes('note.ownonly')
         || this.$page.props.auth.user.can.includes('note.index') || this.$page.props.auth.user.role.includes('Administrator')">
             <div class="col-md-6">
                 <div class="card bg-white">
@@ -144,7 +147,7 @@
                                 </td>
                                 <td></td>
                                 <td>
-                                    <a :href="`/admin/notes/${note.id}`" class="btn btn-sm btn-default">
+                                    <a :href="`/admin/notes/${note.id}`" class="btn btn-sm btn-default" v-if="this.$page.props.auth.user.role.includes('Administrator') || this.$page.props.auth.user.can.includes('note.show')">
                                         <vue-feather type="eye" size="14"/>
                                     </a>
                                 </td>
@@ -154,7 +157,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6" v-if="props.todos?.leangth">
                 <div class="card bg-white">
                     <div class="card-body">
                         <h2>Active Todos</h2>

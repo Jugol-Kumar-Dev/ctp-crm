@@ -7,12 +7,14 @@ use App\Models\Invoice;
 use App\Models\Quotation;
 use App\Models\Transaction;
 use App\Models\TransactionLine;
+use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Dotenv\Repository\Adapter\ReaderInterface;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\URL;
+use Inertia\Inertia;
 
 class TransactionController extends Controller
 {
@@ -23,15 +25,23 @@ class TransactionController extends Controller
      */
     public function index()
     {
-
-        if (!auth()->user()->can('transaction.index') || auth()->user()->hasRole('administrator')){
-            abort(401);
+        if (!auth()->user()->hasRole('Administrator')){
+            if(!auth()->user()->can('transaction.index') && !auth()->user()->can('transaction.own')){
+                abort(401);
+            }
         }
+
+//        if (!auth()->user()->can('transaction.index') || auth()->user()->hasRole('administrator')){
+//            abort(401);
+//        }
 
 
         $transactions = Transaction::query()
             ->latest()
             ->with(['receivedBy', 'paymentBy', 'method'])
+            ->when(!Auth::user()->hasRole('Administrator') && auth()->user()->can('transaction.own'), function($query){
+                $query->where('received_by', Auth::id());
+            })
             ->when(Request::input('search'), function ($query, $search) {
                 $query->where('id', 'like', "%{$search}%")
                 ->orWherehas('receivedBy', function ($query)use($search){
@@ -50,7 +60,37 @@ class TransactionController extends Controller
                 $endDateTime = Carbon::parse($search[1])->endOfDay();
                 $query->whereBetween('payment_date', [$startDateTime, $endDateTime]);
             })
-            ->latest()
+            ->when(Request::input('employee'), function ($query, $search){
+                $query->whereHas('receivedBy', function ($query)use($search){
+                    $query->where('id', (int)$search);
+                });
+            });
+
+
+
+
+
+
+
+        if(!Auth::user()->hasRole('Administrator') && auth()->user()->can('transaction.own')){
+
+            $creditObj =  clone $transactions;
+            $credited = $creditObj->where('transaction_type', 'Credited')->where('received_by', Auth::id())->sum('pay');
+            $debidedObj = clone $transactions;
+            $debided = $debidedObj->where('transaction_type', 'Debited')->where('received_by', Auth::id())->sum('pay');
+
+//            $credited = Transaction::where('transaction_type', 'Credited')->where('received_by', Auth::id())->sum('pay');
+//            $debided = Transaction::where('transaction_type', 'Debited')->where('received_by', Auth::id())->sum('pay');
+        }else{
+            $creditObj =  clone $transactions;
+            $debided =$creditObj->where('transaction_type', 'Debited')->sum('pay');
+            $debidedObj = clone $transactions;
+            $credited = $debidedObj->where('transaction_type', 'Credited')->sum('pay');
+        }
+
+
+        $creditSum = clone $transactions;
+        $lodedDatas = $transactions->latest()
             ->paginate(Request::input('perPage') ?? 10)
             ->withQueryString()
             ->through(fn($tra) => [
@@ -60,25 +100,22 @@ class TransactionController extends Controller
                 'show_url' => URL::route('expense.show', $tra->id),
             ]);
 
-        if (Request::input('export_pdf') === 'true'){
-            $data = $transactions;
-            $dateRange = Request::input('dateRange');
-            return $this->loadDownload($transactions, Request::input('dateRange'));
-        }
 
+        if (Request::input('export_pdf') === 'true'){
+            return $this->loadDownload($lodedDatas, Request::input('dateRange'));
+        }
 
         if (Request::input('exportPdf') === 'true'){
-            return $this->loadDownload($transactions, Request::input('dateRange'));
+            return $this->loadDownload($lodedDatas, Request::input('dateRange'));
         }
 
 
-        $credited = Transaction::where('transaction_type', 'Credited')->sum('pay');
-        $debided = Transaction::where('transaction_type', 'Debited')->sum('pay');
 
         return inertia('Transaction/Index', [
-            'transactions' => $transactions,
-            'filters'     => Request::only(['search','perPage', 'byStatus', 'dateRange']),
+            'transactions' => $lodedDatas,
+            'filters'     => Request::only(['search','perPage', 'byStatus', 'dateRange', 'employee']),
             "main_url" => Url::route('transaction.index'),
+            'employees' => User::query()->select('name', 'id')->get(),
             "credited" => $credited,
             "debited" => $debided
         ]);
@@ -191,6 +228,68 @@ class TransactionController extends Controller
             'note'       => Request::input('payment_note')
         ]);
         return back();
+    }
+
+
+    public function getDueTransactions()
+    {
+        if (!auth()->user()->hasRole('Administrator')){
+            if(!auth()->user()->can('duetrx.index') && !auth()->user()->can('duetrx.own')){
+                abort(401);
+            }
+        }
+
+        $transactions = Invoice::query()
+            ->with(['client:id,name', 'user:id,name'])
+            ->where('due', '>', 0)
+            ->when(!Auth::user()->hasRole('Administrator') && auth()->user()->can('duetrx.own'), function($query){
+                $query->where('user_id', Auth::id());
+            })
+            ->when(Request::input('search'), function ($query, $search) {
+                $query->where('id', 'like', "%{$search}%")
+                    ->orWherehas('user', function ($query)use($search){
+                        $query->where('name',    'like', "%{$search}%");
+                    })
+                    ->orWherehas('client', function ($query)use($search){
+                        $query->where('name',    'like', "%{$search}%");
+                    });
+            })
+            ->when(Request::input('employee'), function ($query, $search){
+                $query->whereHas('user', function ($query)use($search){
+                    $query->where('id', (int)$search);
+                });
+            })
+            ->when(Request::input('dateRange'), function ($query, $search){
+                $startDateTime = Carbon::parse($search[0])->startOfDay();
+                $endDateTime = Carbon::parse($search[1])->endOfDay();
+                $query->whereBetween('created_at', [$startDateTime, $endDateTime]);
+            })
+            ->select('id', 'invoice_id', 'client_id', 'user_id', 'grand_total', 'pay', 'due', 'created_at')
+            ->latest();
+
+
+
+        $dueObj = clone $transactions;
+        $dueTotal = $dueObj->where('due', '>', 0)->sum('due');
+        $payObj = clone $transactions;
+        $payTotal = $payObj->where('due', '>', 0)->sum('pay');
+        $grandObj = clone $transactions;
+        $grandTotal = $grandObj->where('due', '>', 0)->sum('grand_total');
+
+
+        $passionated = clone $transactions;
+        $allData = $passionated->paginate(Request::input('perPage') ?? 10)
+            ->withQueryString();
+
+        return Inertia::render('DueReport/Index',[
+            'transactions' => $allData,
+            'filters'     => Request::only(['search','perPage', 'byStatus', 'dateRange', 'employee']),
+            'employees' => User::query()->select('name', 'id')->get(),
+            "main_url" => Url::route('dueTransactions'),
+            'dueTotal' => $dueTotal,
+            'payTotal' => $payTotal,
+            'grandTotal' => $grandTotal
+        ]);
     }
 
 

@@ -85,6 +85,7 @@
                                                         <div class="user_name text-truncate text-body">
                                                             <span class="fw-bolder">{{ user.name }}</span>
                                                         </div>
+                                                        <small class="emp_post text-muted">{{ user.phone ?? '' }}</small>
                                                         <small class="emp_post text-muted">{{ user.email }}</small>
                                                     </div>
                                                 </div>
@@ -93,30 +94,57 @@
                                             <td>
                                                 <span v-for="role in user.roles" class="badge bg-primary" style="margin-right: 3px">{{ role }} </span>
                                             </td>
-                                            <td>{{ user.is_active }}</td>
+                                            <td>{{ user.active_on }}</td>
+
                                             <td>
-                                                <div class="demo-inline-spacing">
-                                                    <Link :href="user.show_url"
-                                                          v-if="this.$page.props.auth.user.can.includes('user.show') || this.$page.props.auth.user.role == 'Administrator' "
-                                                          type="button"
-                                                        class="btn btn-icon btn-icon rounded-circle bg-light-primary waves-effect waves-float waves-light">
-                                                        <Icon title="eye" />
-                                                    </Link>
-                                                    <button
-                                                        v-if="this.$page.props.auth.user.can.includes('user.edit') || this.$page.props.auth.user.role == 'Administrator' "
-                                                        type="button"
-                                                        @click="editUser(user.show_url)"
-                                                        class="btn btn-icon btn-icon rounded-circle bg-light-warning waves-effect waves-float waves-light">
-                                                        <Icon title="pencil" />
-                                                    </button>
-                                                    <button @click="deleteItemModal(props.main_url, user.id)"
-                                                            v-if="this.$page.props.auth.user.can.includes('user.delete') || this.$page.props.auth.user.role == 'Administrator' "
-                                                            type="button"
-                                                            class="btn btn-icon btn-icon rounded-circle aves-effect waves-float waves-light bg-light-danger">
-                                                        <Icon title="trash" />
-                                                    </button>
-                                                </div>
+                                                <CDropdown
+                                                    v-if="
+                                                            this.$page.props.auth.user.can.includes('user.show') ||
+                                                            this.$page.props.auth.user.can.includes('user.edit') ||
+                                                            this.$page.props.auth.user.can.includes('user.delete') ||
+                                                            this.$page.props.auth.user.can.includes('user.loginas') ||
+                                                            this.$page.props.auth.user.role.includes('Administrator')
+                                                         ">
+
+                                                    <CDropdownToggle class="p-0">
+                                                        <vue-feather type="more-vertical" />
+                                                    </CDropdownToggle>
+                                                    <CDropdownMenu >
+                                                        <CDropdownItem :href="user.show_url"
+                                                                       v-if="this.$page.props.auth.user.can.includes('user.show') || this.$page.props.auth.user.role.includes('Administrator')">
+                                                            <Icon title="eye" />
+                                                            <span class="ms-1">Show</span>
+                                                        </CDropdownItem>
+
+                                                        <CDropdownItem @click="editUser(user.show_url)"
+                                                                       v-if="this.$page.props.auth.user.can.includes('user.edit') ||
+                                                                       this.$page.props.auth.user.role.includes('Administrator')">
+                                                            <Icon title="pencil" />
+                                                            <span class="ms-1">Edit</span>
+                                                        </CDropdownItem>
+
+                                                        <CDropdownItem @click="deleteItemModal(props.main_url, user.id)"
+                                                                       v-if="this.$page.props.auth.user.can.includes('user.delete') ||
+                                                                       this.$page.props.auth.user.role.includes('Administrator')">
+                                                            <Icon title="trash" />
+                                                            <span class="ms-1">Delete</span>
+                                                        </CDropdownItem>
+
+
+
+                                                        <CDropdownItem
+                                                            class="d-flex align-items-center"
+                                                            @click="loginAs(user)" v-if="(this.$page.props.auth.user.role.includes('Administrator') || this.$page.props.auth.user.can.includes('user.loginas')) && this.$page.props.auth.user?.id !== user?.id && !user.roles.includes('Administrator')">
+                                                            <vue-feather type="log-in" size="15"/>
+                                                            <span class="ms-1">Login As</span>
+                                                        </CDropdownItem>
+
+                                                    </CDropdownMenu>
+                                                </CDropdown>
                                             </td>
+
+
+
                                         </tr>
                                         </tbody>
                                     </table>
@@ -292,6 +320,7 @@
     import Icon from '../../../components/Icon'
     import Modal from '../../../components/Modal'
     import Image from '../../../components/ImageUploader'
+    import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
     import {ref, watch} from "vue";
     import debounce from "lodash/debounce";
     import {Inertia} from "@inertiajs/inertia";
@@ -427,6 +456,22 @@
         })
     };
 
+    const loginAs = (user)=>{
+        console.log(user)
+        if(confirm("Are You Sure? You Want To Login As "+user?.name)){
+            Inertia.post('/login-as', {
+                userId:user?.id
+            }, {
+                onError:errors => {
+                    Swal.fire(
+                        'Oops...',
+                        `${errors[0]}`,
+                        'error'
+                    )
+                }
+            })
+        }
+    }
 
 
 

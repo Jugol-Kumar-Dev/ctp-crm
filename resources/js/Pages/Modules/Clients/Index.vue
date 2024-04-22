@@ -133,7 +133,7 @@
                                                 'bg-pink' : user.status === 'Converted to Customer',
                                             }">{{ user.status }}
                                             </span>
-                                                <span v-if="user.followUp">
+                                                <span v-if="user.followUp && user.status === 'Follow Up'">
                                                     {{ user.followUp }}
                                                 </span>
                                             </td>
@@ -668,8 +668,6 @@
 
     let editClient = (url) => {
         axios.get(url+"?edit=true").then(res => {
-
-            console.log(res.data)
 
             editData.value = res.data;
             updateForm.name = res.data.name;

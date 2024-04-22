@@ -207,13 +207,27 @@ class ClientsController extends Controller
             abort(401);
         }
 
+        if(auth()->user()->hasRole('Administrator') || auth()->user()->can('client.index')){
+            $user = Client::findOrFail($id)->load('users', 'transactions', 'transactions.receivedBy',
+                'invoices', 'invoices.user',
+                'transactions.method',
+                'quotations', 'quotations.user', 'projects',
+                'projects.users', 'createdBy', 'updatedBy');
+        }else{
+            $user = Client::query()
+                ->with('users')
+                ->where(function ($query) use ($id) {
+                    $query->where('id', $id);
+                })
+                ->where(function ($query) {
+                    $query->where('created_by', Auth::id())
+                        ->orWhereHas('users', function ($query) {
+                            $query->where('users.id', Auth::id());
+                        });
+                })
+                ->firstOrFail();
 
-        $user = Client::findOrFail($id)->load('users', 'transactions', 'transactions.receivedBy',
-            'invoices', 'invoices.user',
-            'transactions.method',
-            'quotations', 'quotations.user', 'projects',
-            'projects.users', 'createdBy', 'updatedBy');
-
+        }
 
         if (Request::input('edit')) {
             return $user;
@@ -242,11 +256,11 @@ class ClientsController extends Controller
      */
     public function update(Client $client)
     {
-//        if (!auth()->user()->can('client.edit') || !auth()->user()->can('leads.edit')) {
-//            abort(401 );
-//        }
 
-//        return Request::all();
+        if (auth()->user()->hasRole('administrator')  || !auth()->user()->can('client.edit')) {
+            abort(401 );
+        }
+
 
         if (Request::input('type') == 'assignEmployee') {
             $agents = [];

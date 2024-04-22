@@ -21,13 +21,26 @@ class NoteController extends Controller
     {
 
 
-        if (!auth()->user()->can('note.index') || auth()->user()->hasRole('administrator')){
-            abort(401);
+        if (!auth()->user()->hasRole('Administrator')){
+            $show =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('note.index');
+            $my =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('note.ownonly');
+            if($show && $my){
+                abort(401);
+            }
         }
+
+
         return inertia('Notes/Notes', [
             $search = Request::input('search'),
             'notes' => Note::query()
                 ->with('noteCategory')
+                ->when(!Auth::user()->hasRole('Administrator') && auth()->user()->can('note.ownonly'), function($query){
+                    $query->where(function ($query) {
+                        $query->whereHas('users', function ($query) {
+                                $query->where('users.id', Auth::id());
+                            });
+                    });
+                })
                 ->when(Request::input('search'), function ($query, $search) {
                     $query
                         ->where('title', 'like', "%{$search}%")
@@ -80,6 +93,9 @@ class NoteController extends Controller
             "category" => "required|integer",
             "agents" => "nullable|array"
         ]);
+
+
+
         $note = Note::create([
             'title' => Request::input('title'),
             'note_category_id' => Request::input('category'),
@@ -137,7 +153,7 @@ class NoteController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Note  $note
-     * @return array
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update()
     {
@@ -149,6 +165,8 @@ class NoteController extends Controller
         if (!auth()->user()->can('note.edit')) {
             abort(401 );
         }
+
+
         $note = Note::findOrFail(Request::input('noteId'));
 
         $agents = [];
@@ -159,15 +177,18 @@ class NoteController extends Controller
                 $agents[] = $item["id"];
             }
         }
+
+
         $note->update([
             'title' => Request::input('title'),
-            'note_category_id' => Request::input('category'),
+            'note_category_id' => Request::input('category')["id"] ?? Request::input('category'),
             'notes' => Request::input('notes'),
             'status' => Request::input("status"),
         ]);
 
         $note->users()->sync($agents);
-        return back();
+
+        return redirect()->route('notes.index');
     }
 
     /**

@@ -38,6 +38,7 @@ class AdminController extends Controller
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
+                    'phone' => $user->phone ?? '',
                     'photo' => $user->photo,
                     'active_on' => $user->created_at->format('d M Y'),
                     'roles' => $user->getRoleNames(),
@@ -107,22 +108,20 @@ class AdminController extends Controller
      */
     public function show($id)
     {
-        $show =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('user.show');
-        $edit =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('user.edit');
-        $me   =  auth()->user()->hasRole('administrator')  || Auth::id() != $id;
+        $ifEdit = auth()->user()->can('user.edit') && !empty(Request::input("api"));
 
-
-        if ( $show && $edit && $me){
+        if(auth()->user()->hasRole('Administrator') || auth()->user()->can('user.show') || $ifEdit || Auth::id() == $id){
+            $user = User::findOrFail($id)->load('invoices', 'projects', 'roles');
+            if(Request::input("api")){
+                return $user;
+            }
+            return inertia('Modules/Admin/Show', [
+                "user" => $user,
+            ]);
+        }else{
             abort(401);
         }
 
-        $user = User::findOrFail($id)->load('invoices', 'projects', 'roles');
-        if(Request::input("api")){
-            return $user;
-        }
-        return inertia('Modules/Admin/Show', [
-            "user" => $user,
-        ]);
     }
 
     /**
@@ -134,7 +133,7 @@ class AdminController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if (!auth()->user()->can('user.edit') || auth()->user()->hasRole('administrator')){
+        if (!auth()->user()->can('user.edit') || !auth()->user()->hasRole('Administrator')){
             abort(401);
         }
 
@@ -157,15 +156,28 @@ class AdminController extends Controller
 
     public function uploadProfile(){
 
-        if (!auth()->user()->can('user.edit') || auth()->user()->hasRole('administrator')){
-            abort(401);
-        }
+
+        return Request::all();
+
+//        $show =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('user.show');
+//        $edit =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('user.edit');
+//        $me   =  auth()->user()->hasRole('administrator')  || Auth::id() != Request::input('userId');
+//
+//        if ( $show && $edit && $me){
+//            abort(401);
+//        }
+
+//        if(auth()->user()->hasRole('administrator') || auth()->user()->can('user.edit') || auth()->user()->can('user.show')){
+            $user = User::findOrFail(Request::input('userId'));
+//        }else{
+//            $user = User::findOrFail(Auth::id());
+//        }
 
 
-        $user = User::findOrFail(Auth::id());
-        if(Storage::exists($user->photo)){
+        if(!empty($user->photo) && Storage::exists($user->photo)){
             Storage::delete($user->photo);
         }
+
         $filePath = Request::file('image')->store('images', 'public');
         $user->photo = $filePath;
         $user->save();

@@ -23,13 +23,24 @@ class ExpanceController extends Controller
      */
     public function index()
     {
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('expanse.index')){
-            abort(401);
+//        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('expanse.index')){
+//            abort(401);
+//        }
+
+
+        if (!auth()->user()->hasRole('Administrator')){
+            if(!auth()->user()->can('expanse.index') && !auth()->user()->can('expanse.own')){
+                abort(401);
+            }
         }
+
 
         return inertia('Modules/Expanse/Index', [
             $search = Request::input('search'),
             'expanses' => Expanse::query()->with(['purpse', 'user','method'])
+                ->when(!Auth::user()->hasRole('Administrator') && auth()->user()->can('expanse.own'), function($query){
+                    $query->where('user_id', Auth::id());
+                })
                 ->when(Request::input('search'), function ($query, $search) {
                     $query->where('subject', 'like', "%{$search}%")
                             ->orWherehas('purpse', function ($query)use($search){

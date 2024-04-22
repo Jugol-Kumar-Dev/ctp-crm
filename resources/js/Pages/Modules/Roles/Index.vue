@@ -22,13 +22,12 @@
                                         <li data-bs-toggle="tooltip"
                                             data-popup="tooltip-custom"
                                             data-bs-placement="top"
-                                            title="Vinnie Mostowy"
+                                            :title="user?.name"
                                             class="avatar avatar-sm pull-up"
                                             v-for="user in role.users"
                                         >
                                             <img class="rounded-circle" :src="user.photo" alt="Avatar" />
                                         </li>
-
                                     </ul>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-end mt-1 pt-25">

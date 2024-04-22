@@ -136,16 +136,20 @@ class QuotationController extends Controller
 
 
     public function index(){
-
-
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.index')){
-            abort(401);
+        if (!auth()->user()->hasRole('Administrator')){
+            $show =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('quotation.index');
+            $my =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('quotation.ownonly');
+            if($show && $my){
+                abort(401);
+            }
         }
 
-
-        $quotation  = Quotation::query()
+/*        $quotation  = Quotation::query()
             ->with(['client', 'user', 'invoice'])
             ->latest()
+            ->when(!Auth::user()->hasRole('Administrator') && auth()->user()->can('quotation.ownonly'), function($query){
+                $query->where('created_by', Auth::id());
+            })
             ->when(Request::input('search'), function ($query, $search) {
                 $query->where('subject', 'like', "%{$search}%")
                 ->orWhereHas('client', function ($client) use($search){
@@ -168,8 +172,7 @@ class QuotationController extends Controller
                 $startDateTime = Carbon::parse($search[0])->startOfDay();
                 $endDateTime = Carbon::parse($search[1])->endOfDay();
                 $query->whereBetween('created_at', [$startDateTime, $endDateTime]);
-            })
-            ->paginate(Request::input('perPage') ?? 10)
+            })->paginate(Request::input('perPage') ?? 10)
             ->withQueryString()
             ->through(fn($qot) => [
                 "id"           => $qot->id,
@@ -186,7 +189,72 @@ class QuotationController extends Controller
                 "show_url"     => URL::route('quotations.show', $qot->id),
                 "edit_url"     => URL::route('quotations.edit', $qot->id),
                 "invoice_url"  => URL::route('quotations.quotationInvoice', $qot->id)
-            ]);
+            ]);*/
+
+
+        $quotation = Quotation::query()
+            ->with(['client', 'user', 'invoice'])
+            ->latest()
+            ->when(!Auth::user()->hasRole('Administrator') && auth()->user()->can('quotation.ownonly'), function($query) {
+                $query->where('created_by', Auth::id());
+            })
+            ->when(Request::filled('search'), function ($query) {
+                $search = '%' . Request::input('search') . '%';
+                $query->where(function ($query) use ($search) {
+                    $query->where('subject', 'like', $search)
+                        ->orWhereHas('client', function ($client) use ($search) {
+                            $client->where('name', 'like', $search)
+                                ->orWhere('phone', 'like', $search)
+                                ->orWhere('email', 'like', $search);
+                        })
+                        ->orWhereHas('user', function ($user) use ($search) {
+                            $user->where('name', 'like', $search)
+                                ->orWhere('phone', 'like', $search)
+                                ->orWhere('email', 'like', $search);
+                        });
+                });
+            })
+            ->when(Request::filled('byStatus'), function ($query) {
+                $query->where('status', Request::input('byStatus'));
+            })
+            ->when(Request::filled('dateRange'), function ($query) {
+                $dateRange = Request::input('dateRange');
+                $query->whereBetween('created_at', [
+                    Carbon::parse($dateRange[0])->startOfDay(),
+                    Carbon::parse($dateRange[1])->endOfDay()
+                ]);
+            })
+            ->paginate(Request::input('perPage') ?? 10)
+            ->withQueryString()
+            ->through(function ($qot) {
+                return [
+                    "id" => $qot->id,
+                    "qut_id" => $qot->quotation_id,
+                    "client" => $qot->client,
+                    "user" => $qot->user,
+                    "subject" => $qot->subject,
+                    "status" => $qot->status,
+                    "total_price" => $qot->total_price,
+                    "discount" => $qot->discount,
+                    "grand_total" => $qot->grand_total,
+                    "date" => $qot->qut_date->format('M-d-Y'),
+                    "created_at" => $qot->created_at->format('Y-m-d'),
+                    "show_url" => URL::route('quotations.show', $qot->id),
+                    "edit_url" => URL::route('quotations.edit', $qot->id),
+                    "invoice_url" => URL::route('quotations.quotationInvoice', $qot->id)
+                ];
+            });
+
+
+
+
+
+
+
+
+
+
+
 
         return inertia('Quotation/Index', [
             'quotations'  => $quotation,
@@ -236,7 +304,24 @@ class QuotationController extends Controller
         ])->oldest('position')->get();
 
 
-        $clients   = Client::query()->latest()->get(); //where('is_client', true)
+
+        if(auth()->user()->can('quotation.ownonly')){
+            $clients = Client::query()
+                ->with(['users'])
+                ->where(function ($query) {
+                    $query->where('is_client', true)
+                        ->where('created_by', Auth::id());
+                })
+                ->orWhereHas('users', function ($query) {
+                    $query->where('user_id', Auth::id());
+                })->where('is_client', true)
+                ->latest()->get();
+        }else{
+            $clients = Client::query()->where('is_client', true)
+                ->latest()->get();
+        }
+
+
 
         return inertia('Quotation/Store', [
             'services' => $services,
@@ -578,73 +663,84 @@ class QuotationController extends Controller
 
     public function show($id, $attatchment=false)
     {
+//        if(!auth()->user()->hasRole('Administrator')  || !auth()->user()->can('quotation.show')){
+//            abort(401);
+//        }
 
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.show')){
-            abort(401);
-        }
 
-        $quotation = Quotation::with(['client', 'user:id,name', 'invoice'])->findOrFail($id);
 
-        $pref = [];
-        foreach (json_decode($quotation->items) as $item){
-            if ($item->checkPackages){
-                foreach ($item->checkPackages as $package){
-                    $pref[] =[
-                        'name'=> $package->descriptions,
-                        'qty' => $package->qty,
-                        'price' => $package->price,
-                    ];
+        if(auth()->user()->hasRole('Administrator')  || auth()->user()->can('quotation.show')) {
+
+            $quotation = Quotation::with(['client', 'user:id,name', 'invoice'])->findOrFail($id);
+
+            $pref = [];
+            foreach (json_decode($quotation->items) as $item) {
+                if ($item->checkPackages) {
+                    foreach ($item->checkPackages as $package) {
+                        $pref[] = [
+                            'packageName' => $package->name,
+                            'name' => $package->descriptions,
+                            'qty' => $package->qty,
+                            'price' => $package->price,
+                        ];
+                    }
                 }
-            }
-            if ($item->checkFeatrueds){
-                foreach ($item->checkFeatrueds as $feared){
-                    $pref[] =[
-                        'name'=> $feared->name,
-                        'qty' => $feared->qty,
-                        'price' => $feared->price,
-                    ];
+                if ($item->checkFeatrueds) {
+                    foreach ($item->checkFeatrueds as $feared) {
+                        $pref[] = [
+                            'name' => $feared->name,
+                            'qty' => $feared->qty,
+                            'price' => $feared->price,
+                        ];
+                    }
                 }
-            }
-            if ($item->customItem){
+                if ($item->customItem) {
 //                foreach ($item->customItem as $cItem){
-                    $pref[] =[
-                        'name'=> $item?->customItem->description ?? 'custom_service',
+                    $pref[] = [
+                        'name' => $item?->customItem->description ?? 'custom_service',
                         'qty' => $item?->customItem->qty,
                         'price' => $item?->customItem->price,
                     ];
 //                }
+                }
             }
-        }
 
+            if (!auth()->user()->hasRole('Administrator') && (auth()->user()->can('quotation.ownonly') && $quotation->created_by != Auth::id())) {
+                abort(401);
+            }
 
-        if (Request::input('download')) {
-            $isPrint = false;
-            $pdf = Pdf::loadView('invoice.quotation', compact('quotation', 'pref', 'isPrint'));
+            if (Request::input('download')) {
+                $isPrint = false;
+                $pdf = Pdf::loadView('invoice.quotation', compact('quotation', 'pref', 'isPrint'));
 //            return view('invoice.quotation', compact('quotation', 'pref', 'isPrint'));
-            return $pdf->download($quotation->client->name."_".now()->format('d_m_Y')."_".'quotation.pdf');
-        }
+                return $pdf->download($quotation->client->name . "_" . now()->format('d_m_Y') . "_" . 'quotation.pdf');
+            }
 
-        if ($attatchment){
-            return ['quotation'=> $quotation, 'pref' => $pref];
-        }
+            if ($attatchment) {
+                return ['quotation' => $quotation, 'pref' => $pref];
+            }
 
-        if (Request::input('print')){
-            $isPrint = true;
-            return view('invoice.quotation', compact('quotation', 'pref', 'isPrint'));
-        }
 
-        return Inertia::render('Quotation/Show',   [
-            "quotation" => $quotation,
-            "paymentMethods" => Method::all(),
-            $downloadInvoiceUrl = $quotation->invoice ? URL::route('invoices.downloadInvoice', $quotation->invoice?->id) : null,
-            "url" =>[
-                "show_url" => URL::route('quotations.show', $quotation->id),
-                "edit_url" => URL::route('quotations.edit', $quotation->id),
-                "add_discount" => URL::route('quotations.addDiscount', $quotation->id),
-                "create_invoice" => URL::route('invoices.createInvoice', $quotation->id),
-                "invoice_url" => $downloadInvoiceUrl,
-            ]
-        ]);
+            if (Request::input('print')) {
+                $isPrint = true;
+                return view('invoice.quotation', compact('quotation', 'pref', 'isPrint'));
+            }
+
+            return Inertia::render('Quotation/Show', [
+                "quotation" => $quotation,
+                "paymentMethods" => Method::all(),
+                $downloadInvoiceUrl = $quotation->invoice ? URL::route('invoices.downloadInvoice', $quotation->invoice?->id) : null,
+                "url" => [
+                    "show_url" => URL::route('quotations.show', $quotation->id),
+                    "edit_url" => URL::route('quotations.edit', $quotation->id),
+                    "add_discount" => URL::route('quotations.addDiscount', $quotation->id),
+                    "create_invoice" => URL::route('invoices.createInvoice', $quotation->id),
+                    "invoice_url" => $downloadInvoiceUrl,
+                ]
+            ]);
+        }else{
+            abort(401);
+        }
     }
 
     public function givenDiscount($id){
@@ -890,7 +986,6 @@ class QuotationController extends Controller
         if(Request::input('is_invoice') === 'true'){
             $isQuotation = false;
             $data["invoice"] = $quotation->invoice;
-
         }
 
 
@@ -933,7 +1028,29 @@ class QuotationController extends Controller
 
         $services = Searvice::with(['packages', 'features'])->get();
 
-        $clients = Client::where('is_client', true)->latest()->get();
+//        $clients = Client::where('is_client', true)->latest()->get();
+
+
+        if(auth()->user()->can('quotation.ownonly')){
+            $clients = Client::query()
+                ->with(['users'])
+                ->where(function ($query) {
+                    $query->where('is_client', true)
+                        ->where('created_by', Auth::id());
+                })
+                ->orWhereHas('users', function ($query) {
+                    $query->where('user_id', Auth::id());
+                })->where('is_client', true)
+                ->latest()->get();
+        }else{
+            $clients = Client::query()->where('is_client', true)
+                ->latest()->get();
+        }
+
+
+        if (!auth()->user()->hasRole('Administrator') && (auth()->user()->can('quotation.ownonly') && $quot->created_by != Auth::id())) {
+            abort(401);
+        }
 
         return Inertia::render('Quotation/Edit',   [
             'quotation' => $quot,

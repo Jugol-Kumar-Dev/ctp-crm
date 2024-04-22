@@ -226,16 +226,32 @@ class LeadController extends Controller
 
     public function show($id)
     {
-        if (auth()->user()->hasRole('administrator')  || !auth()->user()->can('leads.show')){
-            abort(404);
+        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('leads.show')){
+            abort(401);
         }
 
-        $user = Client::findOrFail($id)->load('users', 'transactions', 'transactions.receivedBy',
-            'invoices', 'invoices.user',
-            'transactions.method',
-            'quotations', 'quotations.user', 'projects',
-            'projects.users', 'createdBy', 'updatedBy');
 
+
+        if(auth()->user()->hasRole('Administrator') || auth()->user()->can('leads.index')){
+            $user = Client::findOrFail($id)->load('users', 'transactions', 'transactions.receivedBy',
+                'invoices', 'invoices.user',
+                'transactions.method',
+                'quotations', 'quotations.user', 'projects',
+                'projects.users', 'createdBy', 'updatedBy');
+        }else{
+            $user = Client::query()
+                ->with('users')
+                ->where(function ($query) use ($id) {
+                    $query->where('id', $id);
+                })
+                ->where(function ($query) {
+                    $query->where('created_by', Auth::id())
+                        ->orWhereHas('users', function ($query) {
+                            $query->where('users.id', Auth::id());
+                        });
+                })
+                ->firstOrFail();
+        }
 
         if (Request::input('edit')) {
             return $user;
