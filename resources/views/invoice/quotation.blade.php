@@ -175,8 +175,8 @@
         <div class="col-1">
             <div class="to" style="text-align: right">
                 <h3>ID:{{ env('QUT_PREFIX')}}{{ $quotation->quotation_id }}{{ $quotation->id }}</h3>
-                <p>Created on: {{ $quotation->qut_date?->format('y-m-d') }}</p>
-                <p>Valid until: {{ $quotation->due_date?->format('y-m-d') }}</p>
+                <p>Created on: {{ $quotation->qut_date?->format('d-m-Y') }}</p>
+                <p>Valid until: {{ $quotation->due_date?->format('d-m-Y') }}</p>
             </div>
         </div>
     </div>

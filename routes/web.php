@@ -238,25 +238,6 @@ Route::get('/test/edit/{id}', [\App\Http\Controllers\TestController::class, 'edi
 Route::put('/test/update/{id}', [\App\Http\Controllers\TestController::class, 'update'])->name('test.update');
 
 
-//Route::fallback(function() {
-//    return \Inertia\Inertia::render('Pages/Errors/404',[
-//        "info" =>[
-//            'data' => 'somting want wrong...',
-//            'code' => 404
-//        ]
-//    ]);
-//});
-
-
-
-//Route::get('/test-qot', function(){
-//    $bSetting = new BusinessSettingController();
-//    $template = $bSetting->get_setting('quotation_template');
-//
-//    return view('emails.quotation', compact('template'));
-//});
-
-
 Route::get("/test", function(){
     return inertia("ntest");
 });
@@ -265,7 +246,5 @@ Route::get("/test", function(){
 Route::get('/storage',function (){
     Artisan::call('storage:link');
 });
-
-
 
 

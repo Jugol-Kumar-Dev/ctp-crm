@@ -98,26 +98,127 @@ class InvoiceController extends Controller
 
     public function create()
     {
+          if((auth()->user()->can('leads.index') ||
+              auth()->user()->can('leads.ownonly') ||
+              auth()->user()->can('client.index') ||
+              auth()->user()->can('client.ownonly')) && auth()->user()->can('invoice.create'))
+          {
+              if(auth()->user()->hasRole('Administrator') ||
+                  (auth()->user()->can('leads.index') && auth()->user()->can('client.index'))) {
+                  $clients = Client::query()
+                      ->select(['id','name', 'email', 'phone'])
+                      ->latest()->get();
+              }
+              elseif(auth()->user()->can('leads.ownonly') && auth()->user()->can('client.ownonly')){
+                  $clients = Client::query()
+                      ->with(['users'])
+                      ->where(function ($query) {
+                          $query->where('is_client', true)
+                              ->where('created_by', Auth::id());
+                      })
+                      ->orWhereHas('users', function ($query) {
+                          $query->where('user_id', Auth::id());
+                      })
+                      ->latest()
+                      ->get();
+              }
+              elseif(auth()->user()->can('leads.ownonly') && auth()->user()->can('client.index')){
+                  $myLeads = Client::query()
+                      ->with(['users'])
+                      ->where(function ($query) {
+                          $query->where('is_client', false)
+                              ->where('created_by', Auth::id());
+                      })
+                      ->orWhereHas('users', function ($query) {
+                          $query->where('user_id', Auth::id());
+                      })
+                      ->where('is_client', false)
+                      ->select(['id','name', 'email', 'phone'])
+                      ->latest()
+                      ->get();
 
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.create')){
-            abort(401);
-        }
 
-          if(auth()->user()->can('invoice.ownonly')){
-              $clients = Client::query()
-                  ->with(['users'])
-                  ->where(function ($query) {
-                      $query->where('is_client', true)
-                          ->where('created_by', Auth::id());
-                  })
-                  ->orWhereHas('users', function ($query) {
-                      $query->where('user_id', Auth::id());
-                  })->where('is_client', true)
-                  ->latest()->get();
-          }else{
-              $clients = Client::query()->where('is_client', true)
-                  ->latest()->get();
+                  $allCients = Client::query()
+                      ->where('is_client', true)
+                      ->select(['id','name', 'email', 'phone'])
+                      ->latest()
+                      ->get();
+
+                  $clients = [...$myLeads, ...$allCients];
+              }
+              elseif(auth()->user()->can('leads.index') && auth()->user()->can('client.ownonly')){
+                  $myLeads = Client::query()
+                      ->with(['users'])
+                      ->where(function ($query) {
+                          $query->where('is_client', false)
+                              ->where('created_by', Auth::id());
+                      })
+                      ->orWhereHas('users', function ($query) {
+                          $query->where('user_id', Auth::id());
+                      })
+                      ->where('is_client', true)
+                      ->select(['id','name', 'email', 'phone'])
+                      ->latest()
+                      ->get();
+
+
+                  $allCients = Client::query()
+                      ->where('is_client', false)
+                      ->select(['id','name', 'email', 'phone'])
+                      ->latest()
+                      ->get();
+
+                  $clients = [...$myLeads, ...$allCients];
+              }
+              elseif(auth()->user()->can('leads.ownonly')){
+                  $clients = Client::query()
+                      ->with(['users'])
+                      ->where(function ($query) {
+                          $query->where('is_client', false)
+                              ->where('created_by', Auth::id());
+                      })
+                      ->orWhereHas('users', function ($query) {
+                          $query->where('user_id', Auth::id());
+                      })
+                      ->where('is_client', false)
+                      ->select(['id','name', 'email', 'phone'])
+                      ->latest()
+                      ->get();
+              }
+              elseif(auth()->user()->can('client.ownonly')){
+                  $clients = Client::query()
+                      ->with(['users'])
+                      ->where(function ($query) {
+                          $query->where('is_client', true)
+                              ->where('created_by', Auth::id());
+                      })
+                      ->orWhereHas('users', function ($query) {
+                          $query->where('user_id', Auth::id());
+                      })
+                      ->where('is_client', true)
+                      ->select(['id','name', 'email', 'phone'])
+                      ->latest()
+                      ->get();
+              }
+              elseif(auth()->user()->can('client.index')){
+                  $clients = Client::query()
+                      ->where('is_client', true)
+                      ->select(['id','name', 'email', 'phone'])
+                      ->latest()->get();
+              }
+              elseif(auth()->user()->can('leads.index')){
+                  $clients = Client::query()
+                      ->where('is_client', false)
+                      ->select(['id','name', 'email', 'phone'])
+                      ->latest()->get();
+              }
+          } elseif(auth()->user()->can('invoice.create')){
+              $clients = [];
           }
+          else{
+              abort(401);
+          }
+
 
 
 
@@ -184,7 +285,7 @@ class InvoiceController extends Controller
     public function invoiceItemsGenerate($invoice){
 
 
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.show')){
+        if(!auth()->user()->can('invoice.show')){
             abort(401);
         }
 
@@ -236,16 +337,11 @@ class InvoiceController extends Controller
 
     public function show(Invoice $invoice)
     {
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.show')){
-            abort(401);
-        }
-
-        if(auth()->user()->can('invoice.ownonly')){
+        if(!auth()->user()->hasRole('Administrator') && auth()->user()->can('invoice.ownonly')){
             if($invoice->user_id != Auth::id()){
                 abort(401);
             }
         }
-
 
         $invoice = $invoice->load('user', 'client', 'quotation', 'transactions', 'transactions.receivedBy:id,name', 'transactions.method:id,name');
         $pref = $this->invoiceItemsGenerate($invoice);

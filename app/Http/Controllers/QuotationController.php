@@ -305,20 +305,124 @@ class QuotationController extends Controller
 
 
 
-        if(auth()->user()->can('quotation.ownonly')){
-            $clients = Client::query()
-                ->with(['users'])
-                ->where(function ($query) {
-                    $query->where('is_client', true)
-                        ->where('created_by', Auth::id());
-                })
-                ->orWhereHas('users', function ($query) {
-                    $query->where('user_id', Auth::id());
-                })->where('is_client', true)
-                ->latest()->get();
-        }else{
-            $clients = Client::query()->where('is_client', true)
-                ->latest()->get();
+        if((auth()->user()->can('leads.index') ||
+                auth()->user()->can('leads.ownonly') ||
+                auth()->user()->can('client.index') ||
+                auth()->user()->can('client.ownonly')) && auth()->user()->can('quotation.create'))
+        {
+            if(auth()->user()->hasRole('Administrator') ||
+                (auth()->user()->can('leads.index') && auth()->user()->can('client.index'))) {
+                $clients = Client::query()
+                    ->select(['id','name', 'email', 'phone'])
+                    ->latest()->get();
+            }
+            elseif(auth()->user()->can('leads.ownonly') && auth()->user()->can('client.ownonly')){
+                $clients = Client::query()
+                    ->with(['users'])
+                    ->where(function ($query) {
+                        $query->where('created_by', Auth::id());
+                    })
+                    ->orWhereHas('users', function ($query) {
+                        $query->where('user_id', Auth::id());
+                    })
+                    ->latest()
+                    ->get();
+            }
+            elseif(auth()->user()->can('leads.ownonly') && auth()->user()->can('client.index')){
+                $myLeads = Client::query()
+                    ->with(['users'])
+                    ->where(function ($query) {
+                        $query->where('is_client', false)
+                            ->where('created_by', Auth::id());
+                    })
+                    ->orWhereHas('users', function ($query) {
+                        $query->where('user_id', Auth::id());
+                    })
+                    ->where('is_client', false)
+                    ->select(['id','name', 'email', 'phone'])
+                    ->latest()
+                    ->get();
+
+
+                $allCients = Client::query()
+                    ->where('is_client', true)
+                    ->select(['id','name', 'email', 'phone'])
+                    ->latest()
+                    ->get();
+
+                $clients = [...$myLeads, ...$allCients];
+            }
+            elseif(auth()->user()->can('leads.index') && auth()->user()->can('client.ownonly')){
+                $myLeads = Client::query()
+                    ->with(['users'])
+                    ->where(function ($query) {
+                        $query->where('is_client', false)
+                            ->where('created_by', Auth::id());
+                    })
+                    ->orWhereHas('users', function ($query) {
+                        $query->where('user_id', Auth::id());
+                    })
+                    ->where('is_client', true)
+                    ->select(['id','name', 'email', 'phone'])
+                    ->latest()
+                    ->get();
+
+
+                $allCients = Client::query()
+                    ->where('is_client', false)
+                    ->select(['id','name', 'email', 'phone'])
+                    ->latest()
+                    ->get();
+
+                $clients = [...$myLeads, ...$allCients];
+            }
+            elseif(auth()->user()->can('leads.ownonly')){
+                $clients = Client::query()
+                    ->with(['users'])
+                    ->where(function ($query) {
+                        $query->where('is_client', false)
+                            ->where('created_by', Auth::id());
+                    })
+                    ->orWhereHas('users', function ($query) {
+                        $query->where('user_id', Auth::id());
+                    })
+                    ->where('is_client', false)
+                    ->select(['id','name', 'email', 'phone'])
+                    ->latest()
+                    ->get();
+            }
+            elseif(auth()->user()->can('client.ownonly')){
+                $clients = Client::query()
+                    ->with(['users'])
+                    ->where(function ($query) {
+                        $query->where('is_client', true)
+                            ->where('created_by', Auth::id());
+                    })
+                    ->orWhereHas('users', function ($query) {
+                        $query->where('user_id', Auth::id());
+                    })
+                    ->where('is_client', true)
+                    ->select(['id','name', 'email', 'phone'])
+                    ->latest()
+                    ->get();
+            }
+            elseif(auth()->user()->can('client.index')){
+                $clients = Client::query()
+                    ->where('is_client', true)
+                    ->select(['id','name', 'email', 'phone'])
+                    ->latest()->get();
+            }
+            elseif(auth()->user()->can('leads.index')){
+                $clients = Client::query()
+                    ->where('is_client', false)
+                    ->select(['id','name', 'email', 'phone'])
+                    ->latest()->get();
+            }
+        } elseif(auth()->user()->can('quotation.create')){
+            $clients = [];
+        }
+        else{
+            abort(401);
         }
 
 

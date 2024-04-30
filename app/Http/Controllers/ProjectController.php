@@ -35,7 +35,10 @@ class ProjectController extends Controller
         $clients =[];
         $invoices = [];
 
-        if(auth()->user()->can('project.employees')){
+        if((auth()->user()->can('project.employees') ||
+            auth()->user()->can('project.index'))  &&
+            auth()->user()->can('client.ownonly')){
+
             $clients = Client::query()
                 ->with(['users'])
                 ->where(function ($query) {
@@ -45,14 +48,30 @@ class ProjectController extends Controller
                 ->orWhereHas('users', function ($query) {
                     $query->where('user_id', Auth::id());
                 })->where('is_client', true)
+                ->select(['id', 'name', 'email', 'phone'])
                 ->latest()->get();
+        }elseif((auth()->user()->can('project.employees') ||
+            auth()->user()->can('project.index')) &&
+            auth()->user()->can('client.index')){
+
+            $clients = Client::query()->where('is_client', true)
+                ->latest()->get();
+        }else{
+            $clients = [];
+        }
+
+        if((auth()->user()->can('project.employees') ||
+                auth()->user()->can('project.index'))  &&
+                auth()->user()->can('invoice.ownonly')){
 
             $invoices = Invoice::query()->where('user_id', Auth::id())->with(['quotation', 'client'])->get();
 
-        }else{
-            $clients = Client::query()->where('is_client', true)
-                ->latest()->get();
+        }elseif((auth()->user()->can('project.employees') ||
+                auth()->user()->can('project.index')) &&
+                auth()->user()->can('invoice.index')){
             $invoices = Invoice::query()->with(['quotation', 'client'])->get();
+        }else{
+            $invoices = [];
         }
 
 
@@ -210,6 +229,7 @@ class ProjectController extends Controller
     public function show($id)
     {
         if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('project.show')){
+
             abort(401);
         }
 
@@ -224,9 +244,10 @@ class ProjectController extends Controller
 
 
 
-        if(auth()->user()->hasRole('administrator')  || auth()->user()->can('invoice.show')) {
+        if(auth()->user()->hasRole('Administrator')  || auth()->user()->can('invoice.show')) {
             $invObj = new InvoiceController();
             $pref = $invObj->invoiceItemsGenerate($project->invoice);
+
         }
 
 
@@ -242,7 +263,7 @@ class ProjectController extends Controller
 
             $exist = $project->users->where('id', Auth::id())->first();
 
-            if(empty($exist) || $project->user_id == Auth::id()){
+            if(empty($exist) && $project->user_id != Auth::id()){
                 abort(401);
             }
 
