@@ -15,7 +15,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
  */
 class BusinessSetting extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
 
     protected $guarded = ['id'];
@@ -26,5 +26,11 @@ class BusinessSetting extends Model
         return $this->morphMany('App\Models\Gallery', 'imageable');
     }
 
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->useLogName("Settings");
+    }
 
 }

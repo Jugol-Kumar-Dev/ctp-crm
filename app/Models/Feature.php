@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 
 class Feature extends Model
 {
 
-    use SoftDeletes;
+    use SoftDeletes, LogsActivity;
 
     /*
     |--------------------------------------------------------------------------
@@ -47,6 +49,12 @@ class Feature extends Model
         return $this->belongsToMany('App\Models\Quotation', 'feature_quotation');
     }
 
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->useLogName('Features');
+    }
     /*
     |--------------------------------------------------------------------------
     | SCOPES

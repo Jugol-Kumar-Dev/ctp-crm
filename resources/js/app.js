@@ -18,12 +18,14 @@ import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 import al from "@vuepic/vue-datepicker";
 import {moment} from "moment";
+import Prism from "prismjs";
 
 import { createToaster } from "@meforma/vue-toaster";
+import { PrismEditor } from 'vue-prism-editor';
+import 'vue-prism-editor/dist/prismeditor.min.css'; // import the styles
 
-
-
-
+import VueTelInput from 'vue-tel-input';
+import 'vue-tel-input/vue-tel-input.css';
 
 window.$toast = createToaster({
     position: 'bottom'
@@ -51,6 +53,8 @@ createInertiaApp({
       .use(CKEditor)
         .use(createPinia())
         .use(moment)
+        .use(Prism)
+        .use(VueTelInput)
       .component("Link", Link)
       .component("Head", Head)
       .component(VueFeather.name, VueFeather)

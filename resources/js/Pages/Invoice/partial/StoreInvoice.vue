@@ -50,6 +50,7 @@
                                                                             </div>-->
                             </div>
                         </div>
+                        <input type="text" v-model="formData.subject" class="form-control mt-2 mb-1" style="margin-bottom:-20px" placeholder="e.g Subject...">
                     </div>
                     <!-- Header ends -->
 
@@ -409,6 +410,7 @@ const formData = useForm({
     clientId:null,
     date:null,
     note:null,
+    subject:null,
     paymentPolicy:servicePolicy.getPaymentPolicy,
     servicePolicy:servicePolicy.getTramsAndCondition,
     payemtnPolicy:servicePolicy.getPaymentMethods,

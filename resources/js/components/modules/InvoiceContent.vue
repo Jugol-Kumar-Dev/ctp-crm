@@ -32,6 +32,7 @@
                         </div>
                     </div>
                 </div>
+                <h3 v-if="props.invoice?.subject">Subject: {{ props.invoice?.subject }}</h3>
             </div>
             <!-- Header ends -->
 

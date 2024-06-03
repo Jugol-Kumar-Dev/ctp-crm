@@ -86,7 +86,7 @@
                                                        class="checkbox-padding form-check-input">
                                             </th>
                                             <th class="sorting" style="width:7%">Client</th>
-                                            <th class="sorting">Assigned</th>
+                                            <th class="sorting" width="15%">Assigned</th>
                                             <th class="sorting">Status</th>
 <!--                                            <th class="sorting">Created At</th>-->
                                             <th class="sorting">Created By</th>
@@ -106,7 +106,8 @@
                                                         <div class="avatar  me-1">
                                                             <img
                                                                 :src="user.photo"
-                                                                alt="{{ user.username }}" height="32" width="32">
+                                                                @error="(event) => event.target.src = `https://ui-avatars.com/api/?background=random&color=fff&name=${user.name}`"
+                                                                alt="{{ user.name }}" height="32" width="32">
                                                         </div>
                                                     </div>
                                                     <div class="d-flex flex-column">
@@ -130,7 +131,7 @@
                                                 'badge-light-danger' : user.status === 'Disqualified',
                                                 'badge-light-warning' : user.status === 'Follow Up',
                                                 'bg-purple' : user.status === 'New Lead',
-                                                'bg-pink' : user.status === 'Converted to Customer',
+                                                'bg-light-primary' : user.status?.toLowerCase() === 'Converted to Customer'?.toLowerCase(),
                                             }">{{ user.status }}
                                             </span>
                                                 <span v-if="user.followUp && user.status === 'Follow Up'">
@@ -149,6 +150,13 @@
                                                         <vue-feather type="more-vertical" />
                                                     </CDropdownToggle>
                                                     <CDropdownMenu>
+                                                        <CDropdownItem  @click="editClient(user.show_url, 'onlyStatus')"   v-if="this.$page.props.auth.user.can.includes('client.edit') || this.$page.props.auth.user.role.includes('Administrator')">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+                                                                <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9"/>
+                                                                <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/>
+                                                            </svg>
+                                                            <span class="ms-1">Change Status</span>
+                                                        </CDropdownItem>
                                                         <CDropdownItem  @click="editClient(user.show_url)"   v-if="this.$page.props.auth.user.can.includes('client.edit') || this.$page.props.auth.user.role.includes('Administrator')">
                                                             <Icon title="pencil" />
                                                             <span class="ms-1">Edit</span>
@@ -422,7 +430,6 @@
         </form>
     </Modal>
 
-
     <Modal id="updateBulkStatus" title="Bulk Status" v-vb-is:modal size="sm">
         <form @submit.prevent="updateBulkStatusSubmit">
             <div class="modal-body">
@@ -520,6 +527,59 @@
             </div>
         </form>
     </Modal>
+
+    <Modal id="changeOnlyStatus" title="Change Status" v-vb-is:modal size="sm">
+        <form @submit.prevent="updateClientForm(editData.id)">
+            <div class="modal-body">
+                <div class="row mb-1" :class="{'d-none' : !followUp}">
+                    <div class="col-md">
+                        <label>Follow Up Date:
+                            <Required/>
+                        </label>
+                        <div class="single-datepiker">
+                            <Datepicker v-model="updateForm.followDate" :monthChangeOnScroll="false"
+                                        :format="'d-MM-Y'"
+                                        placeholder="Select Date" autoApply></Datepicker>
+                            <span v-if="errors.followDate" class="error text-sm text-danger">{{
+                                    errors.followDate
+                                }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-1" :class="{'d-none' : !followUp}">
+                    <div class="col-md">
+                        <textarea class="form-control" v-model="updateForm.followMessage" rows="5"
+                                  placeholder="Follow up message..."></textarea>
+                        <span v-if="errors.followMessage" class="error text-sm text-danger">{{ errors.followMessage }}</span>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div :class="clientStatus ? 'col-md-12' : 'col-md'">
+                        <label>Lead Status <span class="text-danger">*</span></label>
+                        <v-select v-model="updateForm.status"
+                                  @update:modelValue="changeStatus"
+                                  label="name"
+                                  class="form-control select-padding"
+                                  :options="status"
+                                  :reduce="item => item.name"
+                                  placeholder="Select Lead Status">
+                        </v-select>
+                        <span v-if="errors.status" class="error text-sm text-danger">{{ errors.status }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button :disabled="updateForm.processing" type="submit"
+                        class="btn btn-primary waves-effect waves-float waves-light">Save
+                </button>
+                <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                        aria-label="Close">Cancel
+                </button>
+            </div>
+        </form>
+    </Modal>
+
 
 </template>
 
@@ -656,6 +716,7 @@
             },
             onSuccess: () => {
                 document.getElementById('editClient').$vb.modal.hide()
+                document.getElementById('changeOnlyStatus').$vb.modal.hide();
                 createForm.reset()
                 Swal.fire(
                     'Saved!',
@@ -666,7 +727,7 @@
         })
     }
 
-    let editClient = (url) => {
+    let editClient = (url, type) => {
         axios.get(url+"?edit=true").then(res => {
 
             editData.value = res.data;
@@ -681,7 +742,11 @@
             updateForm.status = res.data.status;
             updateForm.agents = res.data.users;
 
-            document.getElementById('editClient').$vb.modal.show();
+            if(type === 'onlyStatus'){
+                document.getElementById('changeOnlyStatus').$vb.modal.show();
+            }else{
+                document.getElementById('editClient').$vb.modal.show();
+            }
         }).catch(err => {
             console.log(err);
         });

@@ -4,10 +4,12 @@ namespace App\Models;
 
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Method extends Model
 {
-
+    use LogsActivity;
 
     /*
     |--------------------------------------------------------------------------
@@ -22,6 +24,14 @@ class Method extends Model
     // protected $fillable = [];
     // protected $hidden = [];
     // protected $dates = [];
+
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->useLogName('Payment Method');
+    }
 
     /*
     |--------------------------------------------------------------------------

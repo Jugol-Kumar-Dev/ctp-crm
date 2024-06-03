@@ -24524,3 +24524,7 @@ div.dataTables_wrapper .dataTables_info {
   color: white;
   cursor: pointer;
 }
+
+.vti__dropdown-list {
+  z-index: 5 !important;
+}

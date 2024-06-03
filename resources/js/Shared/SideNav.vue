@@ -347,6 +347,15 @@
                     </li>
 -->
 
+                    <li class="nav-item">
+                        <Link preserve-scroll class="d-flex align-items-center"
+                              href="/admin/activity-logs"
+                              v-if="this.$page.props.auth.user.can.includes('settings.activity_log') || this.$page.props.auth.user.role.includes('Administrator')">
+                            <vue-feather type="file-text" />
+                            <span class="menu-title text-truncate" data-i18n="Chat">Activity Log</span>
+                        </Link>
+                    </li>
+
 
 
 

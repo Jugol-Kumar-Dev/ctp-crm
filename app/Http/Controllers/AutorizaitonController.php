@@ -66,7 +66,6 @@ class AutorizaitonController extends Controller
             abort(401);
         }
 
-
         Request::validate([
            'roleName' => 'required|unique:roles,name',
            'selectedPermissions' => 'required'
@@ -124,7 +123,6 @@ class AutorizaitonController extends Controller
             abort(401);
         }
 
-
         Request::validate([
             "roleName" => ['required', Rule::unique('roles', 'name')->ignore($id)],
             'selectedPermissions' => 'required'
@@ -147,11 +145,9 @@ class AutorizaitonController extends Controller
      */
     public function destroy($id)
     {
-
         if (!auth()->user()->can('authorization.delete') || auth()->user()->hasRole('administrator')){
             abort(401);
         }
-
 
         $role = Role::findById($id);
         $role->delete();

@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Quotation extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
+
 
     protected $guarded = ['id'];
 
@@ -24,6 +27,14 @@ class Quotation extends Model
     public function invoice(){
         return $this->hasOne(Invoice::class, 'quotation_id');
     }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->useLogName('Quotation');
+    }
+
 
 
 

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -19,12 +21,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
-    use  HasRoles;
+    use  HasRoles, LogsActivity;
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
+
 
     protected $guarded = ['id'];
 
@@ -95,6 +98,13 @@ class User extends Authenticatable
         return $this->hasMany(Expanse::class);
     }
 
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('User')
+            ->logOnly(['name', 'email', 'text']);
+    }
 
 
 }

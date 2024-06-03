@@ -9,10 +9,11 @@
       <link rel="icon" href="{{ asset('/') }}fav/cropped-FAV-192x192.png" sizes="192x192" />
       <link rel="apple-touch-icon" href="{{ asset('/') }}fav/cropped-FAV-180x180.png" />
 
-    <link href="{{ mix('/css/app.css') }}" rel="stylesheet" crossorigin="anonymous"/>
-
-    <script src="{{ mix('/js/app.js') }}" defer crossorigin="anonymous"></script>
+      <link href="{{ mix('/css/app.css') }}" rel="stylesheet" crossorigin="anonymous"/>
+      <script src="{{ mix('/js/app.js') }}" defer crossorigin="anonymous"></script>
       <script src="{{ asset("/js/vendors.min.js?v=".time()) }}" crossorigin="anonymous"></script>
+      <script src="{{ asset('/js/json.js') }}" crossorigin="anonymous"></script>
+
       @inertiaHead
   </head>
   <body>

@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * @method static findOrFail(int $id)
@@ -14,6 +16,7 @@ class Client extends Model
 {
 
 
+    use LogsActivity;
     /*
     |--------------------------------------------------------------------------
     | GLOBAL VARIABLES
@@ -120,4 +123,10 @@ class Client extends Model
     | MUTATORS
     |--------------------------------------------------------------------------
     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->useLogName($this->is_client == 0 ?  'Lead' : 'Client');
+    }
 }

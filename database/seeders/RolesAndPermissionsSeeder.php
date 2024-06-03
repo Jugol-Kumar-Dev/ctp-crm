@@ -313,6 +313,15 @@ class RolesAndPermissionsSeeder extends Seeder
                     'Show Old Data',
                 ]
             ],
+            [
+                'module' => "Activity Log",
+                'permissions' => [
+                    'settings.activity_log'
+                ],
+                'name' => [
+                    'Show Old Data',
+                ]
+            ],
 
             [
                 'module' => "Due Transaction",

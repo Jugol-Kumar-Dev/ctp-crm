@@ -221,6 +221,8 @@
 
 /*! !!../../../css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./main.css */
 
+/*! !!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./ActivityLog.vue?vue&type=style&index=0&id=7e3a201c&lang=css */
+
 /*! !!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Switch.vue?vue&type=style&index=0&id=65ccab5f&scoped=true&lang=css */
 
 /*! !!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Test.vue?vue&type=style&index=0&id=430422bb&scoped=true&lang=css */
@@ -713,6 +715,8 @@
 
 /*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./TodoLayout.vue?vue&type=style&index=0&id=0b062580&lang=css */
 
+/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./ActivityLog.vue?vue&type=script&setup=true&lang=js */
+
 /*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DarkToggle.vue?vue&type=script&setup=true&lang=js */
 
 /*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Icon.vue?vue&type=script&setup=true&lang=js */
@@ -754,6 +758,8 @@
 /*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./ViewLink.vue?vue&type=script&setup=true&lang=js */
 
 /*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./ntest.vue?vue&type=script&setup=true&lang=js */
+
+/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./ActivityLog.vue?vue&type=template&id=7e3a201c */
 
 /*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DarkToggle.vue?vue&type=template&id=129f0e15 */
 
@@ -798,6 +804,8 @@
 /*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./ViewLink.vue?vue&type=template&id=4fb0622a */
 
 /*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./ntest.vue?vue&type=template&id=6012be47 */
+
+/*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./ActivityLog.vue?vue&type=style&index=0&id=7e3a201c&lang=css */
 
 /*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Switch.vue?vue&type=style&index=0&id=65ccab5f&scoped=true&lang=css */
 
@@ -1036,6 +1044,8 @@
 /*! ../chartConfig.js */
 
 /*! ../components/DarkToggle */
+
+/*! ../components/Pagination.vue */
 
 /*! ../components/ProgressChart.vue */
 
@@ -1344,6 +1354,12 @@
 /*! ./Action.vue?vue&type=script&setup=true&lang=js */
 
 /*! ./Action.vue?vue&type=template&id=069eb9e7 */
+
+/*! ./ActivityLog.vue?vue&type=script&setup=true&lang=js */
+
+/*! ./ActivityLog.vue?vue&type=style&index=0&id=7e3a201c&lang=css */
+
+/*! ./ActivityLog.vue?vue&type=template&id=7e3a201c */
 
 /*! ./Admin.vue?vue&type=script&setup=true&lang=js */
 
@@ -3594,6 +3610,10 @@
   \********************************************/
 
 /*!********************************************!*\
+  !*** ./resources/js/Pages/ActivityLog.vue ***!
+  \********************************************/
+
+/*!********************************************!*\
   !*** ./resources/js/Pages/Notes/Notes.vue ***!
   \********************************************/
 
@@ -5762,6 +5782,10 @@
   \**************************************************************************/
 
 /*!**************************************************************************!*\
+  !*** ./resources/js/Pages/ActivityLog.vue?vue&type=template&id=7e3a201c ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
   !*** ./resources/js/Pages/Modules/Dashboard.vue?vue&type=script&lang=js ***!
   \**************************************************************************/
 
@@ -6007,6 +6031,10 @@
 
 /*!*******************************************************************************!*\
   !*** ./node_modules/v-tooltip/node_modules/vue-resize/dist/vue-resize.esm.js ***!
+  \*******************************************************************************/
+
+/*!*******************************************************************************!*\
+  !*** ./resources/js/Pages/ActivityLog.vue?vue&type=script&setup=true&lang=js ***!
   \*******************************************************************************/
 
 /*!*******************************************************************************!*\
@@ -6579,6 +6607,10 @@
 
 /*!****************************************************************************************!*\
   !*** ./node_modules/@inertiajs/inertia/node_modules/axios/lib/helpers/parseHeaders.js ***!
+  \****************************************************************************************/
+
+/*!****************************************************************************************!*\
+  !*** ./resources/js/Pages/ActivityLog.vue?vue&type=style&index=0&id=7e3a201c&lang=css ***!
   \****************************************************************************************/
 
 /*!****************************************************************************************!*\
@@ -7338,6 +7370,10 @@
   \**********************************************************************************************************************************************************************************************************/
 
 /*!***********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/Pages/ActivityLog.vue?vue&type=script&setup=true&lang=js ***!
+  \***********************************************************************************************************************************************************************************************************/
+
+/*!***********************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/Pages/Notes/Notes.vue?vue&type=script&setup=true&lang=js ***!
   \***********************************************************************************************************************************************************************************************************/
 
@@ -7810,6 +7846,10 @@
   \***************************************************************************************************************************************************************************************************************************************************************************/
 
 /*!****************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/Pages/ActivityLog.vue?vue&type=template&id=7e3a201c ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!****************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/Pages/Notes/Notes.vue?vue&type=template&id=dd6d558c ***!
   \****************************************************************************************************************************************************************************************************************************************************************************/
 
@@ -8270,6 +8310,10 @@
   \************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 
 /*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/Pages/ActivityLog.vue?vue&type=style&index=0&id=7e3a201c&lang=css ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/Pages/Notes/Notes.vue?vue&type=style&index=0&id=dd6d558c&lang=css ***!
   \*************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 
@@ -8476,6 +8520,10 @@
 /*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/Pages/Notes/Show.vue?vue&type=style&index=0&id=6820cad8&lang=css ***!
   \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/Pages/ActivityLog.vue?vue&type=style&index=0&id=7e3a201c&lang=css ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 
 /*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/Pages/Notes/Notes.vue?vue&type=style&index=0&id=dd6d558c&lang=css ***!

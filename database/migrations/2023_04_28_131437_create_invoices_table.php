@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('quotation_id')->nullable();
             $table->foreignId('client_id')->nullable()->constrained('clients')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('user_id')->constrained('users');
+            $table->string('subject')->nullable();
             $table->enum('invoice_type', ['quotation', 'custom'])->default('custom');
             $table->integer('total_price')->nullable();
             $table->integer('discount')->default(0);

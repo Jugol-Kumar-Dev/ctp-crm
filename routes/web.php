@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AutorizaitonController;
 use App\Http\Controllers\ChatController;
@@ -164,21 +165,12 @@ Route::prefix('admin')->group(function(){
         Route::post('project/update-attachment/{id}', [ProjectController::class, 'updateProjectAttachment'])->name('projects.updateProjectAttachment');
 
         Route::get('project/download-attachment/{path?}', function(){
-//            return request()->all();
-
-
-
             $path = request()->input('path');
-
-//            return $path;
-//            return \Illuminate\Support\Facades\Storage::download($path, 'file.png');
-
             if(!empty($path) && $path != 'null'){
                 return \Illuminate\Support\Facades\Storage::disk('public')->download($path);
                 return \Illuminate\Support\Facades\Storage::disk('public')->download(request()->input('path'));
             }
             return back();
-
         });
 
 
@@ -221,21 +213,26 @@ Route::prefix('admin')->group(function(){
 
         Route::get('/all-policy-settings', [BusinessSettingController::class, 'getAllPolicy']);
 
+
+        // activity log management
+        Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('log.index');
     });
 
     Route::post('/logout', [LoginController::class, 'destroy']);
 });
 
 Route::get('/qut-email', [TestController::class, 'testEmail']);
-
 Route::get('invoice-show/{id}',  [QuotationController::class, 'createInvoice']);
-
 
 
 Route::get('/test', [\App\Http\Controllers\TestController::class, 'index'])->name('test.index');
 Route::post('/test/create', [\App\Http\Controllers\TestController::class, 'create'])->name('test.create');
 Route::get('/test/edit/{id}', [\App\Http\Controllers\TestController::class, 'edit'])->name('test.edit');
 Route::put('/test/update/{id}', [\App\Http\Controllers\TestController::class, 'update'])->name('test.update');
+
+
+// check unique lead customer number exising
+Route::get('/check-phone-unique', [ClientsController::class, 'checkNumberUnique']);
 
 
 Route::get("/test", function(){
@@ -246,5 +243,4 @@ Route::get("/test", function(){
 Route::get('/storage',function (){
     Artisan::call('storage:link');
 });
-
 

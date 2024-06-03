@@ -133,6 +133,16 @@ class ClientsController extends Controller
 
     }
 
+
+
+    public function checkNumberUnique()
+    {
+        $phone = Request::query('phone');
+
+        $exists = Client::where('phone', $phone)->exists();
+
+        return response()->json(['unique' => !$exists]);
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -157,8 +167,8 @@ class ClientsController extends Controller
             "name" => ['nullable'],
             "email" => ['nullable', 'email'],
             "secondary_email" => ['nullable', 'email'],
-            "phone" => ['required'],
-            "secondary_phone" => ['nullable'],
+            "phone" => ['required', 'unique:clients'],
+//            "secondary_phone" => ['nullale', 'unique:clients'],
             "company" => ['nullable'],
             "address" => ['nullable', 'max:150'],
             "note" => ['nullable'],
@@ -274,6 +284,18 @@ class ClientsController extends Controller
                 }
             }
             $client->users()->sync($agents);
+
+
+            activity("Lead")
+                ->event('Assigned Employee')
+                ->performedOn($client)
+                ->causedBy(auth()->user())
+                ->withProperties([
+                    'customer' => $client
+                ])
+                ->log("Assigned Employees To $client");
+
+
             return back();
         }
 
@@ -305,7 +327,7 @@ class ClientsController extends Controller
 
             $client->users()->sync($agents);
             return back();
-        } else {
+        }else {
             $data = Request::validate([
                 "name" => ['nullable'],
                 "email" => ['nullable', 'email'],
@@ -319,23 +341,24 @@ class ClientsController extends Controller
                 "agents" => ['nullable']
             ]);
 
-
             if (is_array(Request::input('status'))) {
                 $data['status'] = Request::input('status')["name"];
             } else {
                 $data['status'] = Request::input('status');
             }
 
-            if ($data['status'] == 'Converted to Customer') {
+
+            if ($data['status'] == 'Converted To Customer') {
                 $data['is_client'] = true;
+            }else{
+                if (Request::input('isClient')) {
+                    $client->is_client = true;
+                } else {
+                    $client->is_client = false;
+                }
             }
-
-
-            if (Request::input('isClient')) {
-                $client->is_client = true;
-            } else {
-                $client->is_client = false;
-            }
+            // Convarted To Customer
+            // Converted to Customer
 
             $agents = [];
             if (Request::input('agents') != null) {
@@ -351,7 +374,6 @@ class ClientsController extends Controller
             $data['follow_up'] = null;
             $data['updated_by'] = Auth::id();
 
-//            return $data;
 
             $client->update($data);
             $client->users()->sync($agents);
@@ -415,11 +437,23 @@ class ClientsController extends Controller
     public function setFollowUp()
     {
         $customer = Client::findOrFail(Request::input('clientId'));
+        $oldStatus = $customer->status;
         $customer->follow_up = Request::input('followDate');
         $customer->follow_up_message = Request::input('message');
         $customer->status = 'Follow Up';
         $customer->updated_by = Auth::id();
         $customer->save();
+
+
+        activity("Lead")
+            ->event('Lead Status Update')
+            ->performedOn($customer)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'customer' => $customer
+            ])
+            ->log("Change Lead Status $oldStatus To $customer->status");
+
         return back();
     }
 

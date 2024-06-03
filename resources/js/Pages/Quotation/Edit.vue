@@ -162,7 +162,7 @@
 
                                         <div v-if="formData.items[index].activeTab === 'package'" v-for="(packs, k) in formData.items[index].checkPackages">
                                             <div class="border position-relative">
-                                                <textarea class="form-control rounded-0" rows="5">{{ packs?.descriptions }}</textarea>
+                                                <textarea class="form-control rounded-0" rows="5" v-model="formData.items[index].checkPackages[k].descriptions"/>
                                                 <vue-feather type="x" class="packDelete" size="15" @click="packItemRemove(index, k)"/>
                                             </div>
                                             <div class="d-flex gap-2 my-1 align-items-center">
@@ -566,10 +566,6 @@
 
         formData.items = allItems;
     })
-
-
-
-
 </script>
 
 

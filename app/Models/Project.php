@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 
 /**
@@ -14,6 +16,7 @@ use Illuminate\Support\Facades\Storage;
 class Project extends Model
 {
 
+    use LogsActivity;
 
     /*
     |--------------------------------------------------------------------------
@@ -88,6 +91,15 @@ class Project extends Model
     public function invoice(){
         return $this->belongsTo(Invoice::class, 'invoice_id');
     }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->useLogName('Project');
+    }
+
+
     /*
     |--------------------------------------------------------------------------
     | SCOPES

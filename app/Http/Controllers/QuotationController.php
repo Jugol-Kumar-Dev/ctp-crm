@@ -14,6 +14,7 @@ use App\Models\Platform;
 use App\Models\Quotation;
 use App\Models\Searvice;
 use App\Models\Transaction;
+use App\Models\User;
 use App\Models\Website;
 use App\Models\Work;
 
@@ -509,7 +510,15 @@ class QuotationController extends Controller
         ]);
 
         if (Request::input('sendMail')){
+
             if ($quotation->client->email){
+                activity('Quotation')
+                    ->event('Mail Sent')
+                    ->performedOn($quotation)
+                    ->causedBy(auth()->user())
+                    ->withProperties([
+                        'Email Send' => $quotation->client->email
+                    ])->log("Email Sent to {$quotation->client->name}");
                 Mail::to($quotation->client->email)->send(new QuotationMail($quotation->client));
             }
         }
@@ -654,10 +663,6 @@ class QuotationController extends Controller
 
 
 
-
-
-
-
 //        return Request::all();
         Request::validate([
             'client_id' => "required",
@@ -685,10 +690,6 @@ class QuotationController extends Controller
             'date'             => Request::input('date'),
             'status'           => filled(Request::input('status')),
         ]);
-
-
-
-
 
         $works = Request::input('woarks');
         $workdata = [];
@@ -767,12 +768,6 @@ class QuotationController extends Controller
 
     public function show($id, $attatchment=false)
     {
-//        if(!auth()->user()->hasRole('Administrator')  || !auth()->user()->can('quotation.show')){
-//            abort(401);
-//        }
-
-
-
         if(auth()->user()->hasRole('Administrator')  || auth()->user()->can('quotation.show')) {
 
             $quotation = Quotation::with(['client', 'user:id,name', 'invoice'])->findOrFail($id);
@@ -817,6 +812,18 @@ class QuotationController extends Controller
                 $isPrint = false;
                 $pdf = Pdf::loadView('invoice.quotation', compact('quotation', 'pref', 'isPrint'));
 //            return view('invoice.quotation', compact('quotation', 'pref', 'isPrint'));
+
+                $name =auth()->user()->name;
+
+                activity('Quotation')
+                    ->event('Download')
+                    ->performedOn($quotation)
+                    ->causedBy(auth()->user())
+                    ->withProperties([
+                        'Quotation' => $quotation
+                    ])->log("Quotation Download By $name");
+
+
                 return $pdf->download($quotation->client->name . "_" . now()->format('d_m_Y') . "_" . 'quotation.pdf');
             }
 
@@ -826,6 +833,14 @@ class QuotationController extends Controller
 
 
             if (Request::input('print')) {
+                activity('Quotation')
+                    ->event('Print')
+                    ->performedOn($quotation)
+                    ->causedBy(auth()->user())
+                    ->withProperties([
+                        'Quotation Printed' => $quotation,
+                    ])->log("Quotation Printed");
+
                 $isPrint = true;
                 return view('invoice.quotation', compact('quotation', 'pref', 'isPrint'));
             }
@@ -872,9 +887,15 @@ class QuotationController extends Controller
             ]);
         }
 
-
-
         $quotation->save();
+//        activity('Quotation')
+//            ->event('Discount')
+//            ->performedOn($quotation)
+//            ->causedBy(auth()->user())
+//            ->withProperties([
+//                'Quotation Printed' => $quotation,
+//            ])->log("Given Discounted");
+
         return back();
     }
 
@@ -1092,15 +1113,19 @@ class QuotationController extends Controller
             $data["invoice"] = $quotation->invoice;
         }
 
-
+        activity('Quotation')
+            ->event('Mail Sent')
+            ->performedOn($quotation)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'From Quotation' => $quotation,
+                'To Invoice' => $quotation->invoice
+            ])->log("Invoice Created {$quotation->client->name}");
 
         return view('invoice.quotation', compact('data', 'isQuotation'));
-        exit();
 
         $pdf = Pdf::loadView('invoice.quotation', compact('data', 'isQuotation'));
         return $pdf->download($data["quotation_owner"]["client"]["name"]."_".now()->format('d_m_Y')."_".'quotation.pdf');
-
-
     }
 
 
@@ -1418,6 +1443,20 @@ class QuotationController extends Controller
                 $quotaiton->update(['status' => $status]);
             }
         }
+
+
+
+        activity('Invoice')
+            ->event('Quotation Converted To Invoice')
+            ->performedOn($quotaiton)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'invoice' => $quotaiton?->invoice,
+                'transaction' => $quotaiton
+            ])->log("Quotation To Invoice Created. Invoice id: {$quotaiton?->invoice?->invoice_id} & Quotation Id: {$quotaiton?->quotation_id}");
+
+
+
         return back();
     }
 
@@ -1436,7 +1475,7 @@ class QuotationController extends Controller
         $quotation = Quotation::with(['invoice','client'])->findOrFail(Request::input('quotation_id'));
         $invoice = Invoice::where('quotation_id',$quotation->id)->first();
         $totalPay = Request::input('pay_amount')+Request::input('discount');
-        Transaction::create([
+        $transaction = Transaction::create([
             'u_id'       => date('Yd', strtotime(now())),
             'transaction_model' => 'App\\Models\\Invoice',
             'transaction_model_id' => $invoice->id,
@@ -1465,6 +1504,14 @@ class QuotationController extends Controller
             'due' => $tk
         ]);
 
+        activity('Transaction')
+            ->event('Transaction Crated.....')
+            ->performedOn($quotation->invoice)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'invoice' => $invoice,
+                'transaction' => $transaction
+            ])->log("Transaction Created... Invoice id: $invoice->invoice_id & Transaction Id: $transaction->transaction_id");
 
         return back();
     }
@@ -1474,8 +1521,6 @@ class QuotationController extends Controller
         if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.edit')){
             abort(401);
         }
-
-
 
         Request::validate([
             'email' => 'required|email'
@@ -1490,6 +1535,23 @@ class QuotationController extends Controller
 //                $message->attachData($pdf->output(), 'myfile.pdf');
 //            });
             Mail::to($email)->send(new QuotationMail($data['quotation'], $data['pref']));
+
+            activity("Quotation")
+                ->event('Mail Sent')
+                ->performedOn($data['quotation'])
+                ->causedBy(auth()->user())
+                ->withProperties([
+               'Email Send' => $email
+            ])->log("Email Sent");
+
+
+//            activity()
+//                ->performedOn($anEloquentModel)
+//                ->causedBy($user)
+//                ->withProperties(['customProperty' => 'customValue'])
+//                ->log('Look mum, I logged something');
+
+
             return redirect()->back()->with([
                 'message' => 'Email Send Success...'
             ]);

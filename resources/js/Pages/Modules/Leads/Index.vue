@@ -14,7 +14,7 @@
                                 <div class="card-header border-bottom d-flex justify-content-between">
                                     <h4 class="card-title">Lead Information's </h4>
                                     <button
-                                        v-if="this.$page.props.auth.user.can.includes('leads.create') || this.$page.props.auth.user.role.includes('Administrator')"
+                                        v-if="$page.props.auth.user.can.includes('leads.create') || $page.props.auth.user.role.includes('Administrator')"
                                         class="dt-button add-new btn btn-primary"
                                         @click="addDataModal"
                                     >
@@ -124,10 +124,10 @@
                                             </td>
 
 
-                                            <td v-if=" this.$page.props.auth.user.role.includes('Administrator') ||
-                                            this.$page.props.auth.user.can.includes('leads.edit') ||
-                                            this.$page.props.auth.user.can.includes('leads.delete') ||
-                                            this.$page.props.auth.user.can.includes('leads.show')" class="cursor-pointer" @click="singleShowlead(user)">
+                                            <td v-if=" $page.props.auth.user.role.includes('Administrator') ||
+                                            $page.props.auth.user.can.includes('leads.edit') ||
+                                            $page.props.auth.user.can.includes('leads.delete') ||
+                                            $page.props.auth.user.can.includes('leads.show')" class="cursor-pointer" @click="singleShowlead(user)">
                                                 <div class="d-flex align-items-center gap-1 user-info">
                                                     <div class="icon">
                                                         <vue-feather type="more-vertical"/>
@@ -183,26 +183,41 @@
                                             <td>{{ user.createdBy?.name ?? '---' }}</td>
                                             <td>{{ user.updatedBy?.name ?? '---' }}</td>
                                             <td>
-                                                <CDropdown v-if="this.$page.props.auth.user.can.includes('leads.edit') ||
-                                                this.$page.props.auth.user.can.includes('leads.show') ||
-                                                this.$page.props.auth.user.can.includes('leads.delete') ||
-                                                this.$page.props.auth.user.role == 'Administrator'">
+                                                <CDropdown v-if="$page.props.auth.user.can.includes('leads.edit') ||
+                                                $page.props.auth.user.can.includes('leads.show') ||
+                                                $page.props.auth.user.can.includes('leads.delete') ||
+                                                $page.props.auth.user.role == 'Administrator'">
                                                     <CDropdownToggle>
                                                         <vue-feather type="more-vertical"/>
                                                     </CDropdownToggle>
                                                     <CDropdownMenu>
+                                                        <CDropdownItem @click="editClient(user.show_url, 'changeOnlyStatus')"
+                                                                       v-if="$page.props.auth.user.can.includes('leads.edit') || $page.props.auth.user.role == 'Administrator'">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+                                                                <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9"/>
+                                                                <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/>
+                                                            </svg>                                                            <span class="ms-1">Change Status</span>
+                                                        </CDropdownItem>
                                                         <CDropdownItem @click="editClient(user.show_url)"
-                                                                       v-if="this.$page.props.auth.user.can.includes('leads.edit') || this.$page.props.auth.user.role == 'Administrator'">
+                                                                       v-if="$page.props.auth.user.can.includes('leads.edit') || $page.props.auth.user.role == 'Administrator'">
                                                             <Icon title="pencil"/>
                                                             <span class="ms-1">Edit</span>
                                                         </CDropdownItem>
                                                         <CDropdownItem :href="`/admin/show-lead/${user.id}`"
-                                                                       v-if="this.$page.props.auth.user.can.includes('leads.show') || this.$page.props.auth.user.role.includes('Administrator')">
+                                                                       v-if="$page.props.auth.user.can.includes('leads.show') || $page.props.auth.user.role.includes('Administrator')">
                                                             <Icon title="eye"/>
                                                             <span class="ms-1">Show</span>
                                                         </CDropdownItem>
+
+                                                        <CDropdownItem @click="editClient(user.show_url, 'convertToCm')"
+                                                                       v-if="$page.props.auth.user.can.includes('leads.edit') || $page.props.auth.user.role == 'Administrator'">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right-circle" viewBox="0 0 16 16">
+                                                                <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
+                                                            </svg>
+                                                            <span class="ms-1">Convert To Client</span>
+                                                        </CDropdownItem>
                                                         <CDropdownItem @click="deleteItemModal(user.id)" type="button"
-                                                                       v-if="this.$page.props.auth.user.can.includes('leads.delete') || this.$page.props.auth.user.role == 'Administrator' ">
+                                                                       v-if="$page.props.auth.user.can.includes('leads.delete') || $page.props.auth.user.role == 'Administrator' ">
                                                             <Icon title="trash"/>
                                                             <span class="ms-1">Delete</span>
                                                         </CDropdownItem>
@@ -226,11 +241,9 @@
         </div>
     </div>
 
-
-    <Modal
-        v-if="this.$page.props.auth.user.can.includes('leads.create') || this.$page.props.auth.user.role.includes('Administrator')"
+    <Modal v-if="$page.props.auth.user.can.includes('leads.create') || $page.props.auth.user.role.includes('Administrator')"
         id="addItemModal" :title="clientStatus ?  'Add New Lead' : 'Convert To New Client'" v-vb-is:modal
-        :size="clientStatus ? 'sm' : 'lg'">
+        :size="clientStatus ? 'md' : 'lg'">
         <form @submit.prevent="createClientForm">
             <div class="modal-body">
                 <div class="row mb-1">
@@ -267,27 +280,25 @@
                     </div>
                 </div>
                 <div class="row mb-1">
-                    <div class="col-md">
-                        <label>Phone: <span class="text-danger">*</span></label>
-                        <input v-model="createForm.phone" type="text" placeholder="+88017********" class="form-control">
+                    <div class="col-md-12">
+                        <label>Phone <span class="text-danger">*</span></label>
+                        <PhoneInput v-model="createForm.phone"/>
                         <span v-if="errors.phone" class="error text-sm text-danger">{{ errors.phone }}</span>
                     </div>
-                    <div class="col-md" :class="{ 'd-none' : clientStatus }">
-                        <label>Secondary Phone: </label>
-                        <input v-model="createForm.secondary_phone" type="text" placeholder="+88017********"
-                               class="form-control">
-                        <span v-if="errors.secondary_phone"
-                              class="error text-sm text-danger">{{ errors.secondary_phone }}</span>
-                    </div>
+<!--                    <div class="col-md-12 mt-2">-->
+<!--                        <label>Secondary Phone</label>-->
+<!--                        <PhoneInput v-model="createForm.secondary_phone"/>-->
+<!--                        <span v-if="errors.secondary_phone" class="error text-sm text-danger">{{ errors.secondary_phone }}</span>-->
+<!--                    </div>-->
                 </div>
                 <div class="row mb-1" :class="{ 'd-none' : clientStatus }">
-                    <div class="col-md">
+                    <div class="col-md-12">
                         <label>Address: </label>
                         <textarea v-model="createForm.address" type="text" placeholder="Enter Full Address" rows="5"
                                   class="form-control"></textarea>
                         <span v-if="errors.name" class="error text-sm text-danger">{{ errors.address }}</span>
                     </div>
-                    <div class="col-md">
+                    <div class="col-md-12">
                         <label>Nots: </label>
                         <textarea v-model="createForm.note" type="text" placeholder="Enter note messages" rows="5"
                                   class="form-control"></textarea>
@@ -305,7 +316,6 @@
                                   placeholder="Select Lead Status">
                         </v-select>
                         <span v-if="errors.status" class="error text-sm text-danger">{{ errors.status }}</span>
-
                     </div>
 
                     <div class="mt-1" :class="clientStatus ? 'col-md-12' : 'col-md'">
@@ -475,22 +485,22 @@
                     </div>
                 </div>
                 <div class="d-flex gap-1">
-                    <a :href="`/admin/show-lead/${singleLeadShow.id}`" v-if="this.$page.props.auth.user.can.includes('leads.show') ||
-                    this.$page.props.auth.user.role.includes('Administrator')"
+                    <a :href="`/admin/show-lead/${singleLeadShow.id}`" v-if="$page.props.auth.user.can.includes('leads.show') ||
+                    $page.props.auth.user.role.includes('Administrator')"
                        class="btn btn-sm btn-success btn-icon d-flex align-items-center">
                         <vue-feather type="eye" size="18"/>
                         <span>Show</span>
                     </a>
                     <button class="btn btn-sm btn-primary d-flex align-items-center"
-                            v-if=" this.$page.props.auth.user.role.includes('Administrator') ||
-                                            this.$page.props.auth.user.can.includes('leads.edit')"
+                            v-if=" $page.props.auth.user.role.includes('Administrator') ||
+                                            $page.props.auth.user.can.includes('leads.edit')"
                             @click="editClient(singleLeadShow.show_url)">
                         <vue-feather type="edit" size="18"/>
                         <span>Edit</span>
                     </button>
                     <button class="btn btn-sm btn-danger btn-icon d-flex align-items-center"
-                            v-if=" this.$page.props.auth.user.role.includes('Administrator') ||
-                                            this.$page.props.auth.user.can.includes('leads.delete')"
+                            v-if=" $page.props.auth.user.role.includes('Administrator') ||
+                                            $page.props.auth.user.can.includes('leads.delete')"
                             @click="deleteItemModal(singleLeadShow.id)">
                         <vue-feather type="trash" size="18"/>
                         <span>Delete</span>
@@ -644,6 +654,61 @@
         </form>
     </Modal>
 
+
+    <Modal id="changeOnlyStatus" title="Change Status" v-vb-is:modal size="sm">
+        <form @submit.prevent="updateClientForm(editData.id)">
+            <div class="modal-body">
+                <div class="row mb-1" :class="{'d-none' : !followUp}">
+                    <div class="col-md">
+                        <label>Follow Up Date:
+                            <Required/>
+                        </label>
+                        <div class="single-datepiker">
+                            <Datepicker v-model="updateForm.followDate" :monthChangeOnScroll="false"
+                                        :format="'d-MM-Y'"
+                                        placeholder="Select Date" autoApply></Datepicker>
+                            <span v-if="errors.followDate" class="error text-sm text-danger">{{
+                                    errors.followDate
+                                }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-1" :class="{'d-none' : !followUp}">
+                    <div class="col-md">
+                        <textarea class="form-control" v-model="updateForm.followMessage" rows="5"
+                                  placeholder="Follow up message..."></textarea>
+                        <span v-if="errors.followMessage" class="error text-sm text-danger">{{ errors.followMessage }}</span>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div :class="clientStatus ? 'col-md-12' : 'col-md'">
+                        <label>Lead Status <span class="text-danger">*</span></label>
+                        <v-select v-model="updateForm.status"
+                                  @update:modelValue="changeStatus"
+                                  label="name"
+                                  class="form-control select-padding"
+                                  :options="status"
+                                  :reduce="item => item.name"
+                                  placeholder="Select Lead Status">
+                        </v-select>
+                        <span v-if="errors.status" class="error text-sm text-danger">{{ errors.status }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button :disabled="updateForm.processing" type="submit"
+                        class="btn btn-primary waves-effect waves-float waves-light">Save
+                </button>
+                <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                        aria-label="Close">Cancel
+                </button>
+            </div>
+        </form>
+    </Modal>
+
+
+
 </template>
 
 
@@ -657,13 +722,15 @@ import {Inertia} from "@inertiajs/inertia";
 import Swal from 'sweetalert2'
 import {useForm} from "@inertiajs/inertia-vue3";
 import axios from 'axios';
-import DropdownItems from "../../../components/modules/DropdownItems"
 import moment from "moment";
-
 import {CDropdown, CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
 import {useDate} from "../../../composables/useDate";
-
+import intlTelInput from "intl-tel-input";
+import "intl-tel-input/build/css/intlTelInput.min.css"
+import PhoneInput from "../../../components/PhoneInput.vue";
 const range = useDate();
+
+
 
 let props = defineProps({
     clients: Object,
@@ -764,6 +831,8 @@ let addDataModal = () => {
     clientStatus.value = true;
     document.getElementById('addItemModal').$vb.modal.show()
 }
+const numberError = ref('')
+
 let createClientForm = () => {
     Inertia.post('clients', createForm, {
         preserveState: true,
@@ -796,6 +865,8 @@ let updateClientForm = (id) => {
         },
         onSuccess: () => {
             document.getElementById('editClient').$vb.modal.hide()
+            document.getElementById('changeOnlyStatus').$vb.modal.hide();
+
             createForm.reset()
             Swal.fire(
                 'Saved!',
@@ -806,15 +877,9 @@ let updateClientForm = (id) => {
     })
 }
 
-let editClient = (url) => {
-
-    status.value = [
-        {"name": 'New Lead'}, {"name": 'Contacted'}, {"name": 'Qualified'}, {"name": 'Disqualified'}, {"name": 'Follow Up'}, {"name": 'Converted to Customer'}
-    ]
-
+let editClient = (url, changeStatus) => {
 
     axios.get(url + "?edit=true").then(res => {
-        console.log(res.data)
         editData.value = res.data;
         updateForm.name = res.data.name;
         updateForm.email = res.data.email;
@@ -826,7 +891,7 @@ let editClient = (url) => {
         updateForm.note = res.data.note;
         updateForm.status = res.data.status;
         updateForm.agents = res.data.users;
-        clientStatus.value = res.data.status !== 'Convarted To Customer'
+        clientStatus.value = res.data.status !== 'Converted To Customer'
 
 
         followUp.value = res.data.status === 'Follow Up' ? true : false;
@@ -834,8 +899,26 @@ let editClient = (url) => {
         updateForm.followDate = res.data.follow_up;
         updateForm.followMessage = res.data.follow_up_message;
 
+        if(changeStatus === 'changeOnlyStatus'){
+            status.value = [
+                {"name": 'New Lead'}, {"name": 'Contacted'}, {"name": 'Qualified'}, {"name": 'Disqualified'}, {"name": 'Follow Up'}
+            ]
+            document.getElementById('changeOnlyStatus').$vb.modal.show();
+        }else if(changeStatus === 'convertToCm'){
+            status.value = [
+                {"name": 'New Lead'}, {"name": 'Contacted'}, {"name": 'Qualified'}, {"name": 'Disqualified'}, {"name": 'Follow Up'}, {"name": 'Converted to Customer'}
+            ]
+            updateForm.status = 'Converted To Customer'
+            clientStatus.value = false
+            document.getElementById('editClient').$vb.modal.show();
+        }
+        else{
+            status.value = [
+                {"name": 'New Lead'}, {"name": 'Contacted'}, {"name": 'Qualified'}, {"name": 'Disqualified'}, {"name": 'Follow Up'}, {"name": 'Converted to Customer'}
+            ]
+            document.getElementById('editClient').$vb.modal.show();
+        }
 
-        document.getElementById('editClient').$vb.modal.show();
     }).catch(err => {
         console.log(err);
     });
@@ -954,34 +1037,6 @@ const singleShowlead = (user) => {
 const isReset = computed(() => {
     return !!props.filters?.perPage || props.filters?.byStatus || props.filters?.dateRange;
 })
-
-//
-// const dateRange = ref([]);
-// const formattedDate = computed(() => {
-//     if (dateRange.value.length === 2) {
-//         const startDate = new Date(dateRange.value[0]);
-//         const endDate = new Date(dateRange.value[1]);
-//
-//         const formattedStartDate = formatDate(startDate);
-//         const formattedEndDate = formatDate(endDate);
-//
-//         return `${formattedStartDate} - ${formattedEndDate}`;
-//     }
-//
-//     return '';
-// });
-//
-// const handleDate = () => {
-//     // Handle date changes if needed
-// };
-//
-// const formatDate = (date) => {
-//     const year = date.getFullYear();
-//     const month = (date.getMonth() + 1).toString().padStart(2, '0');
-//     const day = date.getDate().toString().padStart(2, '0');
-//     return `${year}-${month}-${day}`;
-// };
-//
 
 
 </script>

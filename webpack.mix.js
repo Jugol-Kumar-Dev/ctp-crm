@@ -30,9 +30,9 @@ mix.webpackConfig({
     stats: {
         children: false
    },
-    optimization: {
-        minimize: true, // Enable minification
-    }
+    // optimization: {
+    //     minimize: true, // Enable minification
+    // }
 }).disableNotifications();
 
 

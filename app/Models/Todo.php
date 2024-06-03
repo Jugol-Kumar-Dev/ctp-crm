@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * @method static create(array $array)
@@ -11,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Todo extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
 
     protected $guarded = ['id'];
@@ -25,5 +27,12 @@ class Todo extends Model
         return $this->hasMany(Todo::class, 'todo_id');
     }
 
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->useLogName('Todo');
+    }
 
 }

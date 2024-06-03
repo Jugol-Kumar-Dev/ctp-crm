@@ -50,6 +50,7 @@
                                                                             </div>-->
                             </div>
                         </div>
+                        <input type="text" v-model="formData.subject" class="form-control mt-2 mb-1" style="margin-bottom:-20px" placeholder="e.g Subject...">
                     </div>
                     <!-- Header ends -->
 
@@ -405,6 +406,7 @@ const formData = useForm({
     clientId:props.invoice.client,
     date:props.invoice.created_at,
     note:props.invoice.note,
+    subject:props.invoice?.subject,
     paymentPolicy:props.invoice.payment_policy ?? policyStore.getPaymentPolicy,
     servicePolicy:props.invoice.trams_of_service ?? policyStore.getServicePolicy,
     payemtnPolicy:props.invoice.payment_methods ?? policyStore.getPaymentMethods,
