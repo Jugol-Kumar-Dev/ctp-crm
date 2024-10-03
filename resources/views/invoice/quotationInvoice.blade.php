@@ -338,7 +338,7 @@
             @if (!is_null($invoice?->payment_methods ?? $invoice?->quotation?->payment_methods))
                 <h3>Payment Mehod:</h3>
                 {!! nl2br($invoice?->payment_methods ?? $invoice?->quotation?->payment_methods) !!}
-                <h3>Direct Payment Bill Online at <a href="https://creativetechpark.com/pay" target="_blank">https://creativetechpark.com/pay</a></h3>
+                <h3>Direct Payment Bill Online at <a href="https://creativetechpark.com/pay" >https://creativetechpark.com/pay</a></h3>
             @endif
         </div>
     </div>

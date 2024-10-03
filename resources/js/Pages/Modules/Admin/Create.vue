@@ -329,8 +329,8 @@
 
 </script>
 <script setup>
-    import {useForm} from "@inertiajs/inertia-vue3";
-    import {Inertia} from "@inertiajs/inertia";
+    import {useForm} from "@inertiajs/vue3";
+    import {router} from "@inertiajs/vue3";
     import {defineProps} from "@vue/runtime-core";
 
 
@@ -346,7 +346,7 @@
     });
 
     let submit = () =>{
-        Inertia.post("/users", form,{
+        router.post("/users", form,{
             onSuccess:  () =>{
                 alert('Data Save Successfully done.');
             },

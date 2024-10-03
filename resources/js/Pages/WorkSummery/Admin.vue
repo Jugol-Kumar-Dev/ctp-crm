@@ -83,10 +83,10 @@
 
 
 <script setup>
-import Pagination from "../../components/Pagination"
-import Modal from '../../components/Modal'
-import {useForm} from "@inertiajs/inertia-vue3";
-import {Inertia} from "@inertiajs/inertia";
+import Pagination from "@/components/Pagination.vue";
+import Modal from "@/components/Modal.vue";
+import {useForm} from "@inertiajs/vue3";
+import {router} from "@inertiajs/vue3";
 import Swal from "sweetalert2";
 import moment from "moment";
 let props = defineProps({
@@ -104,7 +104,7 @@ const fromData = useForm({
 const addWorkSummery = () => document.getElementById('addWorkSummery').$vb.modal.show()
 
 let saveTodaySummery = () => {
-    Inertia.post('/admin/work-summery/save', fromData, {
+    router.post('/admin/work-summery/save', fromData, {
         preserveState: true,
         onStart: () => {
             fromData.processing = true

@@ -19,6 +19,5 @@ export function useDate(date = null){
 
 
 
-
     return { formatted, ranges }
 }

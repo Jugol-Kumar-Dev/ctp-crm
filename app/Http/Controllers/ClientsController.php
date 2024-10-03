@@ -75,6 +75,20 @@ class ClientsController extends Controller
                     $query->where('is_client', true)
                         ->where('created_by', Auth::id());
                 })
+                ->when(Request::input('search'), function ($query, $search) {
+                    $query
+                        ->where('email', 'like', "%{$search}%")
+                        ->orWhere('name', 'like', "%{$search}%")
+                        ->orWhere('company', 'like', "%{$search}%")
+                        ->orWhere('secondary_email', 'like', "%{$search}%")
+                        ->orWhere('secondary_phone', 'like', "%{$search}%")
+                        ->orWhere('address', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhereHas('projects', function ($developer) use($search){
+                            $developer->where('name', 'like', "%{$search}%")
+                                ->orWhere('description', 'like', "%{$search}");
+                        });
+                })
                 ->orWhereHas('users', function ($query) {
                     $query->where('user_id', Auth::id());
                 })

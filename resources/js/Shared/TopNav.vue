@@ -156,7 +156,7 @@
                     </div>
 
 
-                    <a v-if="showData?.downloadUrl" :href="showData?.downloadUrl" target="_blank" v-c-tooltip="'View Or Download This File.'">
+                    <a v-if="showData?.downloadUrl" :href="showData?.downloadUrl"  v-c-tooltip="'View Or Download This File.'">
                         <img :src="showData?.downloadUrl" alt="" class="mb-1" style="max-width: 100%;">
                         {{ $page.props.auth?.ADMIN_URL+''+showData?.downloadUrl }}
                     </a>
@@ -171,11 +171,10 @@
 </template>
 
 <script setup>
-import DarkToggle from "../components/DarkToggle";
+import DarkToggle from "@/components/DarkToggle.vue";
 import {ref} from "vue";
-import axios from "axios";
 import moment from "moment";
-import {Inertia} from "@inertiajs/inertia";
+import { router } from '@inertiajs/vue3'
 
 const props = defineProps({
   toggleVerticalMenuActive: {
@@ -192,7 +191,8 @@ const openNotefication = () => {
     isopen.value = !isopen.value
 };
 const showItem = (id, noti_id)=>{
-    Inertia.get(`/admin/todos/${id}?show_data=true&notification_id=${noti_id}`);
+    router.get
+    router.get(`/admin/todos/${id}?show_data=true&notification_id=${noti_id}`);
 }
 
 

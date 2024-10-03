@@ -48,13 +48,13 @@
                                                             :monthChangeOnScroll="false"
                                                             placeholder="Select Quotation Date"
                                                             :enable-time-picker="false"
-                                                            :format="'d-MM-Y'"
+                                                            :format="'dd-MM-Y'"
                                                             autoApply></Datepicker>
 
                                                 <Datepicker v-model="formData.due_date"
                                                             :monthChangeOnScroll="false"
                                                             :enable-time-picker="false"
-                                                            :format="'d-MM-Y'"
+                                                            :format="'dd-MM-Y'"
                                                             placeholder="Select Quotation Due Date"
                                                             autoApply></Datepicker>
                                             </div>
@@ -471,7 +471,7 @@ import {ref, computed,onMounted  } from "vue";
 import {useQuotationStore} from "../../../Store/useQuotationStore";
 import Fuse from "fuse.js";
 import {usePolicyStore} from "../../../Store/usePolicyStore";
-import {useForm} from "@inertiajs/inertia-vue3";
+import {useForm} from "@inertiajs/vue3";
 import Modal from "../../../components/Modal.vue";
 import {storeToRefs} from "pinia";
 

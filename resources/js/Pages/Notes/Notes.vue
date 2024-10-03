@@ -90,7 +90,7 @@
                                                                     <Icon title="pencil" />
                                                                         <span class="ms-1">Edit</span>
                                                                     </CDropdownItem>
-                                                                    <CDropdownItem :href="item.show_url" target="_blank"
+                                                                    <CDropdownItem :href="item.show_url"
                                                                                    v-if="this.$page.props.auth.user.can.includes('note.show') ||
                                                                                    this.$page.props.auth.user.role.includes('Administrator') ">
                                                                     <Icon title="eye" />
@@ -221,19 +221,20 @@
 
 
 <script setup>
-    import Pagination from "../../components/Pagination"
-    import Icon from '../../components/Icon'
-    import Modal from '../../components/Modal'
+    import Pagination from "@/components/Pagination.vue";
+    import Icon from "@/components/Icon.vue";
+    import Modal from "@/components/Modal.vue";
     import {ref, watch} from "vue";
     import debounce from "lodash/debounce";
-    import {Inertia} from "@inertiajs/inertia";
+    import {router} from "@inertiajs/vue3";
     import Swal from 'sweetalert2'
-    import {useForm} from "@inertiajs/inertia-vue3";
+    import {useForm} from "@inertiajs/vue3";
     import axios from 'axios';
     import {useDate} from "../../composables/useDate";
     const range = useDate();
     import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
-    import TextEditor from "../../components/TextEditor";
+    import TextEditor from "@/components/TextEditor";
+
 
     let props = defineProps({
         notes: Object | null,
@@ -267,7 +268,7 @@
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                Inertia.delete(props.main_url + `/${id}`, {
+                router.delete(props.main_url + `/${id}`, {
                     preserveState: true, replace: true, onSuccess: page => {
                         Swal.fire(
                             'Deleted!',
@@ -288,7 +289,7 @@
     };
 
     let createNote = () => {
-        Inertia.post(props.main_url, createForm, {
+        router.post(props.main_url, createForm, {
             preserveState: true,
             onStart: () => {
                 createForm.processing = true
@@ -314,7 +315,7 @@
     let search = ref(props.filters.search);
     let perPage = ref(props.filters.perPage);
     watch([search, perPage], debounce(function ([val, val2]) {
-        Inertia.get(props.main_url, { search: val, perPage: val2}, { preserveState: true, replace: true });
+        router.get(props.main_url, { search: val, perPage: val2}, { preserveState: true, replace: true });
     }, 300));
 
 </script>

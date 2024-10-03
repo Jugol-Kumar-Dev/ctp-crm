@@ -79,7 +79,7 @@ export default {
 </script>
 
 <script setup>
-import { useForm } from '@inertiajs/inertia-vue3';
+import { useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue'
 
 const passwordFieldType = ref('password')

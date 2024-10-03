@@ -267,11 +267,11 @@
 </template>
 
 <script setup>
-import Image from '../../components/ImageUploader.vue'
-import Modal from '../../components/Modal.vue'
+import Image from "@/components/ImageUploader.vue";
+import Modal from "@/components/Modal.vue";
 import Layout from "../../Shared/Layout.vue";
 import Swal from 'sweetalert2'
-import { usePage, useForm } from '@inertiajs/inertia-vue3'
+import { usePage, useForm } from '@inertiajs/vue3'
 import {computed, ref} from "vue"
 
 const APP_URL = usePage().props.value.ADMIN_URL;

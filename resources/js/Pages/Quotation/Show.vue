@@ -174,7 +174,7 @@
                                             data-bs-target="#createInvoice">
                                         Generate Invoices
                                     </button>
-                                    <a :href="props.url.invoice_url" v-else target="_blank" class="btn btn-success w-100 mb-75">
+                                    <a :href="props.url.invoice_url" v-else  class="btn btn-success w-100 mb-75">
                                         Get Invoices
                                     </a>
                                 </div>
@@ -417,9 +417,9 @@
 <script setup>
     import moment from "moment";
     import {computed, ref} from "vue";
-    import {useForm} from "@inertiajs/inertia-vue3";
+    import {useForm} from "@inertiajs/vue3";
     import Swal from "sweetalert2";
-    import {Inertia} from "@inertiajs/inertia";
+    import {router} from "@inertiajs/vue3";
 
     const props = defineProps({
         quotation:Object|[]|null,
@@ -549,7 +549,7 @@
     }
 
     const emailSendApiCall =()=>{
-        Inertia.post(`/admin/send-quotation-email/${props.quotation.id}`, {email:customerEmail.value}, {
+        router.post(`/admin/send-quotation-email/${props.quotation.id}`, {email:customerEmail.value}, {
             preserveState: true,
             onStart: () =>{ processing.value = true},
             onFinish: () => {processing.value = false},

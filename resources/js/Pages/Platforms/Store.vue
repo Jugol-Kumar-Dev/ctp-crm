@@ -76,9 +76,9 @@
 </template>
 
 <script setup>
-    import {useForm} from "@inertiajs/inertia-vue3";
+    import {useForm} from "@inertiajs/vue3";
     import {ref} from "vue";
-    import {Inertia} from "@inertiajs/inertia";
+    import {router} from "@inertiajs/vue3";
 
     const props = defineProps({
         main_url:String,
@@ -104,7 +104,7 @@
 
     const processing= ref(false)
     const savePlatform = () =>{
-        Inertia.post(props.main_url,formData,{
+        router.post(props.main_url,formData,{
             preserveState: true,
             onStart: () =>{ processing.value = true},
             onFinish: () => {processing.value = false},

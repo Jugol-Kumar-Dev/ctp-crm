@@ -15,6 +15,10 @@ const props = defineProps({
     id: {
         type: String,
         default: 'phone',
+    },
+    add:{
+        type:Boolean,
+        default: true
     }
 });
 
@@ -40,28 +44,34 @@ onMounted(() => {
 const validatePhoneNumber = async () => {
     if (phoneInput.value.value?.trim()) {
         if (iti.value.isValidNumber()) {
-            try {
-                const response = await axios.get('/check-phone-unique', {
-                    params: {phone: iti.value.getNumber()}
-                });
+            if(props.add){
+                try {
+                    const response = await axios.get('/check-phone-unique', {
+                        params: {phone: iti.value.getNumber()}
+                    });
 
-                if (response.data.unique) {
-                    const countryData = iti.value.getSelectedCountryData();
-                    emit('update:modelValue', iti.value.getNumber());
-                    emit('countryData', countryData);
-                    error.value = '';
-                } else {
-                    error.value = 'Phone number is already taken';
+                    if (response.data.unique) {
+                        const countryData = iti.value.getSelectedCountryData();
+                        emit('update:modelValue', iti.value.getNumber());
+                        emit('countryData', countryData);
+                        error.value = '';
+                    } else {
+                        error.value = 'Phone number is already taken';
+                        // emit('update:modelValue', null);
+                        emit('validationError', error.value);
+                    }
+                } catch (e) {
+                    console.log(e)
+                    error.value = 'Error checking phone number';
                     // emit('update:modelValue', null);
                     emit('validationError', error.value);
                 }
-            } catch (e) {
-                console.log(e)
-                error.value = 'Error checking phone number';
-                // emit('update:modelValue', null);
-                emit('validationError', error.value);
+            }else{
+                const countryData = iti.value.getSelectedCountryData();
+                emit('update:modelValue', iti.value.getNumber());
+                emit('countryData', countryData);
+                error.value = '';
             }
-
         } else {
             error.value = 'Invalid Phone Number';
             // emit('update:modelValue', null);

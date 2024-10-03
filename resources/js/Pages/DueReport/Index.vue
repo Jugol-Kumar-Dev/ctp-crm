@@ -36,7 +36,7 @@
                                                         :monthChangeOnScroll="false"
                                                         range multi-calendars
                                                         :enable-time-picker="false"
-                                                        :format="'d-MM-Y'"
+                                                        :format="'dd-MM-Y'"
                                                         placeholder="Select Date Range" autoApply
                                                         @update:model-value="handleDate" ></Datepicker>
 
@@ -182,17 +182,18 @@
 
 </script>
 <script setup>
-import Pagination from "../../components/Pagination"
-import Icon from '../../components/Icon'
-import Modal from '../../components/Modal'
-import ImageUploader from "../../components/ImageUploader"
-import Textarea from "../../components/Textarea";
+import Pagination from "@/components/Pagination.vue";
+import Icon from "@/components/Icon.vue";
+import Modal from "@/components/Modal.vue";
+import ImageUploader from "@/components/ImageUploader.vue";
+import Textarea from "@/components/Textarea";
+
 import moment from 'moment';
 import {ref, watch, computed} from "vue";
 import debounce from "lodash/debounce";
-import {Inertia} from "@inertiajs/inertia";
+import {router} from "@inertiajs/vue3";
 import Swal from 'sweetalert2'
-import {useForm} from "@inertiajs/inertia-vue3";
+import {useForm} from "@inertiajs/vue3";
 import axios from "axios";
 import {useDate} from "../../composables/useDate";
 const range = useDate();
@@ -244,7 +245,7 @@ let search = ref(props.filters.search);
 let perPage = ref(props.filters.perPage);
 
 watch([search, perPage, searchByStatus, dateRange, employee], debounce(function ([val, val2, val3, val4, val5]) {
-    Inertia.get(props.main_url, { search: val, perPage: val2, byStatus: val3 , dateRange: val4, employee:val5}, { preserveState: true, replace: true });
+    router.get(props.main_url, { search: val, perPage: val2, byStatus: val3 , dateRange: val4, employee:val5}, { preserveState: true, replace: true });
 }, 300));
 
 const exportPDF =() =>{

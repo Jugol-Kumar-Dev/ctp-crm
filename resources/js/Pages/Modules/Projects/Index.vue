@@ -71,7 +71,7 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <a href="https://jugolkumar.com" target="_blank">{{ projects.project.name }}</a>
+                                                <a href="https://jugolkumar.com">{{ projects.project.name }}</a>
                                             </td>
 
                                             <td>{{ projects.start_date + " - " + projects.end_date }} </td>
@@ -489,9 +489,9 @@
     import ImageUploader from "../../../components/ImageUploader"
     import {ref, watch} from "vue";
     import debounce from "lodash/debounce";
-    import {Inertia} from "@inertiajs/inertia";
+    import {router} from "@inertiajs/vue3";
     import Swal from 'sweetalert2'
-    import {useForm} from "@inertiajs/inertia-vue3";
+    import {useForm} from "@inertiajs/vue3";
     import axios from 'axios';
     import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
 
@@ -565,7 +565,7 @@
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                Inertia.delete('clients/' + id, {
+                router.delete('clients/' + id, {
                     preserveState: true, replace: true, onSuccess: page => {
                         Swal.fire(
                             'Deleted!',
@@ -589,7 +589,7 @@
         document.getElementById('addItemModal').$vb.modal.show()
     }
     const createProject = () => {
-        Inertia.post('projects', createForm, {
+        router.post('projects', createForm, {
             preserveState: true,
             onStart: () => {
                 createForm.processing = true
@@ -635,7 +635,7 @@
         });
     }
     const updateProject = (id) => {
-        Inertia.post(props.main_url+"/"+ id, updateForm, {
+        router.post(props.main_url+"/"+ id, updateForm, {
             preserveState: true,
             onStart: () => {
                 createForm.processing = true
@@ -657,7 +657,7 @@
 
 
     // const showProject = (url) =>{
-    //     Inertia.get(url, {
+    //     router.get(url, {
     //
     //     })
     // }
@@ -666,7 +666,7 @@
     const perPage = ref(props.filters.perPage);
 
     watch([search, perPage], debounce(function ([val, val2]) {
-        Inertia.get(props.main_url, {search: val, perPage: val2}, {preserveState: true, replace: true});
+        router.get(props.main_url, {search: val, perPage: val2}, {preserveState: true, replace: true});
     }, 300));
 
 </script>

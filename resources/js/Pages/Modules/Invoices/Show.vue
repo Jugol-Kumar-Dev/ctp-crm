@@ -231,7 +231,7 @@
                                                     <li>Now enter your bKash Mobile Menu PIN to Confirm!</li>
                                                     <li>Done! You will receive a confirmation message from bKash*</li>
                                                 </ul>
-                                                <h3>Direct Payment Bill Online at <a href="https://creativetechpark.com/pay" target="_blank">https://creativetechpark.com/pay</a>
+                                                <h3>Direct Payment Bill Online at <a href="https://creativetechpark.com/pay" >https://creativetechpark.com/pay</a>
                                                 </h3>
                                             </div>
                                         </div>
@@ -268,7 +268,7 @@
 <!--                                        Send Invoice-->
 <!--                                    </button>-->
                                     <a :href="info.download_url" class="btn btn-outline-secondary w-100 btn-download-invoice mb-75">Download</a>
-<!--                                    <a class="btn btn-outline-secondary w-100 mb-75" href="./app-invoice-print.html" target="_blank"> Print </a>-->
+<!--                                    <a class="btn btn-outline-secondary w-100 mb-75" href="./app-invoice-print.html" > Print </a>-->
                                     <button type="button" class="btn btn-primary w-100 mb-75" data-bs-toggle="modal" data-bs-target="#showTransactions">Payment History</button>
                                     <button class="btn btn-success w-100 mb-75" data-bs-toggle="modal" data-bs-target="#add-payment-sidebar">Add Payment</button>
                                 </div>
@@ -467,8 +467,8 @@
 </script>
 <script setup>
     import { computed, ref } from "vue";
-    import {useForm} from "@inertiajs/inertia-vue3";
-    import {Inertia} from "@inertiajs/inertia";
+    import {useForm} from "@inertiajs/vue3";
+    import {router} from "@inertiajs/vue3";
 
     let props = defineProps({
         info: Object,
@@ -485,7 +485,7 @@
 
     let addPayment = () => {
 
-        Inertia.post(props.info.payment_url, createForm, {
+        router.post(props.info.payment_url, createForm, {
             onSuccess: () => {
                 Swal.fire(
                     'Added!',

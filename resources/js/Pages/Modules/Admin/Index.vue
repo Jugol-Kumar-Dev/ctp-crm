@@ -323,9 +323,9 @@
     import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
     import {ref, watch} from "vue";
     import debounce from "lodash/debounce";
-    import {Inertia} from "@inertiajs/inertia";
+    import {router} from "@inertiajs/vue3";
     import Swal from 'sweetalert2'
-    import {useForm} from "@inertiajs/inertia-vue3";
+    import {useForm} from "@inertiajs/vue3";
     import axios from "axios";
     import {useAction} from "../../../composables/useAction";
     const {deleteItem} = useAction();
@@ -369,7 +369,7 @@
         document.getElementById('addItemModal').$vb.modal.show()
     }
     let createUserForm = () => {
-        Inertia.post('users', createForm, {
+        router.post('users', createForm, {
             preserveState: true,
             onStart: () => {
                 createForm.processing = true
@@ -404,7 +404,7 @@
 
 
     const updateUser = (id) => {
-        Inertia.post(`users/${id}`, updateForm, {
+        router.post(`users/${id}`, updateForm, {
             preserveState: true,
             onStart: () => {
                 createForm.processing = true
@@ -434,7 +434,7 @@
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                Inertia.delete(`${url}/${id}`, {
+                router.delete(`${url}/${id}`, {
                 preserveState: true,
                 replace: true,
                 onSuccess: page => {
@@ -459,7 +459,7 @@
     const loginAs = (user)=>{
         console.log(user)
         if(confirm("Are You Sure? You Want To Login As "+user?.name)){
-            Inertia.post('/login-as', {
+            router.post('/login-as', {
                 userId:user?.id
             }, {
                 onError:errors => {
@@ -480,7 +480,7 @@
     let perPage = ref(props.filters.perPage);
 
     watch([search, perPage], debounce(function ([val, val2]) {
-        Inertia.get(props.main_url, { search: val, perPage: val2 }, { preserveState: true, replace: true });
+        router.get(props.main_url, { search: val, perPage: val2 }, { preserveState: true, replace: true });
     }, 300));
 
 

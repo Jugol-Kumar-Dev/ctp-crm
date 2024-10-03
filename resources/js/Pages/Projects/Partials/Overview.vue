@@ -324,9 +324,8 @@
 import {computed, onMounted, ref} from "vue";
 import moment from "moment";
 import ProgressChart from "../../../components/ProgressChart.vue";
-import {useForm} from "@inertiajs/inertia-vue3";
+import {useForm, router} from "@inertiajs/vue3";
 import Modal from '../../../components/Modal.vue';
-import {Inertia} from "@inertiajs/inertia";
 import Swal from "sweetalert2";
 import ImageUploader from "../../../components/ImageUploader.vue";
 
@@ -393,7 +392,7 @@ const props = defineProps({
     }
 
     const downloadAttachment = (path) =>{
-        Inertia.get('/admin/project/download-attachment/', {
+        router.get('/admin/project/download-attachment/', {
             path:path
         }, {
             onSuccess:()=>{

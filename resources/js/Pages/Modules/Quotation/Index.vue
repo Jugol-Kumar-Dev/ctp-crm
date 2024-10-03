@@ -81,7 +81,7 @@
                                         <tbody>
                                         <tr v-for="qut in quotations.data" :key="qut.id">
                                             <td>
-                                                <a :href="qut.show_url" target="_blank">#{{ moment(new Date()).format('YYYYMMD')+qut.id}}</a>
+                                                <a :href="qut.show_url">#{{ moment(new Date()).format('YYYYMMD')+qut.id}}</a>
                                             </td>
 
                                             <td>
@@ -135,7 +135,7 @@
                                                         <vue-feather type="more-vertical" />
                                                     </CDropdownToggle>
                                                     <CDropdownMenu>
-                                                        <CDropdownItem :href="qut.show_url+'?type=show_invoice'" v-if="qut.status === 'Converted To Invoice'" target="_blank">
+                                                        <CDropdownItem :href="qut.show_url+'?type=show_invoice'" v-if="qut.status === 'Converted To Invoice'">
                                                             <vue-feather type="file" size="15"/>
                                                             <span class="ms-1">Show Invoice</span>
                                                         </CDropdownItem>
@@ -149,7 +149,7 @@
                                                             <Icon title="pencil" />
                                                             <span class="ms-1">Edit</span>
                                                         </CDropdownItem>
-                                                        <CDropdownItem :href="qut.show_url" target="_blank">
+                                                        <CDropdownItem :href="qut.show_url">
                                                             <Icon title="eye" />
                                                             <span class="ms-1">Show</span>
                                                         </CDropdownItem>
@@ -236,9 +236,9 @@
     import Modal from '../../../components/Modal'
     import {ref, watch} from "vue";
     import debounce from "lodash/debounce";
-    import {Inertia} from "@inertiajs/inertia";
+    import {router} from "@inertiajs/vue3";
     import Swal from 'sweetalert2'
-    import {useForm} from "@inertiajs/inertia-vue3";
+    import {useForm} from "@inertiajs/vue3";
     import {defineProps} from "@vue/runtime-core";
     import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
     import {useDate} from "../../../composables/useDate";
@@ -280,7 +280,7 @@
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                Inertia.delete(props.url+"/"+ id, { preserveState: true, replace: true, onSuccess: page => {
+                router.delete(props.url+"/"+ id, { preserveState: true, replace: true, onSuccess: page => {
                     Swal.fire(
                         'Deleted!',
                         'Your file has been deleted.',
@@ -300,20 +300,20 @@
 
 
     let showQuotation = (id, page) => {
-        Inertia.get(props.url+"/"+id, {page:page},{
+        router.get(props.url+"/"+id, {page:page},{
             preserveState: true,
             replace:true,
         });
     }
 
-    let createInvoice = (id) =>Inertia.get(props.url+"/invoice/"+id);
+    let createInvoice = (id) =>router.get(props.url+"/invoice/"+id);
 
     const changeStatus = (id) =>  {
         updateForm.quotId = id;
         document.getElementById('change-status').$vb.modal.show()
     }
     let addPayment = () => {
-        Inertia.post(props.change_status_url, updateForm, {
+        router.post(props.change_status_url, updateForm, {
             onSuccess: () => {
                 document.getElementById('change-status').$vb.modal.hide()
             }
@@ -336,7 +336,7 @@
     let perPage = ref(props.filters.perPage);
 
     watch([search, perPage, searchByStatus, dateRange], debounce(function ([val, val2, val3, val4]) {
-        Inertia.get(props.url, { search: val, perPage: val2, byStatus: val3 , dateRange: val4}, { preserveState: true, replace: true });
+        router.get(props.url, { search: val, perPage: val2, byStatus: val3 , dateRange: val4}, { preserveState: true, replace: true });
     }, 300));
 
 </script>

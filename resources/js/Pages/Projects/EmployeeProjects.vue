@@ -72,7 +72,7 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <a href="https://jugolkumar.com" target="_blank">{{ projects.project.name }}</a>
+                                                <a href="https://jugolkumar.com" >{{ projects.project.name }}</a>
                                             </td>
 
                                             <th>
@@ -329,17 +329,21 @@
 
 
 <script setup>
-    import Pagination from "../../components/Pagination"
-    import Icon from '../../components/Icon'
-    import Modal from '../../components/Modal'
-    import InputFieldError from "../../components/InputFieldError";
-    import TextEditor from "../../components/TextEditor";
-    import ImageUploader from "../../components/ImageUploader"
+    import Pagination from "@/components/Pagination.vue";
+    import Icon from "@/components/Icon.vue";
+    import Modal from "@/components/Modal.vue";
+    import InputFieldError from "@/components/InputFieldError.vue";
+
+
+    import TextEditor from "@/components/TextEditor.vue";
+
+
+    import ImageUploader from "@/components/ImageUploader.vue";
     import {ref, watch, computed} from "vue";
     import debounce from "lodash/debounce";
-    import {Inertia} from "@inertiajs/inertia";
+    import {router} from "@inertiajs/vue3";
     import Swal from 'sweetalert2'
-    import {useForm} from "@inertiajs/inertia-vue3";
+    import {useForm} from "@inertiajs/vue3";
     import axios from 'axios';
     import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
     import {useAction} from "../../composables/useAction";
@@ -391,7 +395,7 @@
         document.getElementById('addItemModal').$vb.modal.show()
     }
     const createProject = () => {
-        Inertia.post(props.main_url, createForm, {
+        router.post(props.main_url, createForm, {
             preserveState: true,
             onStart: () => {createForm.processing = true},
             onFinish: () => {createForm.processing = false},
@@ -431,7 +435,7 @@
     const perPage = ref(props.filters.perPage);
 
     watch([search, perPage], debounce(function ([val, val2]) {
-        Inertia.get(props.emp_url, {search: val, perPage: val2}, {preserveState: true, replace: true});
+        router.get(props.emp_url, {search: val, perPage: val2}, {preserveState: true, replace: true});
     }, 300));
 
 </script>

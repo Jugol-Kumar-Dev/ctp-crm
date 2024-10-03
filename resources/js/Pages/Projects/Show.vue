@@ -11,7 +11,7 @@
                         <!-- Page header -->
                         <div class="d-lg-flex align-items-center justify-content-between">
                             <div class="mb-2 mb-lg-0">
-<!--                                <a :href="info.name" target="_blank">-->
+<!--                                <a :href="info.name" >-->
                                     <h1 class="mb-0 h2 fw-bold text-capitalize">{{ info.name }}</h1>
 <!--                                </a>-->
                             </div>
@@ -207,19 +207,23 @@
 <script setup>
 import moment from "moment";
 import {computed, ref, onMounted} from "vue"
-import ProgressChart from "../../components/ProgressChart.vue";
+import ProgressChart from "@/components/ProgressChart.vue";
+
+
 import Show from "../Invoice/Show.vue";
 import {useAction} from "../../composables/useAction";
-import InvoiceContent from "../../components/modules/InvoiceContent.vue";
+import InvoiceContent from "@/components/modules/InvoiceContent.vue";
+
+
 import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
 
-import {useForm} from "@inertiajs/inertia-vue3";
-import {Inertia} from "@inertiajs/inertia";
-import Overview from "./Partials/Overview.vue";
-import Billing from "./Partials/Billing.vue";
-import Mambers from "./Partials/Mambers.vue";
-import Progressment from "./Partials/Progressment.vue";
-import Action from "./Partials/Action.vue";
+import {useForm} from "@inertiajs/vue3";
+import {router} from "@inertiajs/vue3";
+import Overview from "@/components/Partials/Overview.vue";
+import Billing from "@/components/Partials/Billing.vue";
+import Mambers from "@/components/Partials/Mambers.vue";
+import Progressment from "@/components/Partials/Progressment.vue";
+import Action from "@/components/Partials/Action.vue";
 
 let props = defineProps({
     info: Object,
@@ -245,7 +249,7 @@ const assignDevelopers = ()=> {
 
 
 const removeUser = (url)=> {
-    Inertia.get(url ,{
+    router.get(url ,{
         preserveState: true,
         onSuccess: ()=> { $toast.success('User Removed Successfully Done...') },
         onError: ()=> { $toast.error('Have An Error. Please Try Again.') },

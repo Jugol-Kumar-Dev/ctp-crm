@@ -282,7 +282,7 @@
                 <li>Now enter your bKash Mobile Menu PIN to Confirm!</li>
                 <li>Done! You will receive a confirmation message from bKash*</li>
             </ul>
-            <h3>Direct Payment Bill Online at <a href="https://creativetechpark.com/pay" target="_blank">https://creativetechpark.com/pay</a></h3>
+            <h3>Direct Payment Bill Online at <a href="https://creativetechpark.com/pay" >https://creativetechpark.com/pay</a></h3>
         </div>
     </div>
     @if ($data['invoice']['privicy_and_policy'])

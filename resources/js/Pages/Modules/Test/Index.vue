@@ -141,9 +141,9 @@
     import Modal from '../../../components/Modal'
     import {ref, watch} from "vue";
     import debounce from "lodash/debounce";
-    import {Inertia} from "@inertiajs/inertia";
+    import {router} from "@inertiajs/vue3";
     import Swal from 'sweetalert2'
-    import {useForm} from "@inertiajs/inertia-vue3";
+    import {useForm} from "@inertiajs/vue3";
     import axios from "axios";
 
     let props = defineProps({
@@ -183,7 +183,7 @@
     }
 
     let updateData = (id) => {
-        Inertia.put('/test/update/' + id, updateForm, {
+        router.put('/test/update/' + id, updateForm, {
             onSuccess: () => {
                 document.getElementById('editData').$vb.modal.hide()
                 updateForm.reset()
@@ -201,7 +201,7 @@
     let perPage = ref(props.filters.perPage);
 
     watch([search, perPage], debounce(function ([val, val2]) {
-        Inertia.get(props.url, { search: val, perPage: val2 }, { preserveState: true, replace: true });
+        router.get(props.url, { search: val, perPage: val2 }, { preserveState: true, replace: true });
     }, 300));
 
 

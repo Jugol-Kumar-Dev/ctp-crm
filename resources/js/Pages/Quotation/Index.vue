@@ -44,7 +44,7 @@
 
                                             <Datepicker v-model="dateRange" :monthChangeOnScroll="false" range
                                                         multi-calendars
-                                                        format="y-m-d"
+                                                        format="y-mm-dd"
                                                         placeholder="Select Date Range" autoApply
                                                         @update:model-value="handleDate"></Datepicker>
                                         </div>
@@ -78,7 +78,7 @@
                                             <td>
                                                 <a v-if="this.$page.props.auth.user.can.includes('quotation.show') ||
                                                 this.$page.props.auth.user.role.includes('Administrator')"
-                                                    :href="qut.show_url" target="_blank">#{{ moment(new Date()).format('YYYYMMD')+qut.id}}</a>
+                                                    :href="qut.show_url" >#{{ moment(new Date()).format('YYYYMMD')+qut.id}}</a>
 
                                                 <span v-else>#{{ moment(new Date()).format('YYYYMMD')+qut.id}}</span>
                                             </td>
@@ -138,7 +138,7 @@
                                                             <span class="ms-1">Edit</span>
                                                         </CDropdownItem>
 
-                                                        <CDropdownItem :href="qut.show_url+'?type=show'" target="_blank"
+                                                        <CDropdownItem :href="qut.show_url+'?type=show'"
                                                                        v-if="this.$page.props.auth.user.can.includes('quotation.show') || this.$page.props.auth.user.role.includes('Administrator')">
 
                                                         <Icon title="eye" />
@@ -224,14 +224,14 @@ export default {
 
 
 <script setup>
-import Pagination from "../../components/Pagination.vue"
-import Icon from '../../components/Icon'
-import Modal from '../../components/Modal'
+import Pagination from "@/components/Pagination.vue";
+import Icon from "@/components/Icon.vue";
+import Modal from "@/components/Modal.vue";
 import {ref, watch} from "vue";
 import debounce from "lodash/debounce";
-import {Inertia} from "@inertiajs/inertia";
+import {router} from "@inertiajs/vue3";
 import Swal from 'sweetalert2'
-import {useForm} from "@inertiajs/inertia-vue3";
+import {useForm} from "@inertiajs/vue3";
 import {defineProps} from "@vue/runtime-core";
 import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
 import {useDate} from "../../composables/useDate";
@@ -273,7 +273,7 @@ let deleteItemModal = (id) => {
         confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
         if (result.isConfirmed) {
-            Inertia.delete(props.url+"/"+ id, { preserveState: true, replace: true, onSuccess: page => {
+            router.delete(props.url+"/"+ id, { preserveState: true, replace: true, onSuccess: page => {
                     Swal.fire(
                         'Deleted!',
                         'Your file has been deleted.',
@@ -293,20 +293,20 @@ let deleteItemModal = (id) => {
 
 
 let showQuotation = (id, page) => {
-    Inertia.get(props.url+"/"+id, {page:page},{
+    router.get(props.url+"/"+id, {page:page},{
         preserveState: true,
         replace:true,
     });
 }
 
-let createInvoice = (id) =>Inertia.get(props.url+"/invoice/"+id);
+let createInvoice = (id) =>router.get(props.url+"/invoice/"+id);
 
 const changeStatus = (id) =>  {
     updateForm.quotId = id;
     document.getElementById('change-status').$vb.modal.show()
 }
 let addPayment = () => {
-    Inertia.post(props.change_status_url, updateForm, {
+    router.post(props.change_status_url, updateForm, {
         onSuccess: () => {
             document.getElementById('change-status').$vb.modal.hide()
         }
@@ -329,7 +329,7 @@ let search = ref(props.filters.search);
 let perPage = ref(props.filters.perPage);
 
 watch([search, perPage, searchByStatus, dateRange], debounce(function ([val, val2, val3, val4]) {
-    Inertia.get(props.url, { search: val, perPage: val2, byStatus: val3 , dateRange: val4}, { preserveState: true, replace: true });
+    router.get(props.url, { search: val, perPage: val2, byStatus: val3 , dateRange: val4}, { preserveState: true, replace: true });
 }, 300));
 
 </script>

@@ -84,11 +84,11 @@
 </template>
 
 <script setup>
-    import VueLink from '../../../components/ViewLink'
-    import UserProfile from "../../../components/UserProfile";
-    import {useForm, usePage} from "@inertiajs/inertia-vue3";
+    import VueLink from '@/components/ViewLink.vue'
+    import UserProfile from "@/components/UserProfile.vue";
+    import {useForm, usePage} from "@inertiajs/vue3";
     import {computed, ref} from "vue";
-    import {Inertia} from "@inertiajs/inertia";
+    import {router} from "@inertiajs/vue3";
     let props = defineProps({
         user:[],
         errors:Object,
@@ -127,7 +127,7 @@
 
     const updateProfileImage = () =>{
 
-        Inertia.post('/admin/user/update-profile-image', {image:uploadImageData.value, userId:props.user.id},{
+        router.post('/admin/user/update-profile-image', {image:uploadImageData.value, userId:props.user.id},{
             preserveState: true,
             replace: true,
             onSuccess: page => {

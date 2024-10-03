@@ -241,8 +241,8 @@
 <script setup>
 
 import { computed, ref } from "vue";
-import {useForm} from "@inertiajs/inertia-vue3";
-import {Inertia} from "@inertiajs/inertia";
+import {useForm} from "@inertiajs/vue3";
+import {router} from "@inertiajs/vue3";
 import {useDate} from "../../../composables/useDate";
 import Modal from '../../../components/Modal.vue'
 import moment from 'moment';
@@ -272,7 +272,7 @@ const status = [
 ]
 const changeStatus = () =>  document.getElementById('change-status').$vb.modal.show()
 let addPayment = () => {
-    Inertia.post(props.info.change_status_url, updateForm, {
+    router.post(props.info.change_status_url, updateForm, {
         onSuccess: () => {
             document.getElementById('change-status').$vb.modal.hide()
         }

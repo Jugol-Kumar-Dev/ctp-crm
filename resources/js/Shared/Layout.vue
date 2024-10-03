@@ -40,13 +40,13 @@
             <p class="clearfix mb-0">
                 <span class="float-md-start d-block d-md-inline-block mt-25">COPYRIGHT &copy; {{ new Date().getFullYear() }}
 
-                <a class="ms-25" href="https://creativetechpark.com/" target="_blank">
+                <a class="ms-25" href="https://creativetechpark.com/" >
                     creativetechpark
                 </a>
                     <span class="d-none d-sm-inline-block">, All rightsReserved
                     </span>
                 </span>
-                <span class="float-md-end d-none d-md-block">Loved <vue-feather type="heart" /> & Made By <a href="https://www.facebook.com/zogul.kumar/" target="_blank">Jugol Kumar</a></span>
+                <span class="float-md-end d-none d-md-block">Loved <vue-feather type="heart" /> & Made By <a href="https://www.facebook.com/zogul.kumar/" >Jugol Kumar</a></span>
             </p>
         </footer>
         <button class="btn btn-primary btn-icon scroll-top" type="button"><vue-feather type="arrow-up" /></button>
@@ -57,8 +57,8 @@
 <script setup>
     import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
     import { useStore } from 'vuex'
-    import TopNav from './TopNav'
-    import SideNav from './SideNav'
+    import TopNav from '@/Shared/TopNav.vue'
+    import SideNav from '@/Shared/SideNav.vue'
     import moment from "moment";
 
     const store = useStore()

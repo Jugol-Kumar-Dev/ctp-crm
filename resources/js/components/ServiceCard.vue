@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-    import ServiceItem from './ServiceItem'
+    import ServiceItem from '@/components/ServiceItem.vue'
     let props = defineProps({
         cardTitle:String,
         items:Object,

@@ -181,9 +181,9 @@
     import Modal from '../../../components/Modal'
     import {ref, watch} from "vue";
     import debounce from "lodash/debounce";
-    import {Inertia} from "@inertiajs/inertia";
+    import {router} from "@inertiajs/vue3";
     import Swal from 'sweetalert2'
-    import {useForm} from "@inertiajs/inertia-vue3";
+    import {useForm} from "@inertiajs/vue3";
     import TextEditor from "../../../components/TextEditor";
     import TextArea from "../../../components/Textarea";
     import QuantityButton from "../../../components/QuantityButton";
@@ -226,7 +226,7 @@
 
 
     let updateQutation = () => {
-        Inertia.patch(props.info.update_url, formData,{
+        router.patch(props.info.update_url, formData,{
            onSuccess: () =>{
                formData.reset()
                Swal.fire(

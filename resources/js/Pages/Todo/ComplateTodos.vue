@@ -56,7 +56,7 @@
 import TodoLayout from './TodoLayout.vue'
 import {useAction} from "../../composables/useAction";
 import {ref} from "vue";
-import {Inertia} from "@inertiajs/inertia";
+import {router} from "@inertiajs/vue3";
 import Swal from "sweetalert2";
 import moment from "moment";
 
@@ -73,7 +73,7 @@ const props = defineProps({
 
 const showTodoData = ref({});
 const showItem = (id)=>{
-    Inertia.get(props.main_url+'/'+id+'?show_data=true');
+    router.get(props.main_url+'/'+id+'?show_data=true');
 }
 
 
@@ -81,7 +81,7 @@ const showItem = (id)=>{
 
 
 const taskComplate = (event) =>{
-    Inertia.get(props.main_url+"/"+event+"?complete=true", {},{
+    router.get(props.main_url+"/"+event+"?complete=true", {},{
         onSuccess:()=>{
             Swal.fire(
                 'Saved!',

@@ -28,7 +28,7 @@
 <!--                                                    <vue-feather type="download" size="15"/>-->
                                                     <span class="ms-1">PDF</span>
                                                 </CDropdownItem>
-<!--                                                <CDropdownItem target="_blank">
+<!--                                                <CDropdownItem >
                                                     &lt;!&ndash;                                                    <vue-feather type="download" size="15"/>&ndash;&gt;
                                                     <span class="ms-1">EXCEL</span>
                                                 </CDropdownItem>-->
@@ -59,7 +59,7 @@
                                                         :monthChangeOnScroll="false"
                                                         range multi-calendars
                                                         :enable-time-picker="false"
-                                                        :format="'d-MM-Y'"
+                                                        :format="'dd-MM-Y'"
                                                         placeholder="Select Date Range" autoApply
                                                         @update:model-value="handleDate" ></Datepicker>
                                         </div>
@@ -97,9 +97,9 @@
                                                 </a>
                                             </td>
                                             <td>
-                                                <a :href="`/admin/quotations/${tra.tran.transaction_model_id}?type=show_invoice`" v-if="tra.tran.transaction_model === 'App\\Models\\Invoice'" target="_blank">{{ `${tra.tran.transaction_model}::find(${tra.tran.transaction_model_id})` }}</a>
-                                                <a :href="`/admin/invoices/${tra.tran.transaction_model_id}`" v-else-if="tra.tran.transaction_model === 'App\\Models\\CustomInvoice'" target="_blank">{{ `${tra.tran.transaction_model}::find(${tra.tran.transaction_model_id})` }}</a>
-                                                <a class="text-primary" @click="editItem(`/admin/expense/${tra.tran.transaction_model_id}`)" v-else-if="tra.tran.transaction_model === 'App\\Models\\Expanse'" target="_blank">{{ `${tra.tran.transaction_model}::find(${tra.tran.transaction_model_id})` }}</a>
+                                                <a :href="`/admin/quotations/${tra.tran.transaction_model_id}?type=show_invoice`" v-if="tra.tran.transaction_model === 'App\\Models\\Invoice'">{{ `${tra.tran.transaction_model}::find(${tra.tran.transaction_model_id})` }}</a>
+                                                <a :href="`/admin/invoices/${tra.tran.transaction_model_id}`" v-else-if="tra.tran.transaction_model === 'App\\Models\\CustomInvoice'">{{ `${tra.tran.transaction_model}::find(${tra.tran.transaction_model_id})` }}</a>
+                                                <a class="text-primary" @click="editItem(`/admin/expense/${tra.tran.transaction_model_id}`)" v-else-if="tra.tran.transaction_model === 'App\\Models\\Expanse'">{{ `${tra.tran.transaction_model}::find(${tra.tran.transaction_model_id})` }}</a>
                                             </td>
                                             <td>
                                                 {{ tra.tran.method.name }}
@@ -200,9 +200,9 @@ import Textarea from "../../../components/Textarea";
 import moment from 'moment';
 import {ref, watch} from "vue";
 import debounce from "lodash/debounce";
-import {Inertia} from "@inertiajs/inertia";
+import {router} from "@inertiajs/vue3";
 import Swal from 'sweetalert2'
-import {useForm} from "@inertiajs/inertia-vue3";
+import {useForm} from "@inertiajs/vue3";
 import axios from "axios";
 import {useDate} from "../../../composables/useDate";
 const range = useDate();
@@ -255,7 +255,7 @@ const searchByStatus = ref(props.filters.byStatus)
 let search = ref(props.filters.search);
 let perPage = ref(props.filters.perPage);
 watch([search, perPage, searchByStatus, dateRange], debounce(function ([val, val2, val3, val4]) {
-    Inertia.get(props.main_url, { search: val, perPage: val2, byStatus: val3 , dateRange: val4}, { preserveState: true, replace: true });
+    router.get(props.main_url, { search: val, perPage: val2, byStatus: val3 , dateRange: val4}, { preserveState: true, replace: true });
 }, 300));
 
 

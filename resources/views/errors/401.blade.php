@@ -1,5 +1,5 @@
+@extends('errors::minimal')
 
-
-page not found
-
-not have access
+@section('title', __('Unauthorized Access'))
+@section('code', '401')
+@section('message', __('Unauthorized Access'))

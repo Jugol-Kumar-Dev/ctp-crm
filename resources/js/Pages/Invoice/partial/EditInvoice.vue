@@ -39,7 +39,7 @@
                                     <Datepicker v-model="formData.date"
                                                 :monthChangeOnScroll="false"
                                                 :enable-time-picker="false"
-                                                :format="'d-MM-Y'"
+                                                :format="'dd-MM-Y'"
                                                 placeholder="Select Quotation Date"
                                                 autoApply></Datepicker>
                                 </div>
@@ -373,11 +373,11 @@
 <script setup>
 import moment from 'moment/moment';
 import {ref, computed,onMounted  } from "vue";
-import {useQuotationStore} from "../../../Store/useQuotationStore";
+import {useQuotationStore} from "@/Store/useQuotationStore.js";
 import Fuse from "fuse.js";
-import {useForm} from "@inertiajs/inertia-vue3";
-import {usePolicyStore} from "../../../Store/usePolicyStore";
-import Modal from "../../../components/Modal.vue";
+import {useForm} from "@inertiajs/vue3";
+import {usePolicyStore} from "@/Store/usePolicyStore.js";
+import Modal from "@/components/Modal.vue";
 
 const quotationStore = useQuotationStore();
 const policyStore = usePolicyStore()

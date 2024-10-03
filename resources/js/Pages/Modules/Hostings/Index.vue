@@ -178,9 +178,9 @@
     import Modal from '../../../components/Modal'
     import {ref, watch} from "vue";
     import debounce from "lodash/debounce";
-    import {Inertia} from "@inertiajs/inertia";
+    import {router} from "@inertiajs/vue3";
     import Swal from 'sweetalert2'
-    import {useForm} from "@inertiajs/inertia-vue3";
+    import {useForm} from "@inertiajs/vue3";
     import axios from "axios";
 
     let props = defineProps({
@@ -222,7 +222,7 @@
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                Inertia.delete( 'hostings/' + id, { preserveState: true, replace: true, onSuccess: page => {
+                router.delete( 'hostings/' + id, { preserveState: true, replace: true, onSuccess: page => {
                         Swal.fire(
                             'Deleted!',
                             'Your file has been deleted.',
@@ -246,7 +246,7 @@
     }
 
     let createHostings = ( )=>{
-        Inertia.post('hostings', createForm, {
+        router.post('hostings', createForm, {
             preserveState: true,
             onStart: () =>{ createForm.processing = true},
             onFinish: () => {createForm.processing = false},
@@ -278,7 +278,7 @@
     }
 
     let updateData = (id) => {
-        Inertia.put('hostings/' + id, updateForm, {
+        router.put('hostings/' + id, updateForm, {
             preserveState: true,
             onStart: () => {
                 createForm.processing = true
@@ -303,7 +303,7 @@
     let perPage = ref(props.filters.perPage);
 
     watch([search, perPage], debounce(function ([val, val2]) {
-        Inertia.get(props.main_url, { search: val, perPage: val2 }, { preserveState: true, replace: true });
+        router.get(props.main_url, { search: val, perPage: val2 }, { preserveState: true, replace: true });
     }, 300));
 
 

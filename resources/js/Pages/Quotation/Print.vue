@@ -187,7 +187,7 @@
                                         <li>Now enter your bKash Mobile Menu PIN to Confirm!</li>
                                         <li>Done! You will receive a confirmation message from bKash*</li>
                                     </ul>
-                                    <h3>Direct Payment Bill Online at <a href="https://creativetechpark.com/pay" target="_blank">https://creativetechpark.com/pay</a></h3>
+                                    <h3>Direct Payment Bill Online at <a href="https://creativetechpark.com/pay" >https://creativetechpark.com/pay</a></h3>
 
                                     <!--                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam delectus eos perspiciatis provident quidem repudiandae suscipit ullam. Ab beatae doloremque eos facilis, magnam non totam? Ad maxime molestias numquam voluptatum!</p>-->
 

@@ -377,17 +377,21 @@
 
 
 <script setup>
-import Pagination from "../../components/Pagination"
-import Icon from '../../components/Icon'
-import Modal from '../../components/Modal'
-import InputFieldError from "../../components/InputFieldError";
-import TextEditor from "../../components/TextEditor";
-import ImageUploader from "../../components/ImageUploader"
+import Pagination from "@/components/Pagination.vue";
+import Icon from "@/components/Icon.vue";
+import Modal from "@/components/Modal.vue";
+import InputFieldError from "@/components/InputFieldError.vue";
+
+
+import TextEditor from "@/components/TextEditor.vue";
+
+
+import ImageUploader from "@/components/ImageUploader.vue";
 import {ref, watch} from "vue";
 import debounce from "lodash/debounce";
-import {Inertia} from "@inertiajs/inertia";
+import {router} from "@inertiajs/vue3";
 import Swal from 'sweetalert2'
-import {useForm} from "@inertiajs/inertia-vue3";
+import {useForm} from "@inertiajs/vue3";
 import axios from 'axios';
 
 

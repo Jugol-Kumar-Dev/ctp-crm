@@ -18,7 +18,7 @@
                 <tbody>
                 <tr v-for="qut in quotations" :key="qut.id">
                     <td>
-                        <a :href="qut.show_url" target="_blank">#{{ moment(new Date()).format('YYYYMMD')+qut.id}}</a>
+                        <a :href="qut.show_url" >#{{ moment(new Date()).format('YYYYMMD')+qut.id}}</a>
                     </td>
                     <td>{{ qut.subject }}</td>
                     <td>

@@ -1,5 +1,5 @@
 import * as Swal from "sweetalert2";
-import {Inertia} from "@inertiajs/inertia";
+import {router} from "@inertiajs/vue3";
 import {ref} from "vue";
 
 
@@ -30,7 +30,7 @@ export function useAction(){
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                Inertia.delete(main_url + "/" + id, {
+                router.delete(main_url + "/" + id, {
                     preserveState: true, replace: true, onSuccess: page => {
                         Swal.fire(
                             'Deleted!',

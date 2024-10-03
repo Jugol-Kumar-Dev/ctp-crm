@@ -41,7 +41,7 @@
                                                             :monthChangeOnScroll="false"
                                                             range multi-calendars
                                                             :enable-time-picker="false"
-                                                            :format="'d-MM-Y'"
+                                                            :format="'dd-MM-Y'"
                                                             placeholder="Select Date Range" autoApply
                                                             @update:model-value="handleDate" ></Datepicker>
                                             </div>
@@ -81,7 +81,7 @@
                                             </td>
                                             <td>{{ moment(quotation?.quotation.created_at).format('MM-DD-YY') }}</td>
                                             <td>
-                                                <a :href="`/admin/old-quotation/${quotation?.quotation.id}`" target="_blank">
+                                                <a :href="`/admin/old-quotation/${quotation?.quotation.id}`" >
                                                     <vue-feather type="eye"/>
                                                 </a>
                                             </td>
@@ -103,17 +103,21 @@
 
 
 <script setup>
-import Pagination from "../../components/Pagination"
-import Icon from '../../components/Icon'
-import Modal from '../../components/Modal'
-import InputFieldError from "../../components/InputFieldError";
-import TextEditor from "../../components/TextEditor";
-import ImageUploader from "../../components/ImageUploader"
+import Pagination from "@/components/Pagination.vue";
+import Icon from "@/components/Icon.vue";
+import Modal from "@/components/Modal.vue";
+import InputFieldError from "@/components/InputFieldError.vue";
+
+
+import TextEditor from "@/components/TextEditor.vue";
+
+
+import ImageUploader from "@/components/ImageUploader.vue";
 import {ref, watch, computed} from "vue";
 import debounce from "lodash/debounce";
-import {Inertia} from "@inertiajs/inertia";
+import {router} from "@inertiajs/vue3";
 import Swal from 'sweetalert2'
-import {useForm} from "@inertiajs/inertia-vue3";
+import {useForm} from "@inertiajs/vue3";
 import axios from 'axios';
 import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
 import {useAction} from "../../composables/useAction";
@@ -141,7 +145,7 @@ const perPage = ref(props.filters.perPage);
 const handleDate = (event) => isCustom.value = event !== null;
 
 watch([search, perPage,dateRange], debounce(function ([val, val2, val3]) {
-    Inertia.get(props.main_url, {search: val, perPage: val2, dateRange: val3}, {preserveState: true, replace: true});
+    router.get(props.main_url, {search: val, perPage: val2, dateRange: val3}, {preserveState: true, replace: true});
 }, 300));
 
 </script>

@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import {useForm} from "@inertiajs/inertia-vue3";
+import {useForm} from "@inertiajs/vue3";
 
     let formData = useForm({
         qty:1,

@@ -109,17 +109,17 @@ class DashboardController extends Controller
 
 
         // This Year Transaction Chart Query
-//        $tranByCount = Transaction::query()
-//            ->whereYear('created_at', date('Y'))
-//            ->selectRaw("month(created_at) as month")
-//            ->selectRaw('count(*) as count')
-//            ->selectRaw('Sum(total_pay) as amount')
-//            ->groupBy('month')
-//            ->orderBy('month')
-////            ->get();
-//            ->pluck('count','month')
-//            ->values()
-//            ->toArray();
+        $tranByCount = Transaction::query()
+            ->whereYear('created_at', date('Y'))
+            ->selectRaw("month(created_at) as month")
+            ->selectRaw('count(*) as count')
+            ->selectRaw('Sum(total_pay) as amount')
+            ->groupBy('month')
+            ->orderBy('month')
+//            ->get();
+            ->pluck('count','month')
+            ->values()
+            ->toArray();
 
 
 
@@ -138,12 +138,6 @@ class DashboardController extends Controller
 
 
 
-        $transactions = Transaction::whereYear('created_at', '=', date('Y'))
-            ->select(DB::raw('MONTH(created_at) as month'), DB::raw('SUM(amount) as total'))
-            ->selectRaw(DB::raw('count(*) as count'))
-            ->groupBy('month')
-            ->orderBy('month')
-            ->get();
 
         $tranByCount = array_values(array_fill_keys($months, 0));
         foreach ($transactions as $transaction) {
@@ -227,6 +221,7 @@ class DashboardController extends Controller
 
 //    }
 //
+
     public function __invoke(Request $request){
 
 

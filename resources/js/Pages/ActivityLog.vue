@@ -57,7 +57,7 @@
                                                         :monthChangeOnScroll="false"
                                                         range multi-calendars
                                                         :enable-time-picker="false"
-                                                        :format="'d-MM-Y'"
+                                                        :format="'dd-MM-Y'"
                                                         placeholder="Select Date Range" autoApply
                                                         @update:model-value="handleDate" ></Datepicker>
 
@@ -138,7 +138,7 @@ import Pagination from "../components/Pagination.vue"
 import moment, {months} from 'moment';
 import {ref, watch, computed} from "vue";
 import debounce from "lodash/debounce";
-import {Inertia} from "@inertiajs/inertia";
+import {router} from "@inertiajs/vue3";
 import axios from "axios";
 import {useDate} from "../composables/useDate.js";
 const range = useDate();
@@ -186,7 +186,7 @@ let search = ref(props.filters.search);
 let perPage = ref(props.filters.perPage);
 
 watch([search, perPage, logName, dateRange, employee, filterEvents], debounce(function ([val, val2, val3, val4, val5, val6]) {
-    Inertia.get(props.main_url, { search: val, perPage: val2, logName: val3 , dateRange: val4, employee:val5, filterEvents:val6}, { preserveState: true, replace: true });
+    router.get(props.main_url, { search: val, perPage: val2, logName: val3 , dateRange: val4, employee:val5, filterEvents:val6}, { preserveState: true, replace: true });
 }, 300), {deep:true});
 
 
@@ -213,7 +213,7 @@ const clearData = () =>{
         confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
         if (result.isConfirmed) {
-            Inertia.get(url, {
+            router.get(url, {
                 preserveState: true, replace: true, onSuccess: page => {
                     Swal.fire(
                         'Deleted!',

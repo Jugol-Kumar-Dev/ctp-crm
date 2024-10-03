@@ -145,9 +145,9 @@
     import Modal from '../../../components/Modal'
     import {ref, watch} from "vue";
     import debounce from "lodash/debounce";
-    import {Inertia} from "@inertiajs/inertia";
+    import {router} from "@inertiajs/vue3";
     import Swal from 'sweetalert2'
-    import {useForm} from "@inertiajs/inertia-vue3";
+    import {useForm} from "@inertiajs/vue3";
     import axios from "axios";
     import {useAction} from "../../../composables/useAction";
 
@@ -181,7 +181,7 @@
 
 
     let createPurpose  = ( )=>{
-        Inertia.post('purposes', createForm, {
+        router.post('purposes', createForm, {
             preserveState: true,
             onStart: () =>{ createForm.processing = true},
             onFinish: () => {createForm.processing = false},
@@ -208,7 +208,7 @@
     }
 
     let updateData = (id) => {
-        Inertia.put('purposes/' + id, updateForm, {
+        router.put('purposes/' + id, updateForm, {
             preserveState: true,
             onStart: () => {
                 createForm.processing = true
@@ -232,7 +232,7 @@
     let perPage = ref(props.filters.perPage);
 
     watch([search, perPage], debounce(function ([val, val2]) {
-        Inertia.get(props.main_url, { search: val, perPage: val2 }, { preserveState: true, replace: true });
+        router.get(props.main_url, { search: val, perPage: val2 }, { preserveState: true, replace: true });
     }, 300));
 
 

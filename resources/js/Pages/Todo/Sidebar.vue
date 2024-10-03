@@ -158,9 +158,9 @@
 
 
 import {ref,onMounted} from "vue";
-import {useForm} from "@inertiajs/inertia-vue3";
+import {useForm} from "@inertiajs/vue3";
 import Swal from "sweetalert2";
-import Switch from '../../components/Switch.vue'
+import Switch from "@/components/Switch.vue";
 import {useQuotationStore} from "../../Store/useQuotationStore";
 const usersData = useQuotationStore();
 import axios from "axios";

@@ -242,10 +242,10 @@
 
 <script setup>
     import UpperQuotation from "./Partials/UpperQuotation.vue"
-    import {useForm, usePage} from "@inertiajs/inertia-vue3";
+    import {useForm, usePage} from "@inertiajs/vue3";
     import {computed, ref, onMounted } from "vue"
     import {useQuotationStore} from "../../Store/useQuotationStore";
-    import {Inertia} from "@inertiajs/inertia";
+    import {router} from "@inertiajs/vue3";
     import Swal from "sweetalert2";
 
     const quotationStore = useQuotationStore()
@@ -282,7 +282,7 @@
 
     const processing = ref(false)
     const updateQuotation = (events) =>{
-        Inertia.put(props.update_url, {...formData, ...events}, {
+        router.put(props.update_url, {...formData, ...events}, {
             preserveState: true,
             onStart: () =>{ processing.value = true},
             onFinish: () => {processing.value = false},

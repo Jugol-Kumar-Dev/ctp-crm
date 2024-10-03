@@ -304,8 +304,8 @@
 <script setup>
 
     import { computed } from "vue";
-    import {useForm} from "@inertiajs/inertia-vue3";
-    import {Inertia} from "@inertiajs/inertia";
+    import {useForm} from "@inertiajs/vue3";
+    import {router} from "@inertiajs/vue3";
     import {useDate} from "../../../composables/useDate";
 
     let { formatted } = useDate();
@@ -325,7 +325,7 @@
 
 
     let addPayment = () => {
-        Inertia.post(props.info.payment_url, createForm, {
+        router.post(props.info.payment_url, createForm, {
             onSuccess: () => {
                 createForm.reset();
                 alert("saved Transaction")

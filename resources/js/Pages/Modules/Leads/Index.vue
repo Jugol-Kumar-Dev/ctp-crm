@@ -34,7 +34,7 @@
                                                                                         &lt;!&ndash;                                                    <vue-feather type="download" size="15"/>&ndash;&gt;
                                                                                         <span class="ms-1">PDF</span>
                                                                                     </CDropdownItem>
-                                    &lt;!&ndash;                                                <CDropdownItem target="_blank">
+                                    &lt;!&ndash;                                                <CDropdownItem >
                                                                                         &lt;!&ndash;                                                    <vue-feather type="download" size="15"/>&ndash;&gt;
                                                                                         <span class="ms-1">EXCEL</span>
                                                                                     </CDropdownItem>&ndash;&gt;
@@ -69,7 +69,7 @@
                                                         :monthChangeOnScroll="false"
                                                         range multi-calendars
                                                         :enable-time-picker="false"
-                                                        :format="'d-MM-Y'"
+                                                        :format="'dd-MM-Y'"
                                                         placeholder="Select Date Range" autoApply
                                                         @update:model-value="handleDate" ></Datepicker>
 
@@ -266,7 +266,7 @@
                     <div class="col-md">
                         <label>Email:</label>
                         <div class=null>
-                            <input v-model="createForm.email" type="email" placeholder="eg.example@creativetechpark.com"
+                            <input v-model="createForm.email" type="email" placeholder="eg customer email"
                                    class="form-control">
                             <span v-if="errors.email" class="error text-sm text-danger">{{ errors.email }}</span>
                         </div>
@@ -285,11 +285,6 @@
                         <PhoneInput v-model="createForm.phone"/>
                         <span v-if="errors.phone" class="error text-sm text-danger">{{ errors.phone }}</span>
                     </div>
-<!--                    <div class="col-md-12 mt-2">-->
-<!--                        <label>Secondary Phone</label>-->
-<!--                        <PhoneInput v-model="createForm.secondary_phone"/>-->
-<!--                        <span v-if="errors.secondary_phone" class="error text-sm text-danger">{{ errors.secondary_phone }}</span>-->
-<!--                    </div>-->
                 </div>
                 <div class="row mb-1" :class="{ 'd-none' : clientStatus }">
                     <div class="col-md-12">
@@ -298,15 +293,9 @@
                                   class="form-control"></textarea>
                         <span v-if="errors.name" class="error text-sm text-danger">{{ errors.address }}</span>
                     </div>
-                    <div class="col-md-12">
-                        <label>Nots: </label>
-                        <textarea v-model="createForm.note" type="text" placeholder="Enter note messages" rows="5"
-                                  class="form-control"></textarea>
-                        <span v-if="errors.note" class="error text-sm text-danger">{{ errors.note }}</span>
-                    </div>
                 </div>
                 <div class="row mb-1">
-                    <div :class="clientStatus ? 'col-md-12' : 'col-md'">
+<!--                    <div v-if="clientStatus" class="'col-md'">
                         <label>Lead Status <span class="text-danger">*</span></label>
                         <v-select v-model="createForm.status"
                                   @update:modelValue="changeStatus"
@@ -316,9 +305,19 @@
                                   placeholder="Select Lead Status">
                         </v-select>
                         <span v-if="errors.status" class="error text-sm text-danger">{{ errors.status }}</span>
+                    </div>-->
+
+
+                    <div class="col-md-12">
+                        <label>Nots: </label>
+                        <textarea v-model="createForm.note" type="text" placeholder="Enter note messages" rows="5"
+                                  class="form-control"></textarea>
+                        <span v-if="errors.note" class="error text-sm text-danger">{{ errors.note }}</span>
                     </div>
 
-                    <div class="mt-1" :class="clientStatus ? 'col-md-12' : 'col-md'">
+
+
+<!--                    <div class="mt-1" :class="clientStatus ? 'col-md-12' : 'col-md'">
                         <label>Assign Agent </label>
                         <v-select
                             multiple
@@ -342,7 +341,7 @@
                                 </li>
                             </template>
                         </v-select>
-                    </div>
+                    </div>-->
                 </div>
             </div>
 
@@ -455,12 +454,64 @@
         </form>
     </Modal>
 
-    <Modal id="showSingleLead" v-vb-is:modal size="md">
+    <Modal id="changeOnlyStatus" title="Change Status" v-vb-is:modal size="sm">
+        <form @submit.prevent="updateClientForm(editData.id)">
+            <div class="modal-body">
+                <div class="row mb-1" :class="{'d-none' : !followUp}">
+                    <div class="col-md">
+                        <label>Follow Up Date:
+                            <Required/>
+                        </label>
+                        <div class="single-datepiker">
+                            <Datepicker v-model="updateForm.followDate" :monthChangeOnScroll="false"
+                                        :format="'dd-MM-Y'"
+                                        placeholder="Select Date" autoApply></Datepicker>
+                            <span v-if="errors.followDate" class="error text-sm text-danger">{{
+                                    errors.followDate
+                                }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-1" :class="{'d-none' : !followUp}">
+                    <div class="col-md">
+                        <textarea class="form-control" v-model="updateForm.followMessage" rows="5"
+                                  placeholder="Follow up message..."></textarea>
+                        <span v-if="errors.followMessage" class="error text-sm text-danger">{{ errors.followMessage }}</span>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div :class="clientStatus ? 'col-md-12' : 'col-md'">
+                        <label>Lead Status <span class="text-danger">*</span></label>
+                        <v-select v-model="updateForm.status"
+                                  @update:modelValue="changeStatus"
+                                  label="name"
+                                  class="form-control select-padding"
+                                  :options="status"
+                                  :reduce="item => item.name"
+                                  placeholder="Select Lead Status">
+                        </v-select>
+                        <span v-if="errors.status" class="error text-sm text-danger">{{ errors.status }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button :disabled="updateForm.processing" type="submit"
+                        class="btn btn-primary waves-effect waves-float waves-light">Save
+                </button>
+                <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                        aria-label="Close">Cancel
+                </button>
+            </div>
+        </form>
+    </Modal>
+
+    <Modal id="showSingleLead" :title="singleLeadShow.name" v-vb-is:modal size="md">
         <div class="d-flex justify-content-between flex-column p-2">
             <div class="d-flex flex-column ml-1">
                 <div class="d-flex justify-content-between">
                     <div class="w-50">
-                        <h4 class="mb-0 text-capitalize"> {{ singleLeadShow.name }} </h4>
+                        <h4 class="mb-0 text-capitalize"> {{  singleLeadShow.name }} </h4>
                         <p class="card-text m-0">{{ singleLeadShow.email }}</p>
                         <p class="card-text m-0">{{ singleLeadShow.phone }}</p>
                         <p class="badge badge-light-purple text-capitalize w-max"> {{ singleLeadShow.status }} </p>
@@ -468,12 +519,17 @@
                     <div class="w-50">
                         <p>Created By: {{ singleLeadShow?.createdBy?.name }}</p>
                         <p>Created Date: {{ singleLeadShow?.created_at}}</p>
-                        <hr>
+                        <hr v-if="singleLeadShow?.followUp">
                         <div class="d-flex flex-column" v-if="singleLeadShow?.followUp">
                             <strong>Follow Up Date: {{ moment(singleLeadShow?.followUp)?.format('ll') }}</strong>
                             <p>Message:
                                 <small>{{ singleLeadShow?.followUpMessage }}</small>
                             </p>
+                        </div>
+                        <hr v-if="singleLeadShow?.note">
+                        <div v-if="singleLeadShow?.note">
+                            <strong>Note:</strong>
+                            <small>{{ singleLeadShow?.note }}</small>
                         </div>
                     </div>
                 </div>
@@ -510,8 +566,9 @@
         </div>
     </Modal>
 
+
     <Modal id="editClient" :title="clientStatus ?  'Edit This Lead' : 'Convert To New Client'" v-vb-is:modal
-           :size="clientStatus ? 'sm' : 'lg'">
+           :size="clientStatus ? 'md' : 'lg'">
         <form @submit.prevent="updateClientForm(editData.id)">
             <div class="modal-body">
                 <div class="row mb-1" :class="{'d-none' : followUp}">
@@ -549,27 +606,26 @@
                     </div>
                 </div>
                 <div class="row mb-1" :class="{'d-none' : followUp}">
-                    <div class="col-md">
-                        <label>Phone: <span class="text-danger">*</span></label>
-                        <input v-model="updateForm.phone" type="text" placeholder="+88017********" class="form-control">
+                    <div class="col-md-12">
+                        <label>Phone <span class="text-danger">*</span></label>
+                        <PhoneInput v-model="updateForm.phone" :add="false"/>
                         <span v-if="errors.phone" class="error text-sm text-danger">{{ errors.phone }}</span>
                     </div>
-                    <div class="col-md" :class="{ 'd-none' : clientStatus }">
+                    <div class="col-md mt-1" :class="{ 'd-none' : clientStatus }">
                         <label>Secondary Phone: </label>
-                        <input v-model="updateForm.secondary_phone" type="text" placeholder="+88017********"
-                               class="form-control">
-                        <span v-if="errors.secondary_phone"
-                              class="error text-sm text-danger">{{ errors.secondary_phone }}</span>
+                        <PhoneInput v-model="updateForm.secondary_phone" :add="false"/>
+                        <span v-if="errors.secondary_phone" class="error text-sm text-danger">{{ errors.secondary_phone }}</span>
                     </div>
                 </div>
 
-                <div class="row mb-1" :class="{ 'd-none' : clientStatus }">
-                    <div class="col-md">
+                <div class="row mb-1">
+                    <div class="col-md"  :class="{ 'd-none' : clientStatus }">
                         <label>Address: </label>
                         <textarea v-model="updateForm.address" type="text" placeholder="Enter Full Address" rows="5"
                                   class="form-control"></textarea>
                         <span v-if="errors.name" class="error text-sm text-danger">{{ errors.address }}</span>
                     </div>
+
                     <div class="col-md">
                         <label>Nots: </label>
                         <textarea v-model="updateForm.note" type="text" placeholder="Enter note messages" rows="5"
@@ -585,7 +641,7 @@
                         </label>
                         <div class="single-datepiker">
                             <Datepicker v-model="updateForm.followDate" :monthChangeOnScroll="false"
-                                        :format="'d-MM-Y'"
+                                        :format="'dd-MM-Y'"
                                         placeholder="Select Date" autoApply></Datepicker>
                             <span v-if="errors.followDate" class="error text-sm text-danger">{{
                                     errors.followDate
@@ -600,9 +656,9 @@
                         <span v-if="errors.followMessage" class="error text-sm text-danger">{{ errors.followMessage }}</span>
                     </div>
                 </div>
-                <div class="row mb-1">
+                <div class="row">
                     <div :class="clientStatus ? 'col-md-12' : 'col-md'">
-                        <label>Lead Status <span class="text-danger">*</span></label>
+                        <label>Status <span class="text-danger">*</span></label>
                         <v-select v-model="updateForm.status"
                                   @update:modelValue="changeStatus"
                                   label="name"
@@ -612,10 +668,9 @@
                                   placeholder="Select Lead Status">
                         </v-select>
                         <span v-if="errors.status" class="error text-sm text-danger">{{ errors.status }}</span>
-
                     </div>
 
-                    <div class="mt-1" :class="clientStatus ? 'col-md-12' : 'col-md'">
+                    <div :class="clientStatus ? 'mt-1 col-md-12' : 'col-md'">
                         <label>Assign Agent </label>
                         <v-select
                             multiple
@@ -655,60 +710,6 @@
     </Modal>
 
 
-    <Modal id="changeOnlyStatus" title="Change Status" v-vb-is:modal size="sm">
-        <form @submit.prevent="updateClientForm(editData.id)">
-            <div class="modal-body">
-                <div class="row mb-1" :class="{'d-none' : !followUp}">
-                    <div class="col-md">
-                        <label>Follow Up Date:
-                            <Required/>
-                        </label>
-                        <div class="single-datepiker">
-                            <Datepicker v-model="updateForm.followDate" :monthChangeOnScroll="false"
-                                        :format="'d-MM-Y'"
-                                        placeholder="Select Date" autoApply></Datepicker>
-                            <span v-if="errors.followDate" class="error text-sm text-danger">{{
-                                    errors.followDate
-                                }}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mb-1" :class="{'d-none' : !followUp}">
-                    <div class="col-md">
-                        <textarea class="form-control" v-model="updateForm.followMessage" rows="5"
-                                  placeholder="Follow up message..."></textarea>
-                        <span v-if="errors.followMessage" class="error text-sm text-danger">{{ errors.followMessage }}</span>
-                    </div>
-                </div>
-                <div class="row mb-1">
-                    <div :class="clientStatus ? 'col-md-12' : 'col-md'">
-                        <label>Lead Status <span class="text-danger">*</span></label>
-                        <v-select v-model="updateForm.status"
-                                  @update:modelValue="changeStatus"
-                                  label="name"
-                                  class="form-control select-padding"
-                                  :options="status"
-                                  :reduce="item => item.name"
-                                  placeholder="Select Lead Status">
-                        </v-select>
-                        <span v-if="errors.status" class="error text-sm text-danger">{{ errors.status }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button :disabled="updateForm.processing" type="submit"
-                        class="btn btn-primary waves-effect waves-float waves-light">Save
-                </button>
-                <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="modal"
-                        aria-label="Close">Cancel
-                </button>
-            </div>
-        </form>
-    </Modal>
-
-
-
 </template>
 
 
@@ -718,9 +719,9 @@ import Icon from '../../../components/Icon'
 import Modal from '../../../components/Modal'
 import {ref, watch, onMounted, computed} from "vue";
 import debounce from "lodash/debounce";
-import {Inertia} from "@inertiajs/inertia";
+import {router} from "@inertiajs/vue3";
 import Swal from 'sweetalert2'
-import {useForm} from "@inertiajs/inertia-vue3";
+import {useForm} from "@inertiajs/vue3";
 import axios from 'axios';
 import moment from "moment";
 import {CDropdown, CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
@@ -754,7 +755,7 @@ let createForm = useForm({
     company: null,
     address: null,
     note: null,
-    status: null,
+    status: {name: 'New Lead'},
     agents: [],
     processing: Boolean,
 })
@@ -801,7 +802,7 @@ let deleteItemModal = (id) => {
         confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
         if (result.isConfirmed) {
-            Inertia.delete('leads/' + id, {
+            router.delete('leads/' + id, {
                 preserveState: true, replace: true, onSuccess: page => {
                     Swal.fire(
                         'Deleted!',
@@ -834,7 +835,7 @@ let addDataModal = () => {
 const numberError = ref('')
 
 let createClientForm = () => {
-    Inertia.post('clients', createForm, {
+    router.post('clients', createForm, {
         preserveState: true,
         onStart: () => {
             createForm.processing = true
@@ -855,7 +856,7 @@ let createClientForm = () => {
 }
 
 let updateClientForm = (id) => {
-    Inertia.put('clients/' + id, updateForm, {
+    router.put('clients/' + id, updateForm, {
         preserveState: true,
         onStart: () => {
             createForm.processing = true
@@ -951,7 +952,7 @@ let search = ref(props.filters.search);
 let perPage = ref(props.filters.perPage);
 
 watch([search, perPage, searchByStatus, dateRange], debounce(function ([val, val2, val3, val4]) {
-    Inertia.get(props.main_url, {search: val, perPage: val2, byStatus: val3, dateRange: val4}, {
+    router.get(props.main_url, {search: val, perPage: val2, byStatus: val3, dateRange: val4}, {
         preserveState: true,
         replace: true
     });

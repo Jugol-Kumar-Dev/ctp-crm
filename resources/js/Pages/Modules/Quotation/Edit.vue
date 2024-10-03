@@ -340,9 +340,9 @@
 
 <script setup>
 import {computed} from "vue";
-import {Inertia} from "@inertiajs/inertia";
+import {router} from "@inertiajs/vue3";
 import Swal from 'sweetalert2'
-import {useForm} from "@inertiajs/inertia-vue3";
+import {useForm} from "@inertiajs/vue3";
 
 let props = defineProps({
         clients      : Object,
@@ -395,7 +395,7 @@ let props = defineProps({
 
 
     let updateQutation = () => {
-        Inertia.patch(props.edit_quot.update_url, formData, {
+        router.patch(props.edit_quot.update_url, formData, {
             preserveState: true,
             onSuccess: () => {
                 this.data.quatations.reset()

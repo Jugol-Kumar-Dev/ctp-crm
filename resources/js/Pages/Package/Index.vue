@@ -85,10 +85,10 @@
 <script setup>
     import {ref, watch} from "vue";
     import debounce from "lodash/debounce";
-    import {Inertia} from "@inertiajs/inertia";
+    import {router} from "@inertiajs/vue3";
     import Swal from 'sweetalert2'
-    import {useForm} from "@inertiajs/inertia-vue3";
-    import Pagination from "../../components/Pagination"
+    import {useForm} from "@inertiajs/vue3";
+    import Pagination from "@/components/Pagination.vue";
 
     import axios from "axios";
     import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
@@ -104,7 +104,7 @@
     const perPage = ref(props.filters.perPage);
 
     watch([search, perPage], debounce(function ([val, val2]) {
-        Inertia.get(props.main_url, {search: val, perPage: val2}, {preserveState: true, replace: true});
+        router.get(props.main_url, {search: val, perPage: val2}, {preserveState: true, replace: true});
     }, 300));
 
 </script>

@@ -47,7 +47,7 @@
                                             </div>
                                             <Datepicker v-model="dateRange" :monthChangeOnScroll="false" range
                                                         multi-calendars
-                                                        format="y-m-d"
+                                                        format="y-mm-dd"
                                                         placeholder="Select Date Range" autoApply
                                                         @update:model-value="handleDate"></Datepicker>
 
@@ -221,15 +221,15 @@
                     </div>
                     <div class="col-md">
                         <label>Phone: <span class="text-danger">*</span></label>
-                        <input v-model="createForm.phone" type="text" placeholder="+88017********" class="form-control">
+                        <PhoneInput v-model="createForm.phone"/>
                         <span v-if="errors.phone" class="error text-sm text-danger">{{ errors.phone }}</span>
                     </div>
                 </div>
                 <div class="row mb-1">
                     <div class="col-md">
                         <label>Secondary Phone: </label>
-                        <input v-model="createForm.secondary_phone" type="text" placeholder="+88017********" class="form-control">
-                        <span v-if="errors.secondary_phone" class="error text-sm text-danger">{{errors.secondary_phone}}</span>
+                        <PhoneInput v-model="createForm.secondary_phone"/>
+                        <span v-if="errors.secondary_phone" class="error text-sm text-danger">{{ errors.secondary_phone }}</span>
                     </div>
                     <div class="col-md">
                         <label>Company: </label>
@@ -331,15 +331,14 @@
                     </div>
                     <div class="col-md">
                         <label>Phone: <span class="text-danger">*</span></label>
-                        <input v-model="updateForm.phone" type="text" placeholder="+88017********" class="form-control">
+                        <PhoneInput v-model="updateForm.phone" :add="false"/>
                         <span v-if="errors.phone" class="error text-sm text-danger">{{ errors.phone }}</span>
                     </div>
                 </div>
                 <div class="row mb-1">
                     <div class="col-md">
                         <label>Secondary Phone: </label>
-                        <input v-model="updateForm.secondary_phone" type="text" placeholder="+88017********"
-                               class="form-control">
+                        <PhoneInput v-model="updateForm.secondary_phone" :add="false"/>
                         <span v-if="errors.secondary_phone" class="error text-sm text-danger">{{ errors.secondary_phone }}</span>
                     </div>
                     <div class="col-md">
@@ -538,7 +537,7 @@
                         </label>
                         <div class="single-datepiker">
                             <Datepicker v-model="updateForm.followDate" :monthChangeOnScroll="false"
-                                        :format="'d-MM-Y'"
+                                        :format="'dd-MM-Y'"
                                         placeholder="Select Date" autoApply></Datepicker>
                             <span v-if="errors.followDate" class="error text-sm text-danger">{{
                                     errors.followDate
@@ -592,13 +591,14 @@
     import moment from "moment";
     import {computed, ref, watch} from "vue";
     import debounce from "lodash/debounce";
-    import {Inertia} from "@inertiajs/inertia";
+    import {router} from "@inertiajs/vue3";
     import Swal from 'sweetalert2'
-    import {useForm} from "@inertiajs/inertia-vue3";
+    import {useForm} from "@inertiajs/vue3";
     import axios from 'axios';
     import {useDate} from "../../../composables/useDate";
     const range = useDate();
     import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
+    import PhoneInput from "../../../components/PhoneInput.vue";
 
 
 
@@ -661,7 +661,7 @@
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                Inertia.delete('clients/' + id, {
+                router.delete('clients/' + id, {
                     preserveState: true, replace: true, onSuccess: page => {
                         Swal.fire(
                             'Deleted!',
@@ -685,7 +685,7 @@
         document.getElementById('addItemModal').$vb.modal.show()
     }
     let createClientForm = () => {
-        Inertia.post('clients?create=true', createForm, {
+        router.post('clients?create=true', createForm, {
             preserveState: true,
             onStart: () => {
                 createForm.processing = true
@@ -706,7 +706,7 @@
     }
 
     let updateClientForm = (id) => {
-        Inertia.put('clients/' + id, updateForm, {
+        router.put('clients/' + id, updateForm, {
             preserveState: true,
             onStart: () => {
                 createForm.processing = true
@@ -777,7 +777,7 @@
     let search = ref(props.filters.search);
     let perPage = ref(props.filters.perPage);
     watch([search, perPage, searchByStatus, dateRange], debounce(function ([val, val2, val3, val4]) {
-        Inertia.get(props.main_url, { search: val, perPage: val2, byStatus: val3 , dateRange: val4}, { preserveState: true, replace: true });
+        router.get(props.main_url, { search: val, perPage: val2, byStatus: val3 , dateRange: val4}, { preserveState: true, replace: true });
     }, 300));
 
 

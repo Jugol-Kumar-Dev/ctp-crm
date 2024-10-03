@@ -368,9 +368,9 @@
     import Modal from '../../../components/Modal'
     import {ref, watch} from "vue";
     import debounce from "lodash/debounce";
-    import {Inertia} from "@inertiajs/inertia";
+    import {router} from "@inertiajs/vue3";
     import Swal from 'sweetalert2'
-    import {useForm} from "@inertiajs/inertia-vue3";
+    import {useForm} from "@inertiajs/vue3";
     import TextEditor from "../../../components/TextEditor";
     import TextArea from "../../../components/Textarea";
     import QuantityButton from "../../../components/QuantityButton";
@@ -475,7 +475,7 @@
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                Inertia.delete(adminPath.value + '/users/' + id, {
+                router.delete(adminPath.value + '/users/' + id, {
                     preserveState: true, replace: true, onSuccess: page => {
                         Swal.fire(
                             'Deleted!',
@@ -498,7 +498,7 @@
 
     let createQutation = () => {
         console.log(formData)
-        Inertia.post('/admin/quotations', formData, {
+        router.post('/admin/quotations', formData, {
             preserveState: true,
             // onStart: () =>{ data.processing = true},
             // onFinish: () => { data.processing = false},

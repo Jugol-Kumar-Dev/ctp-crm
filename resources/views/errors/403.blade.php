@@ -1,5 +1,5 @@
+@extends('errors::minimal')
 
-
-page not found
-
-not have access
+@section('title', __('Forbidden'))
+@section('code', '403')
+@section('message', __('Forbidden'))

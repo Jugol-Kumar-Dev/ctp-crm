@@ -101,11 +101,11 @@
 <script setup>
 import moment from "moment";
 import {computed, ref} from "vue";
-import {useForm} from "@inertiajs/inertia-vue3";
-import Modal from "../../components/Modal.vue"
+import {useForm} from "@inertiajs/vue3";
+import Modal from "@/components/Modal.vue";
 import {useAction} from "../../composables/useAction";
 import {useActionStore} from "../../Store/useActionStore";
-import InvoiceContent from "../../components/modules/InvoiceContent.vue"
+import InvoiceContent from "@/components/modules/InvoiceContent.vue";
 const props = defineProps({
     content:Object|[]|null,
 })

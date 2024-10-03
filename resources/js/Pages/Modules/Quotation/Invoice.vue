@@ -361,8 +361,8 @@
 <script setup>
 
 import { computed } from "vue";
-import {useForm} from "@inertiajs/inertia-vue3";
-import {Inertia} from "@inertiajs/inertia";
+import {useForm} from "@inertiajs/vue3";
+import {router} from "@inertiajs/vue3";
 import {useDate} from "../../../composables/useDate";
 import Modal from '../../../components/Modal.vue'
 import moment from 'moment';
@@ -423,7 +423,7 @@ let createForm = useForm({
 })
 
 let addPayment = () => {
-    Inertia.post(props.info.add_payment, createForm, {
+    router.post(props.info.add_payment, createForm, {
         onSuccess: () => {
             createForm.reset();
             Swal.fire(

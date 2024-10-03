@@ -63,7 +63,7 @@
                                             </CDropdownToggle>
                                             <CDropdownMenu>
 
-                                                <CDropdownItem :href="item.show_url" target="_blank"
+                                                <CDropdownItem :href="item.show_url"
                                                                v-if="this.$page.props.auth.user.can.includes('services.show') || this.$page.props.auth.user.role.includes('Administrator')">
                                                     <vue-feather type="eye" size="15"/>
                                                     <span class="ms-1">Show</span>
@@ -158,19 +158,21 @@
 
 </template>
 <script>
-import Modal from "../../components/Modal";
+import Modal from "@/components/Modal.vue";
+
+
 
 </script>
 <script setup>
 
     import {useAction} from "../../composables/useAction";
     import {ref, watch} from "vue";
-    import {useForm} from "@inertiajs/inertia-vue3";
+    import {useForm} from "@inertiajs/vue3";
     import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
-    import {Inertia} from "@inertiajs/inertia";
+    import {router} from "@inertiajs/vue3";
     import axios from "axios";
     import debounce from "lodash/debounce";
-    import Pagination from "../../components/Pagination"
+    import Pagination from "@/components/Pagination.vue";
 
 
     const {swalSuccess, deleteItem} = useAction()
@@ -248,7 +250,7 @@ import Modal from "../../components/Modal";
     const search = ref(props.filters.search);
     const perPage = ref(props.filters.perPage);
     watch([search, perPage], debounce(function ([val, val2]) {
-        Inertia.get(props.main_url, {search: val, perPage: val2}, {preserveState: true, replace: true});
+        router.get(props.main_url, {search: val, perPage: val2}, {preserveState: true, replace: true});
     }, 300));
 
 </script>

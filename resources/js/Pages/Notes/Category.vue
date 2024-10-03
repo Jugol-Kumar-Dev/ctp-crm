@@ -117,14 +117,14 @@
 
 
 <script setup>
-import Pagination from "../../components/Pagination"
-import Icon from '../../components/Icon'
-import Modal from '../../components/Modal'
+import Pagination from "@/components/Pagination.vue";
+import Icon from "@/components/Icon.vue";
+import Modal from "@/components/Modal.vue";
 import {ref, watch} from "vue";
 import debounce from "lodash/debounce";
-import {Inertia} from "@inertiajs/inertia";
+import {router} from "@inertiajs/vue3";
 import Swal from 'sweetalert2'
-import {useForm} from "@inertiajs/inertia-vue3";
+import {useForm} from "@inertiajs/vue3";
 
 let props = defineProps({
     categories: Object,
@@ -153,7 +153,7 @@ let deleteItemModal = (id) => {
         confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
         if (result.isConfirmed) {
-            Inertia.delete(props.main_url + `/${id}`, {
+            router.delete(props.main_url + `/${id}`, {
                 preserveState: true, replace: true, onSuccess: page => {
                     Swal.fire(
                         'Deleted!',
@@ -176,7 +176,7 @@ let deleteItemModal = (id) => {
 let addDataModal = () => document.getElementById('addItemModal').$vb.modal.show();
 
 let createCategory = () => {
-    Inertia.post(props.main_url, createForm, {
+    router.post(props.main_url, createForm, {
         preserveState: true,
         onStart: () => {
             createForm.processing = true
@@ -204,7 +204,7 @@ let createCategory = () => {
 let search = ref(props.filters.search);
 let perPage = ref(props.filters.perPage);
 watch([search, perPage ], debounce(function ([val, val2]) {
-    Inertia.get(props.main_url, { search: val, perPage: val2}, { preserveState: true, replace: true });
+    router.get(props.main_url, { search: val, perPage: val2}, { preserveState: true, replace: true });
 }, 300));
 
 </script>

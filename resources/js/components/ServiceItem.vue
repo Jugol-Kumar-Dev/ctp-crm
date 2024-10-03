@@ -17,8 +17,8 @@
 </template>
 
 <script setup>
-    import QuantityButton from "./QuantityButton";
-    import QtyButton from "./QtyButton";
+    import QuantityButton from "@/components/QuantityButton.vue";
+    import QtyButton from "@/components/QtyButton.vue";
     let props = defineProps({
         discount:String,
 

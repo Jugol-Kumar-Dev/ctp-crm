@@ -37,7 +37,7 @@
                     </div>
 
 
-                    <a v-if="showTodoData.downloadUrl" :href="showTodoData.downloadUrl" target="_blank" v-c-tooltip="'View Or Download This File.'">
+                    <a v-if="showTodoData.downloadUrl" :href="showTodoData.downloadUrl"  v-c-tooltip="'View Or Download This File.'">
                         <img :src="showTodoData.downloadUrl" alt="" class="mb-1" style="max-width: 100%;">
                         {{ $page.props.auth.ADMIN_URL+''+showTodoData.downloadUrl }}
                     </a>

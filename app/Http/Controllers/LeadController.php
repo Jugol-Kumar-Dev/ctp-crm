@@ -12,7 +12,94 @@ use Illuminate\Support\Facades\URL;
 
 class LeadController extends Controller
 {
+
     public function index()
+    {
+
+        $show =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('leads.index');
+        $my =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('leads.ownonly');
+
+        if ( $show && $my){
+            abort(401);
+        }
+
+
+
+        $admin = auth()->user()->hasRole('Administrator');
+        $ownOnly = auth()->user()->can('leads.ownonly');
+
+
+        $clients = Client::query()->with(['projects', 'users', 'createdBy', 'updatedBy'])
+            ->where('is_client', false)
+            ->where('status', '!=', 'Converted to Customer')
+            ->when(!$admin && $ownOnly, function ($query) {
+                $query->where(function ($query) {
+                    $query->where('created_by', Auth::id())
+                        ->orWhereHas('users', function ($query) {
+                            $query->where('user_id', Auth::id());
+                        });
+                });
+            })
+            ->when(Request::input('search'), function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('email', 'like', "%{$search}%")
+                        ->orWhere('name', 'like', "%{$search}%")
+                        ->orWhere('address', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhere('secondary_phone', 'like', "%{$search}%");
+                });
+            })
+            ->when(Request::input('byStatus'), function ($query, $status) {
+                $query->where('status', $status);
+            })
+            ->when(Request::input('dateRange'), function ($query, $dateRange) {
+                $startDateTime = Carbon::parse($dateRange[0])->startOfDay();
+                $endDateTime = Carbon::parse($dateRange[1])->endOfDay();
+                $query->whereBetween('created_at', [$startDateTime, $endDateTime]);
+            })
+            ->latest()
+            ->paginate(Request::input('perPage') ?? 10)
+            ->withQueryString()
+            ->through(fn($client) => [
+                'id' => $client->id ?? '--',
+                'name' => $client->name ?? '--',
+                'phone' => $client->phone ?? '--',
+                'email' => $client->email ?? '--',
+                'assigned' => $client->users ?? '--',
+                'createdBy' => $client->createdBy ?? '--',
+                'updatedBy' => $client->updatedBy ?? '--',
+                'photo' => '/images/avatar.png' ?? '--',
+                'status' => $client->status ?? '--',
+                'followUp' => $client->follow_up ?? null,
+                'followUpMessage' => $client->follow_up_message ?? null,
+                'note' => $client->note ?? '--',
+                'created_at' => $client?->created_at?->format('d M Y') ?? null,
+                'show_url' => URL::route('leads.show', $client->id ?? '--')
+            ]);
+
+        if (Request::input('export_pdf') === 'true') {
+            return $this->loadDownload($clients);
+        }
+
+        return inertia('Modules/Leads/Index', [
+            'clients' => $clients,
+            'users' => User::all(),
+            'filters' => Request::only(['search', 'perPage', 'byStatus', 'dateRange']),
+            "main_url" => Url::route('leads.index'),
+        ]);
+
+    }
+
+
+    /*
+     * old index method download from cpanel.
+     * this method problem is not working for unique user
+     * this method not filtering unique user leads
+     * */
+
+
+
+    public function oldIndex()
     {
 
 
@@ -58,6 +145,11 @@ class LeadController extends Controller
                 ->orWhereHas('users', function ($query) {
                     $query->where('user_id', Auth::id());
                 })
+                ->when(Request::input('dateRange'), function ($query, $search) {
+                    $startDateTime = Carbon::parse($search[0])->startOfDay();
+                    $endDateTime = Carbon::parse($search[1])->endOfDay();
+                    $query->whereBetween('created_at', [$startDateTime, $endDateTime]);
+                })
                 ->when(Request::input('byStatus'), function ($query, $search){
                     $query->where('status', $search);
                 });
@@ -75,7 +167,7 @@ class LeadController extends Controller
             abort(404);
         }
 
-            $clients = $clients->latest()
+        $clients = $clients->latest()
             ->paginate(Request::input('perPage') ?? 10)
             ->withQueryString()
             ->through(fn($client) => [
@@ -109,117 +201,10 @@ class LeadController extends Controller
 
     }
 
-    protected function loadMyLeads()
-    {
-        $cliests = Client::query()
-            ->with('users')
-            ->where('is_client', false)
-            ->where('status', '!=',  "Converted to Customer")
-            ->where('created_by', Auth::id())
-            ->orWhereHas('users', function($query){
-                $query->where('user_id', Auth::id());
-            })
-            ->when(Request::input('search'), function ($query, $search){
-                $query
-                    ->where('created_by', Auth::id())
-                    ->orWhereHas('users', function($query){
-                        $query->where('user_id', Auth::id());
-                    })
-                    ->where('email', 'like', "%{$search}%")
-                    ->orWhere('name', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%");
-            })
-            ->when(Request::input('dateRange'), function ($query, $search) {
-                $startDateTime = Carbon::parse($search[0])->startOfDay();
-                $endDateTime = Carbon::parse($search[1])->endOfDay();
-                $query->whereBetween('created_at', [$startDateTime, $endDateTime]);
-            })
-            ->when(Request::input('byStatus'), function ($query, $search) {
-                $query->where('status', $search);
-            })
-            ->when(Request::input('dateRange'), function ($query, $search) {
-                $startDateTime = Carbon::parse($search[0])->startOfDay();
-                $endDateTime = Carbon::parse($search[1])->endOfDay();
-                $query->whereBetween('created_at', [$startDateTime, $endDateTime]);
-            })
-            ->latest()
-            ->paginate(Request::input('perPage') ?? 10)
-            ->withQueryString()
-            ->through(fn($client) => [
-                'id' => $client->id,
-                'name' => $client->name,
-                'phone' => $client->phone,
-                'email' => $client->email,
-                'assigned' => $client->users,
-                'createdBy' => $client->createdBy,
-                'updatedBy' => $client->updatedBy,
-                'photo' => '/images/avatar.png',
-                'status' => $client->status,
-                'followUp' => $client->follow_up,
-                'created_at' => $client?->created_at?->format('d M Y'),
-                'show_url' => URL::route('leads.show', $client->id)
-            ]);
-
-
-        return inertia('Modules/Leads/Index', [
-            'clients' => $cliests,
-            'users' => User::all(),
-            'filters' => Request::only(['search', 'perPage', 'byStatus', 'dateRange']),
-            "main_url" => Url::route('leads.index'),
-        ]);
-
-    }
-
-    private function readALlLeads()
-    {
-
-        $clients = Client::query()->with(['projects', 'users', 'createdBy', 'updatedBy'])
-            ->latest()
-            ->where('is_client', false)
-            ->Where('status', '!=', 'Converted to Customer')
-            ->when(Request::input('search'), function ($query, $search) {
-                $query
-                    ->where('email', 'like', "%{$search}%")
-                    ->orWhere('name', 'like', "%{$search}%")
-                    ->orWhere('address', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%")
-                    ->orWhere('secondary_phone', 'like', "%{$search}%");
-            })
-            ->when(Request::input('byStatus'), function ($query, $search) {
-                $query->where('status', $search);
-            })
-            ->when(Request::input('dateRange'), function ($query, $search) {
-                $startDateTime = Carbon::parse($search[0])->startOfDay();
-                $endDateTime = Carbon::parse($search[1])->endOfDay();
-                $query->whereBetween('created_at', [$startDateTime, $endDateTime]);
-            })
-            ->latest()
-            ->paginate(Request::input('perPage') ?? 10)
-            ->withQueryString()
-            ->through(fn($client) => [
-                'id' => $client->id,
-                'name' => $client->name,
-                'phone' => $client->phone,
-                'email' => $client->email,
-                'assigned' => $client->users,
-                'createdBy' => $client->createdBy,
-                'updatedBy' => $client->updatedBy,
-                'photo' => '/images/avatar.png',
-                'status' => $client->status,
-                'followUp' => $client->follow_up,
-                'created_at' => $client?->created_at?->format('d M Y'),
-                'show_url' => URL::route('leads.show', $client->id)
-            ]);
-
-    }
-
     protected function loadDownload($data)
     {
-//        if (!auth()->user()->can('leads.download')){
-//            abort(404);
-//        }
+
         Pdf::setOption(['enable_php', true]);
-//        return view('reports.pdf_lead_list', compact('data'));
         $pdf = Pdf::loadView('reports.pdf_lead_list', compact('data'));
         return $pdf->download("Lead_Sheet" . "_" . now()->format('d_m_Y') . "_" . 'quotation.pdf');
     }

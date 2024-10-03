@@ -332,7 +332,7 @@
                         <Datepicker v-model="followUpData.followDate"
                                     :monthChangeOnScroll="false"
                                     :enable-time-picker="false"
-                                    :format="'d-MM-Y'"
+                                    :format="'dd-MM-Y'"
                                     placeholder="Select Date" autoApply></Datepicker>
                         <span v-if="errors.followDate" class="error text-sm text-danger">{{ errors.followDate }}</span>
                     </div>
@@ -425,10 +425,10 @@ import moment from "moment";
 
 import {useDate} from '../../composables/useDate.js'
 import {ref} from "vue";
-import {Inertia} from "@inertiajs/inertia";
+import {router} from "@inertiajs/vue3";
 import Swal from "sweetalert2";
 import axios from "axios";
-import {useForm} from "@inertiajs/inertia-vue3";
+import {useForm} from "@inertiajs/vue3";
 let {formatted} = useDate();
 let props = defineProps({
     user:[]|Object|null,
@@ -490,7 +490,7 @@ let editClient = (url) => {
 
 
 let updateClientForm = (id) => {
-    Inertia.put(props.showUrl, updateForm, {
+    router.put(props.showUrl, updateForm, {
         preserveState: true,
         onSuccess: () => {
             document.getElementById('editClient').$vb.modal.hide()
@@ -529,7 +529,7 @@ const assignEmployee = () => {
 }
 
 let assignEmployes = (id) => {
-    Inertia.put(props.showUrl+'?type=assignEmployee', updateForm, {
+    router.put(props.showUrl+'?type=assignEmployee', updateForm, {
         preserveState: true,
         onSuccess: () => {
             document.getElementById('assignEmployee').$vb.modal.hide()

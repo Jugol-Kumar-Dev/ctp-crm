@@ -96,13 +96,13 @@
                                                             <span class="ms-1">Download</span>
                                                         </CDropdownItem>
 
-                                                        <CDropdownItem :href="invoice.show_url" target="_blank"
+                                                        <CDropdownItem :href="invoice.show_url"
                                                                        v-if="this.$page.props.auth.user.can.includes('invoice.show') || this.$page.props.auth.user.role.includes('Administrator')">
                                                             <vue-feather type="eye" size="15"/>
                                                             <span class="ms-1">Show</span>
                                                         </CDropdownItem>
 
-                                                        <CDropdownItem :href="invoice.edit_url" target="_blank"
+                                                        <CDropdownItem :href="invoice.edit_url"
                                                                        v-if="invoice.invoice_type === 'custom' && (this.$page.props.auth.user.can.includes('invoice.edit') || this.$page.props.auth.user.role.includes('Administrator'))">
                                                             <vue-feather type="edit" size="15"/>
                                                             <span class="ms-1">Edit</span>
@@ -137,14 +137,14 @@
 
 </script>
 <script setup>
-import Pagination from "../../components/Pagination"
-import Icon from '../../components/Icon'
-import Modal from '../../components/Modal'
+import Pagination from "@/components/Pagination.vue";
+import Icon from "@/components/Icon.vue";
+import Modal from "@/components/Modal.vue";
 import {ref, watch} from "vue";
 import debounce from "lodash/debounce";
-import {Inertia} from "@inertiajs/inertia";
+import {router} from "@inertiajs/vue3";
 import Swal from 'sweetalert2'
-import {useForm} from "@inertiajs/inertia-vue3";
+import {useForm} from "@inertiajs/vue3";
 import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
 import {useAction} from "../../composables/useAction";
 
@@ -177,7 +177,7 @@ let deleteItemModal = (url) => {
         confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
         if (result.isConfirmed) {
-            Inertia.delete(url, { preserveState: true, replace: true, onSuccess: page => {
+            router.delete(url, { preserveState: true, replace: true, onSuccess: page => {
                     Swal.fire(
                         'Deleted!',
                         'Your file has been deleted.',
@@ -196,7 +196,7 @@ let deleteItemModal = (url) => {
 };
 
 let editITem = (id) =>{
-    Inertia.get('invoices/'+id)
+    router.get('invoices/'+id)
 }
 
 
@@ -206,7 +206,7 @@ let search = ref(props.filters.search);
 let perPage = ref(props.filters.perPage);
 
 watch([search, perPage], debounce(function ([val, val2]) {
-    Inertia.get(props.main_url, { search: val, perPage: val2 }, { preserveState: true, replace: true });
+    router.get(props.main_url, { search: val, perPage: val2 }, { preserveState: true, replace: true });
 }, 300));
 
 

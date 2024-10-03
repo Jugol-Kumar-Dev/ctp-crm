@@ -45,9 +45,8 @@
 </template>
 
 <script setup>
-
-    import {useAction} from "../../../composables/useAction";
-    import {Inertia} from "@inertiajs/inertia";
+    import {useAction} from "@/composables/useAction.js";
+    import {router} from "@inertiajs/vue3";
     import Swal from "sweetalert2";
     import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
 
@@ -73,7 +72,7 @@
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                   Inertia.get(url, {
+                   router.get(url, {
                        preserveState: true, replace: true,
                        onSuccess: ()=> { $toast.success('Remove User Form This Project...') },
                        onError: ()=> { $toast.error('Have An Error. Please Try Again.') },

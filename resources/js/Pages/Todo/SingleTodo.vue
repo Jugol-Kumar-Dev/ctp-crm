@@ -76,7 +76,7 @@
                                     </label>
                                     <input type="text" class="form-control rounded-5" v-model="myData.message" placeholder="Aa"  @input="typing"  @keyup.enter="send">
                                     <button class="btn-icon btn btn-light-success send-button" @click="send">
-                                        <img src="/images/send.svg" alt="">
+                                        <img src="./images/send.svg" alt="">
                                     </button>
                                 </div>
                             </div>
@@ -94,14 +94,14 @@
 
 import {useAction} from "../../composables/useAction.js";
 import {ref, computed, watch, nextTick, onMounted} from "vue";
-import {useForm, usePage} from "@inertiajs/inertia-vue3";
+import {useForm, usePage} from "@inertiajs/vue3";
 import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
-import {Inertia} from "@inertiajs/inertia";
+import {router} from "@inertiajs/vue3";
 import axios from "axios";
 import moment from "moment";
 import Swal from "sweetalert2";
 import Sidebar from './Sidebar.vue'
-import TodoContent from "./TodoContent.vue";
+import TodoContent from "@/components/TodoContent.vue";
 import {useJson} from "../../composables/useJson";
 const {priority} = useJson()
 
@@ -119,7 +119,7 @@ const formData = useForm({
 
 
 const taskComplate = (event) =>{
-    Inertia.get(props.main_url+"/"+event+"?complete=true", {},{
+    router.get(props.main_url+"/"+event+"?complete=true", {},{
         onSuccess:()=>{
             Swal.fire(
                 'Saved!',
@@ -157,7 +157,7 @@ const send = () =>{
 }
 
 const categorySelected = (event) =>{
-    Inertia.get(`/admin/change-todo-status/${props.todo.id}?status=${event}`,{
+    router.get(`/admin/change-todo-status/${props.todo.id}?status=${event}`,{
         onSuccess:()=>{
             Swal.fire(
                 'Saved!',

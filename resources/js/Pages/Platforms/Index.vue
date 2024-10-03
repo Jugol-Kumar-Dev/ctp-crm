@@ -101,12 +101,12 @@
 
     import {useAction} from "../../composables/useAction";
     import {ref, onMounted, watch} from "vue";
-    import {useForm} from "@inertiajs/inertia-vue3";
-    import Pagination from "../../components/Pagination"
+    import {useForm} from "@inertiajs/vue3";
+    import Pagination from "@/components/Pagination.vue";
 
     import MiniMasonry from "minimasonry";
     import debounce from "lodash/debounce";
-    import {Inertia} from "@inertiajs/inertia";
+    import {router} from "@inertiajs/vue3";
 
     const {swalSuccess, deleteItem} = useAction()
 
@@ -153,7 +153,7 @@
     const perPage = ref(props.filters.perPage);
 
     watch([search, perPage], debounce(function ([val, val2]) {
-        Inertia.get(props.main_url, {search: val, perPage: val2}, {preserveState: true, replace: true});
+        router.get(props.main_url, {search: val, perPage: val2}, {preserveState: true, replace: true});
     }, 300));
 
 /*
@@ -177,7 +177,7 @@
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                Inertia.delete( 'services/' + id, { preserveState: true, replace: true, onSuccess: page => {
+                router.delete( 'services/' + id, { preserveState: true, replace: true, onSuccess: page => {
                         Swal.fire(
                             'Deleted!',
                             'Your file has been deleted.',
@@ -215,7 +215,7 @@
     }
 
     let updateData = (id) => {
-        Inertia.put('services/' + id, updateForm, {
+        router.put('services/' + id, updateForm, {
             preserveState: true,
             onStart: () => {
                 createForm.processing = true
@@ -239,7 +239,7 @@
     let perPage = ref(props.filters.perPage);
 
     watch([search, perPage], debounce(function ([val, val2]) {
-        Inertia.get(props.main_url, { search: val, perPage: val2 }, { preserveState: true, replace: true });
+        router.get(props.main_url, { search: val, perPage: val2 }, { preserveState: true, replace: true });
     }, 300));
 
 

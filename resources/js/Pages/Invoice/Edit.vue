@@ -167,21 +167,35 @@
 
 
 <script setup>
-import Pagination from "../../components/Pagination"
-import Icon from '../../components/Icon'
-import Modal from '../../components/Modal'
+import Pagination from "@/components/Pagination.vue";
+import Icon from "@/components/Icon.vue";
+import Modal from "@/components/Modal.vue";
 import {ref, watch, computed, onMounted} from "vue";
 import debounce from "lodash/debounce";
-import {Inertia} from "@inertiajs/inertia";
+import {router} from "@inertiajs/vue3";
 import Swal from 'sweetalert2'
-import {useForm} from "@inertiajs/inertia-vue3";
-import TextEditor from "../../components/TextEditor";
-import TextArea from "../../components/Textarea";
-import QuantityButton from "../../components/QuantityButton";
-import ServiceItem from "../../components/ServiceItem";
-import ServiceCard from "../../components/ServiceCard";
-import InputFieldError from "../../components/InputFieldError";
-import QtyButton from "../../components/QtyButton";
+import {useForm} from "@inertiajs/vue3";
+import TextEditor from "@/components/TextEditor.vue";
+
+
+import TextArea from "@/components/Textarea.vue";
+
+
+import QuantityButton from "@/components/QuantityButton.vue";
+
+
+import ServiceItem from "@/components/ServiceItem.vue";
+
+
+import ServiceCard from "@/components/ServiceCard.vue";
+
+
+import InputFieldError from "@/components/InputFieldError.vue";
+
+
+import QtyButton from "@/components/QtyButton.vue";
+
+
 
 import EditInvoice from './partial/EditInvoice.vue'
 
@@ -218,7 +232,7 @@ const formData = useForm({
 })
 const processing = ref(false)
 const saveInvoice = (events) =>{
-    Inertia.patch(props.update_url, {...formData, ...events}, {
+    router.patch(props.update_url, {...formData, ...events}, {
         preserveState: true,
         onStart: () => {processing.value = true},
         onFinish: () => {processing.value = false},

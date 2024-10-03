@@ -75,7 +75,7 @@
                                             <td>{{ exp.method.name }}</td>
                                             <td>{{ exp.amount+" Tk" }}</td>
                                             <td>
-                                                <a class="text-capitalize" :href="`/admin/users/${exp.user.id}`" target="_blank">
+                                                <a class="text-capitalize" :href="`/admin/users/${exp.user.id}`">
                                                     {{ exp.user.name }}
                                                 </a>
                                             </td>
@@ -149,7 +149,7 @@
                         <Datepicker v-model="createForm.expanse_date"
                                     :monthChangeOnScroll="false"
                                     :enable-time-picker="false"
-                                    :format="'d-MM-Y'"
+                                    :format="'dd-MM-Y'"
                                     placeholder="Select Date" autoApply></Datepicker>
                         <span v-if="errors.expanse_date" class="error text-sm text-danger">{{ errors.expanse_date }}</span>
                     </div>
@@ -212,7 +212,7 @@
                         <Datepicker v-model="updateForm.expanse_date"
                                     :monthChangeOnScroll="false"
                                     :enable-time-picker="false"
-                                    :format="'d-MM-Y'"
+                                    :format="'dd-MM-Y'"
                                     placeholder="Select Date" autoApply></Datepicker>
                         <span v-if="errors.expanse_date" class="error text-sm text-danger">{{ errors.expanse_date }}</span>
                     </div>
@@ -220,7 +220,7 @@
                         <ImageUploader v-model="updateForm.document" label="Expanse Document" type="text" class="form-control"/>
                         <span v-if="errors.document" class="error text-sm text-danger">{{ errors.document }}</span>
                         <a v-if="editData.document" :href="`/storage/${editData.document}`"
-                           class="error text-sm text-danger d-flex gap-1 align-items-center" target="_blank">
+                           class="error text-sm text-danger d-flex gap-1 align-items-center">
                             <span>Existing File</span>
                             <vue-feather type="external-link" size="12"/>
                         </a>
@@ -271,9 +271,9 @@ import moment from "moment";
 
 import {ref, watch} from "vue";
 import debounce from "lodash/debounce";
-import {Inertia} from "@inertiajs/inertia";
+import {router} from "@inertiajs/vue3";
 import Swal from 'sweetalert2'
-import {useForm} from "@inertiajs/inertia-vue3";
+import {useForm} from "@inertiajs/vue3";
 import axios from "axios";
 
 let props = defineProps({
@@ -303,7 +303,7 @@ let createForm = useForm({
 const addExpanseModal = () => document.getElementById('createData').$vb.modal.show();
 
 let createData = () => {
-    Inertia.post(props.main_url, createForm,{
+    router.post(props.main_url, createForm,{
         preserveState: true,
         onStart: () => {
             createForm.processing = true
@@ -395,7 +395,7 @@ let deleteItemModal = (id) => {
         confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
         if (result.isConfirmed) {
-            Inertia.delete( 'expense/' + id, { preserveState: true, replace: true, onSuccess: page => {
+            router.delete( 'expense/' + id, { preserveState: true, replace: true, onSuccess: page => {
                     Swal.fire(
                         'Deleted!',
                         'Your file has been deleted.',
@@ -417,7 +417,7 @@ let search = ref(props.filters.search);
 let perPage = ref(props.filters.perPage);
 
 watch([search, perPage], debounce(function ([val, val2]) {
-    Inertia.get(props.main_url, { search: val, perPage: val2 }, { preserveState: true, replace: true });
+    router.get(props.main_url, { search: val, perPage: val2 }, { preserveState: true, replace: true });
 }, 300));
 
 

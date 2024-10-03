@@ -101,7 +101,7 @@
                                                         v-model="paymentFormData.date"
                                                         placeholder="Select Payment Date"
                                                         :enable-time-picker="false"
-                                                        :format="'d-MM-Y'"
+                                                        :format="'dd-MM-Y'"
                                                         autoApply></Datepicker>
                                         </div>
                                         <div class="mb-1">
@@ -221,13 +221,12 @@
 <script setup>
 import moment from "moment";
 import {computed, ref} from "vue";
-import {useForm} from "@inertiajs/inertia-vue3";
-import Modal from "../../components/Modal.vue"
-import {useAction} from "../../composables/useAction";
-import {useActionStore} from "../../Store/useActionStore";
-import InvoiceContent from "../../components/modules/InvoiceContent.vue"
+import {useForm, router} from "@inertiajs/vue3";
+import Modal from "@/components/Modal.vue";
+import {useAction} from "@/composables/useAction.js";
+import {useActionStore} from "@/Store/useActionStore.js";
+import InvoiceContent from "@/components/modules/InvoiceContent.vue"
 import Swal from "sweetalert2";
-import {Inertia} from "@inertiajs/inertia";
 const props = defineProps({
     invoice:Object|[]|null,
     pref:Array|[]|null,
@@ -320,7 +319,7 @@ const sendEmail = () => {
 }
 
 const emailSendApiCall =()=>{
-    Inertia.post(`/admin/send-invoice-email/${props.invoice.id}`, {email:customerEmail.value}, {
+    router.post(`/admin/send-invoice-email/${props.invoice.id}`, {email:customerEmail.value}, {
         preserveState: true,
         onStart: () =>{ processing.value = true},
         onFinish: () => {processing.value = false},

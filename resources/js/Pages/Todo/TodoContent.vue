@@ -24,7 +24,7 @@
             </div>
 
             <div class="d-flex gap-1" v-if="isImage(props.todo.downloadUrl) === 'docx'">
-                <img  src="/images/word.svg" width="50" alt="user_avatar">
+                <img  src="./images/word.svg" width="50" alt="user_avatar">
                 <div class="d-flex flex-column gap-1">
                     <span class="d-block" style="width: 70%">{{$page.props.auth?.ADMIN_URL+''+props.todo.downloadUrl}}</span>
                     <a class="btn btn-sm btn-primary"

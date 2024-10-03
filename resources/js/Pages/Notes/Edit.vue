@@ -120,17 +120,18 @@
 
 
 <script setup>
-import Pagination from "../../components/Pagination"
-import Icon from '../../components/Icon'
-import Modal from '../../components/Modal'
+import Pagination from "@/components/Pagination.vue";
+import Icon from "@/components/Icon.vue";
+import Modal from "@/components/Modal.vue";
 import {ref, watch} from "vue";
 import debounce from "lodash/debounce";
-import {Inertia} from "@inertiajs/inertia";
+import {router} from "@inertiajs/vue3";
 import Swal from 'sweetalert2'
-import {useForm} from "@inertiajs/inertia-vue3";
+import {useForm} from "@inertiajs/vue3";
 import axios from 'axios';
 import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
-import TextEditor from "../../components/TextEditor";
+import TextEditor from "@/components/TextEditor";
+
 
 
 let props = defineProps({
@@ -162,7 +163,7 @@ createForm.agents = props.note?.users;
 
 
 let createNote = () => {
-    Inertia.post(props.update_url, createForm, {
+    router.post(props.update_url, createForm, {
         preserveState: true,
         onStart: () => {
             createForm.processing = true

@@ -248,16 +248,18 @@
 </template>
 
 <script setup>
-import Modal from "../../components/Modal.vue";
+import Modal from "@/components/Modal.vue";
+
+
 
 import {useAction} from "../../composables/useAction";
 import {computed, ref, watch} from "vue";
-import {useForm} from "@inertiajs/inertia-vue3";
+import {useForm} from "@inertiajs/vue3";
 import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
-import {Inertia} from "@inertiajs/inertia";
+import {router} from "@inertiajs/vue3";
 import axios from "axios";
 import debounce from "lodash/debounce";
-import Pagination from "../../components/Pagination"
+import Pagination from "@/components/Pagination.vue";
 const {swalSuccess, deleteItem} = useAction()
 
 const props = defineProps({
