@@ -10,9 +10,9 @@
                 <div class="col-md-4 col-sm-12">
                     <div class="card">
                         <div class="card-body">
-                            <h1 class="text-capitalize">Welcome {{ this.$page.props.auth.user.username }}</h1>
+                            <h1 class="text-capitalize">Welcome {{ $page.props.auth.user.username }}</h1>
 <!--                            <pre>
-                                {{ this.$page.props.auth.user.can }}
+                                {{ $page.props.auth.user.can }}
                             </pre>-->
                         </div>
                     </div>
@@ -21,9 +21,9 @@
         </section>
 
         <div class="row">
-            <div class="col-md-6" v-if="this.$page.props.auth.user.can.includes('leads.index') ||
-            this.$page.props.auth.user.can.includes('leads.ownonly') ||
-            this.$page.props.auth.user.role.includes('Administrator')">
+            <div class="col-md-6" v-if="$page.props.auth.user.can.includes('leads.index') ||
+            $page.props.auth.user.can.includes('leads.ownonly') ||
+            $page.props.auth.user.role.includes('Administrator')">
                 <div class="card">
                     <div class="card-body">
                         <h2 class="card-title">Today Followup Leads</h2>
@@ -61,7 +61,7 @@
                                     <td>
                                         <div class="d-flex flex-column">
                                             <strong>{{ lead.name }}</strong>
-                                            <smalll>{{ lead.email }}</smalll>
+                                            <small>{{ lead.email }}</small>
                                         </div>
                                     </td>
                                     <td>{{ lead.phone}}</td>
@@ -73,8 +73,8 @@
                 </div>
             </div>
 
-            <div class="col-md-6" v-if="this.$page.props.auth.user.can.includes('client.index') ||
-            this.$page.props.auth.user.role.includes('Administrator')">
+            <div class="col-md-6" v-if="$page.props.auth.user.can.includes('client.index') ||
+            $page.props.auth.user.role.includes('Administrator')">
                 <div class="card">
                     <div class="card-body">
                         <h2 class="card-title">Today Followup Clients</h2>
@@ -125,8 +125,8 @@
             </div>
         </div>
 
-        <div class="row" v-if="this.$page.props.auth.user.can.includes('note.ownonly')
-        || this.$page.props.auth.user.can.includes('note.index') || this.$page.props.auth.user.role.includes('Administrator')">
+        <div class="row" v-if="$page.props.auth.user.can.includes('note.ownonly')
+        || $page.props.auth.user.can.includes('note.index') || $page.props.auth.user.role.includes('Administrator')">
             <div class="col-md-6">
                 <div class="card bg-white">
                     <div class="card-body">
@@ -147,7 +147,7 @@
                                 </td>
                                 <td></td>
                                 <td>
-                                    <a :href="`/admin/notes/${note.id}`" class="btn btn-sm btn-default" v-if="this.$page.props.auth.user.role.includes('Administrator') || this.$page.props.auth.user.can.includes('note.show')">
+                                    <a :href="`/admin/notes/${note.id}`" class="btn btn-sm btn-default" v-if="$page.props.auth.user.role.includes('Administrator') || $page.props.auth.user.can.includes('note.show')">
                                         <vue-feather type="eye" size="14"/>
                                     </a>
                                 </td>
@@ -461,12 +461,13 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 let props = defineProps({
     trans: Object,
-    followup_leads:[]|null,
-    others_followup_leads:[]|null,
-    followup_clients:[]|null,
-    others_followup_Clients:[]|null,
-    todos:[]|null,
-    notes:[],
+    followup_leads:Array|Object|null,
+    others_followup_leads:Array|Object|null,
+    followup_clients:Array|Object|null,
+    others_followup_Clients:Array|Object|null,
+    todos:Array|Object|null,
+    notes:Array|Object|null,
+    errors:Array|Object|null,
 })
 
 /*

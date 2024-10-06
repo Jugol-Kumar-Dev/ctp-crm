@@ -15,7 +15,7 @@
                                 <div class="card-header border-bottom d-flex justify-content-between">
                                     <h4 class="card-title">Purposes Information's </h4>
                                     <button class="dt-button add-new btn btn-primary"
-                                            v-if="this.$page.props.auth.user.can.includes('purpose.create')  || this.$page.props.auth.user.role.includes('Administrator')"
+                                            v-if="$page.props.auth.user.can.includes('purpose.create')  || $page.props.auth.user.role.includes('Administrator')"
                                             tabindex="0" type="button"
                                             @click="addPurpose"
                                     >Add Purposes</button>
@@ -61,10 +61,10 @@
                                             <td>
                                                 <div class="demo-inline-spacing">
                                                     <vue-feather class="cursor-pointer text-info"
-                                                                 v-if="this.$page.props.auth.user.can.includes('purpose.edit')  || this.$page.props.auth.user.role.includes('Administrator')"
+                                                                 v-if="$page.props.auth.user.can.includes('purpose.edit')  || $page.props.auth.user.role.includes('Administrator')"
                                                                  size="15" type="edit" @click="editItem(purpose.show_url)"/>
                                                     <vue-feather class="cursor-pointer text-danger" size="15"
-                                                                 v-if="this.$page.props.auth.user.can.includes('purpose.delete')  || this.$page.props.auth.user.role.includes('Administrator')"
+                                                                 v-if="$page.props.auth.user.can.includes('purpose.delete')  || $page.props.auth.user.role.includes('Administrator')"
                                                                  type="trash-2" @click="deleteItem(props.main_url, purpose.id)"/>
                                                 </div>
                                             </td>
@@ -137,19 +137,18 @@
 
 
 </template>
-<script>
 
-</script><script setup>
-    import Pagination from "../../../components/Pagination"
-    import Icon from '../../../components/Icon'
-    import Modal from '../../../components/Modal'
+<script setup>
+    import Pagination from "@/components/Pagination.vue"
+    import Icon from '@/components/Icon.vue'
+    import Modal from '@/components/Modal.vue'
     import {ref, watch} from "vue";
     import debounce from "lodash/debounce";
     import {router} from "@inertiajs/vue3";
     import Swal from 'sweetalert2'
     import {useForm} from "@inertiajs/vue3";
     import axios from "axios";
-    import {useAction} from "../../../composables/useAction";
+    import {useAction} from "@/composables/useAction.js";
 
     const {deleteItem} = useAction();
 

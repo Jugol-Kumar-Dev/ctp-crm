@@ -223,12 +223,15 @@ class DashboardController extends Controller
 //
 
     public function __invoke(Request $request){
+        $user = Auth::user();
+        $admin = $user->hasRole('Administrator');
+        $show = $user->can('dashboard.show');
 
-
-        if (!auth()->user()->can('dashboard.show') || auth()->user()->hasRole('administrator')){
-            abort(401);
+        if (!$admin) {
+            if (!$show) {
+                abort(401, 'Your Not Autorized For Access Tthis Page');
+            }
         }
-
 
 
         if (auth()->user()->hasRole('administrator')) {

@@ -40,7 +40,7 @@
                                                         placeholder="Select Date Range" autoApply
                                                         @update:model-value="handleDate" ></Datepicker>
 
-                                            <select class="form-select" v-model="employee" style="width:100%;" v-if="!this.$page.props.auth.user.can.includes('duetrx.own')">
+                                            <select class="form-select" v-model="employee" style="width:100%;" v-if="!$page.props.auth.user.can.includes('duetrx.own')">
                                                 <option :value="undefined" disabled selected>Filter By Employee</option>
                                                 <option :value="emp.id" v-for="emp in props.employees" v-text="emp.name"/>
                                             </select>
@@ -171,7 +171,7 @@
                         <p v-text="editData?.details"></p>
                     </div>
                     <div class="col mb-1" v-if="editData?.document">
-                        <img :src="`${this.$page.props?.auth?.MAIN_URL}/storage/${editData?.document}`" frameborder="0" class="w-100 h-100"/>
+                        <img :src="`${$page.props?.auth?.MAIN_URL}/storage/${editData?.document}`" frameborder="0" class="w-100 h-100"/>
                     </div>
                 </div>
             </div>
@@ -186,7 +186,7 @@ import Pagination from "@/components/Pagination.vue";
 import Icon from "@/components/Icon.vue";
 import Modal from "@/components/Modal.vue";
 import ImageUploader from "@/components/ImageUploader.vue";
-import Textarea from "@/components/Textarea";
+import Textarea from "@/components/Textarea.vue";
 
 import moment from 'moment';
 import {ref, watch, computed} from "vue";
@@ -195,7 +195,7 @@ import {router} from "@inertiajs/vue3";
 import Swal from 'sweetalert2'
 import {useForm} from "@inertiajs/vue3";
 import axios from "axios";
-import {useDate} from "../../composables/useDate";
+import {useDate} from "@/composables/useDate.js";
 const range = useDate();
 const formatted  = useDate();
 import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'

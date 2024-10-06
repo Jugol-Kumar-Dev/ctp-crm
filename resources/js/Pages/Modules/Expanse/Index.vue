@@ -14,7 +14,7 @@
                                 <div class="card-header border-bottom d-flex justify-content-between">
                                     <h4 class="card-title">Expanse Information's </h4>
                                     <button class="dt-button add-new btn btn-primary"
-                                            v-if="this.$page.props.auth.user.can.includes('expanse.create') || this.$page.props.auth.user.role.includes('Administrator')"
+                                            v-if="$page.props.auth.user.can.includes('expanse.create') || $page.props.auth.user.role.includes('Administrator')"
                                             tabindex="0" type="button" @click="addExpanseModal"
                                     >Add Expanse</button>
                                 </div>
@@ -60,8 +60,8 @@
                                         <tbody>
                                         <tr v-for="exp in expanses.data" :key="exp.id">
                                             <td>
-                                                <a  v-if="this.$page.props.auth.user.can.includes('expanse.show') ||
-                                                this.$page.props.auth.user.role.includes('Administrator')"
+                                                <a  v-if="$page.props.auth.user.can.includes('expanse.show') ||
+                                                $page.props.auth.user.role.includes('Administrator')"
                                                     href="javascript:void(0)" @click="editItem(exp.show_url, true)">
                                                     #EXP_{{ exp.id }}
                                                 </a>
@@ -83,13 +83,13 @@
                                             <td>{{ exp.created_at }}</td>
                                             <td>
                                                 <button type="button"  @click="editItem(exp.show_url)"
-                                                        v-if="this.$page.props.auth.user.can.includes('expanse.edit') || this.$page.props.auth.user.role.includes('Administrator') "
+                                                        v-if="$page.props.auth.user.can.includes('expanse.edit') || $page.props.auth.user.role.includes('Administrator') "
                                                         class="btn btn-icon btn-icon rounded-circle bg-light-warning waves-effect waves-float waves-light">
                                                     <Icon title="pencil"/>
                                                 </button>
 
                                                 <button @click="deleteItemModal(exp.id)" type="button"
-                                                        v-if="this.$page.props.auth.user.can.includes('expanse.delete') || this.$page.props.auth.user.role.includes('Administrator') "
+                                                        v-if="$page.props.auth.user.can.includes('expanse.delete') || $page.props.auth.user.role.includes('Administrator') "
                                                         class="btn btn-icon btn-icon rounded-circle waves-effect waves-float waves-light bg-light-danger">
                                                     <Icon title="trash"/>
                                                 </button>
@@ -262,11 +262,11 @@
 
 </script>
 <script setup>
-import Pagination from "../../../components/Pagination"
-import Icon from '../../../components/Icon'
-import Modal from '../../../components/Modal'
-import ImageUploader from "../../../components/ImageUploader"
-import Textarea from "../../../components/Textarea";
+import Pagination from "@/components/Pagination.vue"
+import Icon from '@/components/Icon.vue'
+import Modal from '@/components/Modal.vue'
+import ImageUploader from "@/components/ImageUploader.vue"
+import Textarea from "@/components/Textarea.vue";
 import moment from "moment";
 
 import {ref, watch} from "vue";

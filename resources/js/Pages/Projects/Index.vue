@@ -15,7 +15,7 @@
                                     <h4 class="card-title">Project Information's </h4>
 <!--                                    <button class="dt-button add-new btn btn-primary" tabindex="0" type="button" data-bs-toggle="modal" data-bs-target="#addItemModal">Add Client</button>-->
                                     <button
-                                        v-if="this.$page.props.auth.user.can.includes('project.create')|| this.$page.props.auth.user.role.includes('Administrator')"
+                                        v-if="$page.props.auth.user.can.includes('project.create')|| $page.props.auth.user.role.includes('Administrator')"
                                         class="dt-button add-new btn btn-primary"
                                         @click="addDataModal"
                                     >
@@ -126,23 +126,23 @@
                                             <td>{{ projects.start_date + " - " + projects.end_date }} </td>
                                             <td>
                                                 <CDropdown
-                                                    v-if="this.$page.props.auth.user.can.includes('project.show')||
-                                                    this.$page.props.auth.user.can.includes('project.edit')||
-                                                    this.$page.props.auth.user.role.includes('Administrator')">
+                                                    v-if="$page.props.auth.user.can.includes('project.show')||
+                                                    $page.props.auth.user.can.includes('project.edit')||
+                                                    $page.props.auth.user.role.includes('Administrator')">
                                                     <CDropdownToggle>
                                                         <vue-feather type="more-vertical" />
                                                     </CDropdownToggle>
                                                     <CDropdownMenu>
                                                         <CDropdownItem  :href="projects.show_url"
-                                                                        v-if="this.$page.props.auth.user.can.includes('project.show')||
-                                                                        this.$page.props.auth.user.role.includes('Administrator')">
+                                                                        v-if="$page.props.auth.user.can.includes('project.show')||
+                                                                        $page.props.auth.user.role.includes('Administrator')">
 
                                                         <Icon title="eye" />
                                                             <span class="ms-1">Show</span>
                                                         </CDropdownItem>
                                                         <CDropdownItem @click="deleteItem(props.main_url, projects.id)"
-                                                                       v-if="this.$page.props.auth.user.can.includes('project.delete')||
-                                                                        this.$page.props.auth.user.role.includes('Administrator')">
+                                                                       v-if="$page.props.auth.user.can.includes('project.delete')||
+                                                                        $page.props.auth.user.role.includes('Administrator')">
                                                             <Icon title="trash" />
                                                             <span class="ms-1">Delete</span>
                                                         </CDropdownItem>
@@ -164,7 +164,7 @@
         </div>
     </div>
 
-    <Modal id="addItemModal" title="Add New Project" v-vb-is:modal size="lg" v-if="this.$page.props.auth.user.can.includes('project.create') || this.$page.props.auth.user.role.includes('Administrator') ">
+    <Modal id="addItemModal" title="Add New Project" v-vb-is:modal size="lg" v-if="$page.props.auth.user.can.includes('project.create') || $page.props.auth.user.role.includes('Administrator') ">
         <form @submit.prevent="createProject">
             <div class="modal-body">
                 <div class="row mb-1">

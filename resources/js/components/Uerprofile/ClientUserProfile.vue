@@ -27,8 +27,8 @@
 <!--                                                <p v-if="props.user?.follow_up" v-c-tooltip="'follow up date'">{{ moment(props.user?.follow_up)  }}</p>-->
                                                 <div class="d-flex align-items-center gap-1">
                                                     <button class="btn-sm btn btn-primary w-100" v-if="
-                                                this.$page.props.auth.user.role == 'Administrator' ||
-                                                this.$page.props.auth.user.can.includes('client.edit')" @click="editClient" >Edit Me</button>
+                                                $page.props.auth.user.role == 'Administrator' ||
+                                                $page.props.auth.user.can.includes('client.edit')" @click="editClient" >Edit Me</button>
 <!--                                                    <button v-if="props.user?.note" class="btn btn-info btn-sm" @click="showClientNote" v-c-tooltip="'click for show client note.'">-->
 <!--                                                        <vue-feather type="info"/>-->
 <!--                                                    </button>-->
@@ -50,7 +50,7 @@
                         <div class="col-md-4">
                             <div class="card bg-white">
                                 <div class="card-body">
-                                    <table class="mt-2 mt-xl-0 w-100">
+<!--                                    <table class="mt-2 mt-xl-0 w-100">
                                         <tr>
                                             <th class="pb-50">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14px" height="14px" viewBox="0 0 24 24" fill="none"
@@ -111,7 +111,7 @@
                                             </th>
                                             <td> {{ props.user.phone }} </td>
                                         </tr>
-                                    </table>
+                                    </table>-->
                                 </div>
                             </div>
                         </div>
@@ -412,18 +412,15 @@
 
 </template>
 
-<script setup>
-import Account from './Account'
-import Billing from './Billing'
-import Quotation from './Quotation'
-import Invoice from './Invoice'
-import Project from './Project'
-import Domain from './Domain'
-import Hosting from './Hosting'
-import Modal from '../Modal.vue'
-import moment from "moment";
 
-import {useDate} from '../../composables/useDate.js'
+<script setup>
+import Modal from '@/components/Modal.vue'
+import moment from "moment";
+import Billing from "@/components/Uerprofile/Billing.vue"
+import Quotation from "@/components/Uerprofile/Quotation.vue"
+import Invoice from "@/components/Uerprofile/Invoice.vue"
+import Project from "@/components/Uerprofile/Project.vue"
+import {useDate} from '@/composables/useDate.js'
 import {ref} from "vue";
 import {router} from "@inertiajs/vue3";
 import Swal from "sweetalert2";
@@ -560,9 +557,6 @@ export default {
         }
     }
 }
-</script>
-
-<script setup>
 </script>
 
 

@@ -7,8 +7,8 @@
                         <div class="card-header">
                             <h4 class="mb-0">Project Summary
                                 <span @click="editDetails"
-                                      v-if="this.$page.props.auth.user.can.includes('project.edit')||
-                                            this.$page.props.auth.user.role.includes('Administrator')"
+                                      v-if="$page.props.auth.user.can.includes('project.edit')||
+                                            $page.props.auth.user.role.includes('Administrator')"
                                       class="cursor-pointer" v-c-tooltip="'Edit Project Details and Timeline.'">
                                     <vue-feather type="edit" size="15"/>
                                 </span>
@@ -64,7 +64,7 @@
                                         </div>
                                     </div>
                                 </li>
-                                <li class="list-group-item px-0 pb-0" v-if="props.info.invoice && this.$page.props.auth.user.can.includes('project.budget')">
+                                <li class="list-group-item px-0 pb-0" v-if="props.info.invoice && $page.props.auth.user.can.includes('project.budget')">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="d-flex align-items-center">
                                             <vue-feather type="dollar-sign"/>
@@ -85,8 +85,8 @@
                     </div>
                 </div>
                 <div class="col-12 mb-2" v-if="
-                            this.$page.props.auth.user.can.includes('project.credentials') ||
-                            this.$page.props.auth.user.role.includes('Administrator') ">
+                            $page.props.auth.user.can.includes('project.credentials') ||
+                            $page.props.auth.user.role.includes('Administrator') ">
                     <div class="card">
                         <div class="card-header">
                             <h4 class="mb-0">Project Credintials</h4>
@@ -100,7 +100,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-12 mb-2" v-if="props.info.invoice && this.$page.props.auth.user.can.includes('project.budget') || this.$page.props.auth.user.role.includes('Administrator')">
+                <div class="col-md-12 mb-2" v-if="props.info.invoice && $page.props.auth.user.can.includes('project.budget') || $page.props.auth.user.role.includes('Administrator')">
                     <!-- card -->
                     <div class="card">
                         <div class="card-header">
@@ -142,7 +142,7 @@
                         <!-- row -->
                     </div>
                 </div>
-                <div class="col-md-12 mb-2" v-if="props.info.invoice && this.$page.props.auth.user.can.includes('project.budget')">
+                <div class="col-md-12 mb-2" v-if="props.info.invoice && $page.props.auth.user.can.includes('project.budget')">
                     <!-- card -->
                     <div class="card">
                         <!-- card body -->
@@ -207,8 +207,8 @@
 
 
             <div class="card" v-if="
-                            this.$page.props.auth.user.can.includes('project.attachment') ||
-                            this.$page.props.auth.user.role.includes('Administrator') ">
+                            $page.props.auth.user.can.includes('project.attachment') ||
+                            $page.props.auth.user.role.includes('Administrator') ">
                 <!-- Card header -->
                 <div class="card-header card-header-height d-flex justify-content-between align-items-center">
                     <div>
@@ -279,7 +279,7 @@
                             <textarea v-model="formData.project_details" class="form-control" rows="6" placeholder="e.g Project description explain here help for developer..."></textarea>
                         </div>
                     </div>
-                    <div class="col-md-12 mt-2" v-if="this.$page.props.auth.user.can.includes('project.credentials')">
+                    <div class="col-md-12 mt-2" v-if="$page.props.auth.user.can.includes('project.credentials')">
                         <label>Project Credential's : </label>
                         <div class="">
                             <textarea v-model="formData.credintials" class="form-control" rows="6" placeholder="e.g Details explain about this project credentials..."></textarea>
@@ -325,9 +325,9 @@ import {computed, onMounted, ref} from "vue";
 import moment from "moment";
 import ProgressChart from "../../../components/ProgressChart.vue";
 import {useForm, router} from "@inertiajs/vue3";
-import Modal from '../../../components/Modal.vue';
+import Modal from '@/components/Modal.vue';
 import Swal from "sweetalert2";
-import ImageUploader from "../../../components/ImageUploader.vue";
+import ImageUploader from "@/components/ImageUploader.vue";
 
 
 const props = defineProps({

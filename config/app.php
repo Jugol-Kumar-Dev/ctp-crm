@@ -144,6 +144,7 @@ return [
     ],
 
 
+    'perpage' => env('PERPAGE', 25),
 
 
     'electrically_generated_message' => 'This is an electronically generated document, no signature is required',

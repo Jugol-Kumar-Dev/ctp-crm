@@ -106,7 +106,7 @@
     </div>
 </template>
 <script setup>
-import {useDate} from '../../composables/useDate.js'
+import {useDate} from '@/composables/useDate.js'
 import moment from "moment";
 import {computed, ref} from 'vue'
     const props = defineProps({

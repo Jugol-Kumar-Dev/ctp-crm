@@ -130,7 +130,7 @@ import Swal from 'sweetalert2'
 import {useForm} from "@inertiajs/vue3";
 import axios from 'axios';
 import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
-import TextEditor from "@/components/TextEditor";
+import TextEditor from "@/components/TextEditor.vue";
 
 
 

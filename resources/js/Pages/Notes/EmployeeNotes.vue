@@ -9,7 +9,7 @@
                 <div class="row">
 
                     <div class="col-6" v-for="note in notes">
-                        <div class="card" v-if="note.users.find(item => item.name === this.$page.props.auth.user.username)">
+                        <div class="card" v-if="note.users.find(item => item.name === $page.props.auth.user.username)">
                             <div class="card-body">
                                 <h2 class="card-title fw-bold">{{ note.title }}</h2>
                                 <h4>Note Category: {{ note.note_category?.title }}</h4>

@@ -1,6 +1,4 @@
 <template>
-    <Head title="Show Todo"/>
-
     <Head title="Todo Index"/>
     <div class="app-content content ">
         <div class="content-overlay"></div>
@@ -76,7 +74,7 @@
                                     </label>
                                     <input type="text" class="form-control rounded-5" v-model="myData.message" placeholder="Aa"  @input="typing"  @keyup.enter="send">
                                     <button class="btn-icon btn btn-light-success send-button" @click="send">
-                                        <img src="./images/send.svg" alt="">
+                                        <img src="@/assets/images/send.svg" alt="">
                                     </button>
                                 </div>
                             </div>
@@ -92,7 +90,7 @@
 
 <script setup>
 
-import {useAction} from "../../composables/useAction.js";
+import {useAction} from "@/composables/useAction.js";
 import {ref, computed, watch, nextTick, onMounted} from "vue";
 import {useForm, usePage} from "@inertiajs/vue3";
 import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
@@ -101,8 +99,8 @@ import axios from "axios";
 import moment from "moment";
 import Swal from "sweetalert2";
 import Sidebar from './Sidebar.vue'
-import TodoContent from "@/components/TodoContent.vue";
-import {useJson} from "../../composables/useJson";
+import TodoContent from "@/Pages/Todo/TodoContent.vue";
+import {useJson} from "@/composables/useJson.js";
 const {priority} = useJson()
 
 const {deleteItem} = useAction();

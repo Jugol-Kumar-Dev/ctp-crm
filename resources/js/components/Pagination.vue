@@ -11,7 +11,7 @@
                     v-for="link in links"
                     :class="{ 'active' : link.active }"
                 >
-                    <Link :href="link.url" class="page-link" v-html="link.label" />
+                    <Link :href="link.url ?? ''" class="page-link" v-html="link.label" />
                 </li>
             </ul>
         </div>

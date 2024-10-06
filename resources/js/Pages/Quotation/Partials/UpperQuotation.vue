@@ -40,7 +40,7 @@
                                                         <vue-feather type="hash" size="15"/>_id
                                                     </div>
                                                     <input type="text" class="form-control invoice-edit-input"
-                                                           :value="props.quotation.quotation_id+''+props.quotation.id" readonly/>
+                                                           :value="props.quotation.quotation_id" readonly/>
                                                 </div>
                                             </div>
                                             <div class="d-flex align-items-center mb-1 flex-column">
@@ -472,7 +472,7 @@ import {useQuotationStore} from "../../../Store/useQuotationStore";
 import Fuse from "fuse.js";
 import {usePolicyStore} from "../../../Store/usePolicyStore";
 import {useForm} from "@inertiajs/vue3";
-import Modal from "../../../components/Modal.vue";
+import Modal from "@/components/Modal.vue";
 import {storeToRefs} from "pinia";
 
 const quotationStore = useQuotationStore();

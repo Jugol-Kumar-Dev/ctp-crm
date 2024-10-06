@@ -18,7 +18,7 @@
                                         </div>
                                         <h3 class="mt-3" v-if="dateRange">Date Range <strong>{{ moment(dateRange[0])?.format('l') }}</strong> To <strong>{{ moment(dateRange[1])?.format('l') }}</strong></h3>
                                     </div>
-                                    <div v-if="this.$page.props.auth.user.can.includes('transaction.export')|| this.$page.props.auth.user.role.includes('Administrator')">
+                                    <div v-if="$page.props.auth.user.can.includes('transaction.export')|| $page.props.auth.user.role.includes('Administrator')">
                                         <CDropdown>
                                             <CDropdownToggle class="p-0">
                                                 <button class="btn bg-light-secondary d-flex align-items-center">
@@ -69,7 +69,7 @@
                                                         placeholder="Select Date Range" autoApply
                                                         @update:model-value="handleDate" ></Datepicker>
 
-                                            <select class="form-select" v-model="employee" style="width:100%;" v-if="this.$page.props.auth.user.role.includes('Administrator') || this.$page.props.auth.user.can.includes('transaction.index')">
+                                            <select class="form-select" v-model="employee" style="width:100%;" v-if="$page.props.auth.user.role.includes('Administrator') || $page.props.auth.user.can.includes('transaction.index')">
                                                 <option :value="undefined" disabled selected>Filter By Employee</option>
                                                 <option :value="emp.id" v-for="emp in props.employees" v-text="emp.name"/>
                                             </select>
@@ -202,7 +202,7 @@
                         <p v-text="editData?.details"></p>
                     </div>
                     <div class="col mb-1" v-if="editData?.document">
-                        <img :src="`${this.$page.props?.auth?.MAIN_URL}/storage/${editData?.document}`" frameborder="0" class="w-100 h-100"/>
+                        <img :src="`${$page.props?.auth?.MAIN_URL}/storage/${editData?.document}`" frameborder="0" class="w-100 h-100"/>
                     </div>
                 </div>
             </div>
@@ -227,7 +227,7 @@ import {router} from "@inertiajs/vue3";
 import Swal from 'sweetalert2'
 import {useForm} from "@inertiajs/vue3";
 import axios from "axios";
-import {useDate} from "../../composables/useDate";
+import {useDate} from "@/composables/useDate.js";
 const range = useDate();
 const formatted  = useDate();
 import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'

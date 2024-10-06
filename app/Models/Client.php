@@ -86,6 +86,14 @@ class Client extends Model
         return $this->belongsToMany('App\Models\User', 'client_user', 'client_id', 'user_id');
     }
 
+
+    public function createdBy(){
+        return $this->belongsTo(User::class, 'created_by');
+    }
+    public function updatedBy(){
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
     public function projects(){
         return $this->belongsToMany(Project::class, 'client_project');
     }
@@ -97,14 +105,6 @@ class Client extends Model
     public function invoices(){
         return $this->hasMany(Invoice::class, 'client_id');
     }
-
-    public function createdBy(){
-        return $this->belongsTo(User::class, 'created_by');
-    }
-    public function updatedBy(){
-        return $this->belongsTo(User::class, 'updated_by');
-    }
-
 
     /*
     |--------------------------------------------------------------------------

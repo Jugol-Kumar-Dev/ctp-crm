@@ -125,7 +125,7 @@ import axios from 'axios';
 import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
 import {useAction} from "../../composables/useAction";
 import moment from "moment";
-import {useDate} from "../../composables/useDate";
+import {useDate} from "@/composables/useDate.js";
 const range = useDate();
 const props = defineProps({
     oldInvoice: Object,

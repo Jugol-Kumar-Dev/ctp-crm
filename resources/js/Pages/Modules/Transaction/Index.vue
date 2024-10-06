@@ -181,7 +181,7 @@
                         <p v-text="editData?.details"></p>
                     </div>
                     <div class="col mb-1" v-if="editData?.document">
-                        <img :src="`${this.$page.props?.auth?.MAIN_URL}/storage/${editData?.document}`" frameborder="0" class="w-100 h-100"/>
+                        <img :src="`${$page.props?.auth?.MAIN_URL}/storage/${editData?.document}`" frameborder="0" class="w-100 h-100"/>
                     </div>
                 </div>
             </div>
@@ -192,11 +192,11 @@
 
 </script>
 <script setup>
-import Pagination from "../../../components/Pagination"
-import Icon from '../../../components/Icon'
-import Modal from '../../../components/Modal'
-import ImageUploader from "../../../components/ImageUploader"
-import Textarea from "../../../components/Textarea";
+import Pagination from "@/components/Pagination.vue"
+import Icon from '@/components/Icon.vue'
+import Modal from '@/components/Modal.vue'
+import ImageUploader from "@/components/ImageUploader.vue"
+import Textarea from "@/components/Textarea.vue";
 import moment from 'moment';
 import {ref, watch} from "vue";
 import debounce from "lodash/debounce";
@@ -204,7 +204,7 @@ import {router} from "@inertiajs/vue3";
 import Swal from 'sweetalert2'
 import {useForm} from "@inertiajs/vue3";
 import axios from "axios";
-import {useDate} from "../../../composables/useDate";
+import {useDate} from "@/composables/useDate.js";
 const range = useDate();
 const formatted  = useDate();
 import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'

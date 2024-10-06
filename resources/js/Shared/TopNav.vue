@@ -16,7 +16,7 @@
                             <vue-feather type="check-square" />
                         </a>
                     </li>
-                    <li class="nav-item d-none d-lg-block" v-if="this.$page.props.auth.user.role.includes('Administrator')" v-c-tooltip="'Today Working Summery'">
+                    <li class="nav-item d-none d-lg-block" v-if="$page.props.auth.user.role.includes('Administrator')" v-c-tooltip="'Today Working Summery'">
                         <a class="nav-link" href="/admin/admin-show-summery">
                             <vue-feather type="list" />
                         </a>
@@ -98,13 +98,13 @@
 
                 <dark-toggle />
                 <li class="nav-item dropdown dropdown-user">
-                    <a class="nav-link dropdown-toggle dropdown-user-link" :href="`/admin/users/${this.$page.props.auth.user.id}`">
+                    <a class="nav-link dropdown-toggle dropdown-user-link" :href="`/admin/users/${$page.props.auth.user.id}`">
                         <div class="user-nav d-sm-flex d-none">
-                            <span class="user-name fw-bolder">{{ this.$page.props.auth.user.username }}</span>
-                            <span class="user-status">{{ this.$page.props.auth.user.role[0]  }}</span>
+                            <span class="user-name fw-bolder">{{ $page.props.auth.user.username }}</span>
+                            <span class="user-status">{{ $page.props.auth.user.role[0]  }}</span>
                         </div>
                         <span class="avatar">
-                            <img class="round" :src="this.$page.props.auth.user.photo" alt="avatar" height="40" width="40">
+                            <img class="round" :src="$page.props.auth.user.photo" alt="avatar" height="40" width="40">
                             <span class="avatar-status-online"></span>
                         </span>
                     </a>

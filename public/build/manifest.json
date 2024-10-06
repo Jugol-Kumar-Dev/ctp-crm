@@ -20,17 +20,17 @@
     "src": "public/creativeTechPark.png"
   },
   "resources/css/app.css": {
-    "file": "assets/app-BdEfKtOw.css",
+    "file": "assets/app-CooJHyQ5.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-BoJMyp3E.js",
+    "file": "assets/app-BENIvLbD.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "css": [
-      "assets/app-UWdlxPzX.css"
+      "assets/app-DhJoj4EJ.css"
     ],
     "assets": [
       "assets/creativeTechPark-DC-uDthT.png",

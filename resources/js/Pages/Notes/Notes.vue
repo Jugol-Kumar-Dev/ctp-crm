@@ -18,8 +18,8 @@
                                             aria-selected="true">Manage Notes</button>
                                 </li>
                                 <li class="nav-item" role="presentation"
-                                    v-if="this.$page.props.auth.user.can.includes('note.create') ||
-                                          this.$page.props.auth.user.role.includes('Administrator')">
+                                    v-if="$page.props.auth.user.can.includes('note.create') ||
+                                          $page.props.auth.user.role.includes('Administrator')">
                                     <button class="nav-link"
                                             id="profile-tab" data-bs-toggle="tab"
                                             data-bs-target="#profile" type="button"
@@ -77,28 +77,28 @@
                                                         <td>{{ item.created_at }}</td>
                                                         <td>
                                                             <CDropdown
-                                                                v-if="this.$page.props.auth.user.can.includes('note.edit') ||
-                                                                this.$page.props.auth.user.can.includes('note.show') ||
-                                                                this.$page.props.auth.user.role.includes('Administrator') ">
+                                                                v-if="$page.props.auth.user.can.includes('note.edit') ||
+                                                                $page.props.auth.user.can.includes('note.show') ||
+                                                                $page.props.auth.user.role.includes('Administrator') ">
                                                                 <CDropdownToggle class="p-0">
                                                                     <vue-feather type="more-vertical" />
                                                                 </CDropdownToggle>
                                                                 <CDropdownMenu>
                                                                     <CDropdownItem :href="item.show_url+'?satus=edit'"
-                                                                                   v-if="this.$page.props.auth.user.can.includes('note.edit') ||
-                                                                                   this.$page.props.auth.user.role.includes('Administrator') ">
+                                                                                   v-if="$page.props.auth.user.can.includes('note.edit') ||
+                                                                                   $page.props.auth.user.role.includes('Administrator') ">
                                                                     <Icon title="pencil" />
                                                                         <span class="ms-1">Edit</span>
                                                                     </CDropdownItem>
                                                                     <CDropdownItem :href="item.show_url"
-                                                                                   v-if="this.$page.props.auth.user.can.includes('note.show') ||
-                                                                                   this.$page.props.auth.user.role.includes('Administrator') ">
+                                                                                   v-if="$page.props.auth.user.can.includes('note.show') ||
+                                                                                   $page.props.auth.user.role.includes('Administrator') ">
                                                                     <Icon title="eye" />
                                                                         <span class="ms-1">Show</span>
                                                                     </CDropdownItem>
 
                                                                     <CDropdownItem @click="deleteItemModal(item.id)"
-                                                                                   v-if="this.$page.props.auth.user.can.includes('note.delete') || this.$page.props.auth.user.role.includes('Administrator') ">
+                                                                                   v-if="$page.props.auth.user.can.includes('note.delete') || $page.props.auth.user.role.includes('Administrator') ">
 
                                                                     <Icon title="trash" />
                                                                         <span class="ms-1">Delete</span>
@@ -115,7 +115,7 @@
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab"
-                                     v-if="this.$page.props.auth.user.can.includes('note.create') || this.$page.props.auth.user.role.includes('Administrator') ">
+                                     v-if="$page.props.auth.user.can.includes('note.create') || $page.props.auth.user.role.includes('Administrator') ">
                                 <div class="row match-height">
                                         <form class="row match-height" @submit.prevent="createNote">
                                             <div class="col-md-6">
@@ -230,10 +230,10 @@
     import Swal from 'sweetalert2'
     import {useForm} from "@inertiajs/vue3";
     import axios from 'axios';
-    import {useDate} from "../../composables/useDate";
+    import {useDate} from "@/composables/useDate.js";
     const range = useDate();
     import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
-    import TextEditor from "@/components/TextEditor";
+    import TextEditor from "@/components/TextEditor.vue";
 
 
     let props = defineProps({

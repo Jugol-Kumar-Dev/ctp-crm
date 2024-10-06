@@ -22,7 +22,72 @@ class ClientsController extends Controller
      *
      * @return \Inertia\Response|\Inertia\ResponseFactory
      */
+
+
     public function index()
+    {
+        $user = Auth::user();
+        $admin = $user->hasRole('Administrator');
+        $ownOnly = $user->can('leads.ownonly');
+
+        if (!$admin) {
+            if (!auth()->user()->can('leads.index') && !$ownOnly) {
+                abort(401, 'Your Not Autorized For Access Tthis Page');
+            }
+        }
+        $clients = Client::query()
+            ->select('id', 'name', 'phone', 'email', 'created_by', 'updated_by', 'status', 'created_at')
+            ->with(['users:id,name', 'createdBy:id,name', 'updatedBy:id,name'])
+            ->where('is_client', true)
+            ->when(!$admin && $ownOnly, function ($query) use ($user) {
+                $query->where(function ($query) use ($user) {
+                    $query->where('created_by', $user->id)
+                        ->orWhereHas('users', function ($query) use ($user) {
+                            $query->where('user_id', $user->id);
+                        });
+                });
+            })
+            ->when(Request::input('search'), function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('email', 'like', "%{$search}%")
+                        ->orWhere('name', 'like', "%{$search}%")
+                        ->orWhere('address', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhere('secondary_phone', 'like', "%{$search}%");
+                });
+            })
+            ->when(Request::input('byStatus'), function ($query, $status) {
+                $query->where('status', $status);
+            })
+            ->when(Request::input('dateRange'), function ($query, $dateRange) {
+                $startDateTime = Carbon::parse($dateRange[0])->startOfDay();
+                $endDateTime = Carbon::parse($dateRange[1])->endOfDay();
+                $query->whereBetween('created_at', [$startDateTime, $endDateTime]);
+            })
+            ->when(Request::input('employee'), function ($query, $search) {
+                $query->where(function ($query)use($search) {
+                    $query->where('created_by', $search)
+                        ->orWhereHas('users', function ($query) use ($search) {
+                            $query->where('user_id', $search);
+                        });
+                });
+            })
+            ->latest()
+            ->paginate(Request::input('perPage') ?? config('app.perpage'));
+
+        return inertia('Clients/Index', [
+            'clients' => $clients,
+            'users' => User::query()->select('id', 'name')->get(),
+            'filters' => Request::only(['search', 'perPage', 'byStatus', 'dateRange','employee']),
+            "main_url" => Url::route('clients.index'),
+        ]);
+
+    }
+
+
+
+
+    public function old_index()
     {
 
         $show =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('client.index');
@@ -261,7 +326,7 @@ class ClientsController extends Controller
         return inertia('Modules/Clients/Show', [
             "user" => $user,
             'users' => User::all(),
-            'image' => "/images/avatar.png",
+            'image' => "./images/avatar.png",
             'show_url' => URL::route('clients.show', $user->id),
         ]);
     }

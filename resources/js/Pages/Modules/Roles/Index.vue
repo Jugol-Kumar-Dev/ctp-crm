@@ -33,8 +33,8 @@
                                 <div class="d-flex justify-content-between align-items-end mt-1 pt-25">
                                     <div class="role-heading">
                                         <h4 class="fw-bolder">{{ role.name  }}</h4>
-                                        <a v-if="role.is_delete &&  this.$page.props.auth.user.role.includes('Administrator') ||
-                                        role.is_delete && this.$page.props.auth.user.can.includes('authorization.edit') "  href="javascript:void(0);"
+                                        <a v-if="role.is_delete &&  $page.props.auth.user.role.includes('Administrator') ||
+                                        role.is_delete && $page.props.auth.user.can.includes('authorization.edit') "  href="javascript:void(0);"
                                            class="role-edit-modal" @click="editRole(role.id)">
                                             <small class="fw-bolder">Edit Role</small>
                                         </a>
@@ -43,8 +43,8 @@
                                         </span>
                                     </div>
                                     <span @click="deleteItem(props.main_url, role.id)" class="text-body text-danger cursor-pointer"
-                                       v-if="role.is_delete &&  this.$page.props.auth.user.role.includes('Administrator') ||
-                                        role.is_delete &&  this.$page.props.auth.user.can.includes('authorization.delete') ">
+                                       v-if="role.is_delete &&  $page.props.auth.user.role.includes('Administrator') ||
+                                        role.is_delete &&  $page.props.auth.user.can.includes('authorization.delete') ">
                                         <vue-feather type="trash-2" class="text-danger"/>
                                     </span>
                                 </div>
@@ -52,12 +52,12 @@
                         </div>
                     </div>
 
-                    <div class="col-xl-4 col-lg-6 col-md-6" v-if="this.$page.props.auth.user.role.includes('Administrator') || this.$page.props.auth.user.can.includes('authorization.create')">
+                    <div class="col-xl-4 col-lg-6 col-md-6" v-if="$page.props.auth.user.role.includes('Administrator') || $page.props.auth.user.can.includes('authorization.create')">
                         <div class="card">
                             <div class="row">
                                 <div class="col-sm-5">
                                     <div class="d-flex align-items-end justify-content-center h-100">
-                                        <img src="../../../app-assets/images/illustration/faq-illustrations.svg" class="img-fluid mt-2" alt="Image" width="85" />
+                                        <img src="@/assets/images/faq-illustrations.svg" class="img-fluid mt-2" alt="Image" width="85" />
                                     </div>
                                 </div>
                                 <div class="col-sm-7">
@@ -206,11 +206,11 @@
 <script setup>
 import {useForm} from "@inertiajs/vue3";
 import Swal from "sweetalert2";
-import Modal from '../../../components/Modal'
+import Modal from '@/components/Modal.vue'
 import {router} from "@inertiajs/vue3";
 import {ref} from "vue";
 import axios from 'axios';
-import {useAction} from "../../../composables/useAction";
+import {useAction} from "@/composables/useAction.js";
 
 const {deleteItem} = useAction();
 

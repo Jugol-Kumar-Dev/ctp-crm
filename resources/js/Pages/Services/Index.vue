@@ -22,8 +22,8 @@
                                         </div>
                                     </div>
                                     <button class="dt-button add-new btn btn-primary"
-                                            v-if="this.$page.props.auth.user.can.includes('services.create') ||
-                                            this.$page.props.auth.user.role.includes('Administrator')"
+                                            v-if="$page.props.auth.user.can.includes('services.create') ||
+                                            $page.props.auth.user.role.includes('Administrator')"
                                     @click="addServiceModal">
                                         Add Service
                                     </button>
@@ -45,7 +45,7 @@
                                     <div class="d-flex align-items-center justify-content-between">
 
 
-                                        <a :href="item.show_url" v-if="this.$page.props.auth.user.can.includes('services.show') || this.$page.props.auth.user.role.includes('Administrator')">
+                                        <a :href="item.show_url" v-if="$page.props.auth.user.can.includes('services.show') || $page.props.auth.user.role.includes('Administrator')">
                                             <h2 class="card-title">{{ item.name }}</h2>
                                             <small>Position:  {{ item.position }}</small>
                                         </a>
@@ -54,29 +54,29 @@
                                             <h2 class="card-title">{{ item.name }}</h2>
                                             <small>Position:  {{ item.position }}</small>
                                         </div>
-                                        <CDropdown v-if="this.$page.props.auth.user.can.includes('services.delete') ||
-                                        this.$page.props.auth.user.can.includes('services.show') ||
-                                        this.$page.props.auth.user.can.includes('services.edit') ||
-                                        this.$page.props.auth.user.role.includes('Administrator')">
+                                        <CDropdown v-if="$page.props.auth.user.can.includes('services.delete') ||
+                                        $page.props.auth.user.can.includes('services.show') ||
+                                        $page.props.auth.user.can.includes('services.edit') ||
+                                        $page.props.auth.user.role.includes('Administrator')">
                                             <CDropdownToggle class="p-0">
                                                 <vue-feather type="more-vertical" />
                                             </CDropdownToggle>
                                             <CDropdownMenu>
 
                                                 <CDropdownItem :href="item.show_url"
-                                                               v-if="this.$page.props.auth.user.can.includes('services.show') || this.$page.props.auth.user.role.includes('Administrator')">
+                                                               v-if="$page.props.auth.user.can.includes('services.show') || $page.props.auth.user.role.includes('Administrator')">
                                                     <vue-feather type="eye" size="15"/>
                                                     <span class="ms-1">Show</span>
                                                 </CDropdownItem>
 
                                                 <CDropdownItem @click="editService(item.edit_url)"
-                                                               v-if="this.$page.props.auth.user.can.includes('services.edit')  || this.$page.props.auth.user.role.includes('Administrator')">
+                                                               v-if="$page.props.auth.user.can.includes('services.edit')  || $page.props.auth.user.role.includes('Administrator')">
                                                     <vue-feather type="edit" size="15"/>
                                                     <span class="ms-1">Edit</span>
                                                 </CDropdownItem>
 
                                                 <CDropdownItem @click="deleteItem(props.main_url, item.id)"
-                                                               v-if="this.$page.props.auth.user.can.includes('services.delete') || this.$page.props.auth.user.role.includes('Administrator') ">
+                                                               v-if="$page.props.auth.user.can.includes('services.delete') || $page.props.auth.user.role.includes('Administrator') ">
                                                     <vue-feather type="trash-2" size="15"/>
                                                     <span class="ms-1">Delete</span>
                                                 </CDropdownItem>

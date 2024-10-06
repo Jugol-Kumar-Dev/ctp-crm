@@ -43,85 +43,86 @@ class QuotationController extends Controller
      * @param $platforms
      * @return \Inertia\Response|\Inertia\ResponseFactory
      */
-  /*  public function index()
+    /*  public function index()
+      {
+          $quotation  = Quotation::query()
+              ->latest()
+              ->with([
+                  "client:id,name,email,phone", "user:id,name", 'invoice'])
+              ->when(Request::input('search'), function ($query, $search) {
+                  $query->where('u_id', 'like', "%{$search}%")
+                  ->orWhere('u_id', 'like', "%{$search}%")
+                  ->orWhereHas('client', function ($client) use($search){
+                      $client
+                          ->where('name',    'like', "%{$search}%")
+                          ->orWhere('phone', 'like', "%{$search}%")
+                          ->orWhere('email', 'like', "%{$search}%")
+                      ;
+                  })
+                  ->orWhereHas('domains', function($hosting) use($search){
+                      $hosting->where('name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('hostings', function($hosting) use($search){
+                      $hosting->where('name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('works', function($hosting) use($search){
+                      $hosting->where('name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('packages', function($hosting) use($search){
+                      $hosting->where('name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('quotationItems', function($hosting) use($search){
+                      $hosting->where('item_name', 'like', "%{$search}%");
+                  });
+              })
+              ->when(Request::input('byStatus'), function ($query, $search){
+                  $query->where('status', $search);
+              })
+              ->when(Request::input('dateRange'), function ($query, $search){
+                  $start_date = $search[0];
+                  $end_date =  $search[1];
+                  if (!empty($start_date) && !empty($end_date)) {
+                      $query->whereDate('created_at', '>=', $start_date)
+                          ->whereDate('created_at', '<=', $end_date);
+                  }
+                  if (empty($start_date) && !empty($end_date)) {
+                      $query->whereDate('created_at', '<=', $end_date);
+                  }
+              })
+              ->paginate(Request::input('perPage') ?? 10)
+              ->withQueryString()
+              ->through(fn($qot) => [
+                  "id"           => $qot->id,
+                  "subject"      => $qot->subject,
+                  "status"       => $qot->status,
+                  "date"         => $qot->date->format('M-d-Y'),
+                  "client"       => $qot->client,
+                  "invoice"      => $qot->invoice,
+                  "user_name"    => $qot->user->name,
+                  "created_at"   => $qot->created_at->format('Y-m-d'),
+                  "valid_until"  => $qot->valid_until->format('Y-m-d'),
+                  "show_url"     => URL::route('quotations.show', $qot->id),
+                  "edit_url"     => URL::route('quotations.edit', $qot->id),
+                  "invoice_url"  => URL::route('quotations.quotationInvoice', $qot->id)
+              ]);
+
+          return inertia('Modules/Quotation/Index', [
+              'quotations'  => $quotation,
+              'filters'     => Request::only(['search','perPage', 'byStatus', 'dateRange']),
+              'url'         => URL::route('quotations.index'),
+              'change_status_url'  => URL::route('chnageQuotationStatus'),
+          ]);
+
+
+
+      }*/
+
+    protected function mapedItems($services, $platforms)
     {
-        $quotation  = Quotation::query()
-            ->latest()
-            ->with([
-                "client:id,name,email,phone", "user:id,name", 'invoice'])
-            ->when(Request::input('search'), function ($query, $search) {
-                $query->where('u_id', 'like', "%{$search}%")
-                ->orWhere('u_id', 'like', "%{$search}%")
-                ->orWhereHas('client', function ($client) use($search){
-                    $client
-                        ->where('name',    'like', "%{$search}%")
-                        ->orWhere('phone', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%")
-                    ;
-                })
-                ->orWhereHas('domains', function($hosting) use($search){
-                    $hosting->where('name', 'like', "%{$search}%");
-                })
-                ->orWhereHas('hostings', function($hosting) use($search){
-                    $hosting->where('name', 'like', "%{$search}%");
-                })
-                ->orWhereHas('works', function($hosting) use($search){
-                    $hosting->where('name', 'like', "%{$search}%");
-                })
-                ->orWhereHas('packages', function($hosting) use($search){
-                    $hosting->where('name', 'like', "%{$search}%");
-                })
-                ->orWhereHas('quotationItems', function($hosting) use($search){
-                    $hosting->where('item_name', 'like', "%{$search}%");
-                });
-            })
-            ->when(Request::input('byStatus'), function ($query, $search){
-                $query->where('status', $search);
-            })
-            ->when(Request::input('dateRange'), function ($query, $search){
-                $start_date = $search[0];
-                $end_date =  $search[1];
-                if (!empty($start_date) && !empty($end_date)) {
-                    $query->whereDate('created_at', '>=', $start_date)
-                        ->whereDate('created_at', '<=', $end_date);
-                }
-                if (empty($start_date) && !empty($end_date)) {
-                    $query->whereDate('created_at', '<=', $end_date);
-                }
-            })
-            ->paginate(Request::input('perPage') ?? 10)
-            ->withQueryString()
-            ->through(fn($qot) => [
-                "id"           => $qot->id,
-                "subject"      => $qot->subject,
-                "status"       => $qot->status,
-                "date"         => $qot->date->format('M-d-Y'),
-                "client"       => $qot->client,
-                "invoice"      => $qot->invoice,
-                "user_name"    => $qot->user->name,
-                "created_at"   => $qot->created_at->format('Y-m-d'),
-                "valid_until"  => $qot->valid_until->format('Y-m-d'),
-                "show_url"     => URL::route('quotations.show', $qot->id),
-                "edit_url"     => URL::route('quotations.edit', $qot->id),
-                "invoice_url"  => URL::route('quotations.quotationInvoice', $qot->id)
-            ]);
-
-        return inertia('Modules/Quotation/Index', [
-            'quotations'  => $quotation,
-            'filters'     => Request::only(['search','perPage', 'byStatus', 'dateRange']),
-            'url'         => URL::route('quotations.index'),
-            'change_status_url'  => URL::route('chnageQuotationStatus'),
-        ]);
-
-
-
-    }*/
-
-    protected function mapedItems($services, $platforms){
-        return $services->map(function($service) use ($platforms) {
+        return $services->map(function ($service) use ($platforms) {
             $platform_ids = json_decode($service->platforms);
 
-            $service_platforms = $platforms->whereIn('id', $platform_ids)->map(function($platform) {
+            $service_platforms = $platforms->whereIn('id', $platform_ids)->map(function ($platform) {
                 $platform_featureds = json_decode($platform->featureds);
                 return ["data" => $platform, 'featureds' => $platform_featureds,];
             });
@@ -136,73 +137,31 @@ class QuotationController extends Controller
     }
 
 
-    public function index(){
-        if (!auth()->user()->hasRole('Administrator')){
-            $show =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('quotation.index');
-            $my =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('quotation.ownonly');
-            if($show && $my){
-                abort(401);
+    public function index()
+    {
+
+        $user = Auth::user();
+        $admin = $user->hasRole('Administrator');
+        $ownOnly = $user->can('quotation.ownonly');
+
+        if (!$admin) {
+            if (!auth()->user()->can('quotation.index') && !$ownOnly) {
+                abort(401, 'Your Not Autorized For Access This Page');
             }
         }
 
-/*        $quotation  = Quotation::query()
-            ->with(['client', 'user', 'invoice'])
-            ->latest()
-            ->when(!Auth::user()->hasRole('Administrator') && auth()->user()->can('quotation.ownonly'), function($query){
-                $query->where('created_by', Auth::id());
-            })
-            ->when(Request::input('search'), function ($query, $search) {
-                $query->where('subject', 'like', "%{$search}%")
-                ->orWhereHas('client', function ($client) use($search){
-                    $client
-                        ->where('name',    'like', "%{$search}%")
-                        ->orWhere('phone', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
-                })->orWhereHas('user', function ($user) use($search){
-                    $user
-                        ->where('name',    'like', "%{$search}%")
-                        ->orWhere('phone', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
-                });
-            })
-            ->when(Request::input('byStatus'), function ($query, $search){
-                $query->where('status', $search);
-            })
-            ->when(Request::input('dateRange'), function ($query, $search){
-                $search = Request::input('dateRange');
-                $startDateTime = Carbon::parse($search[0])->startOfDay();
-                $endDateTime = Carbon::parse($search[1])->endOfDay();
-                $query->whereBetween('created_at', [$startDateTime, $endDateTime]);
-            })->paginate(Request::input('perPage') ?? 10)
-            ->withQueryString()
-            ->through(fn($qot) => [
-                "id"           => $qot->id,
-                "qut_id"       => $qot->quotation_id,
-                "client"       => $qot->client,
-                "user"         => $qot->user,
-                "subject"      => $qot->subject,
-                "status"       => $qot->status,
-                "total_price"  => $qot->total_price,
-                "discount"     => $qot->discount,
-                "grand_total"  => $qot->grand_total,
-                "date"         => $qot->qut_date->format('M-d-Y'),
-                "created_at"   => $qot->created_at->format('Y-m-d'),
-                "show_url"     => URL::route('quotations.show', $qot->id),
-                "edit_url"     => URL::route('quotations.edit', $qot->id),
-                "invoice_url"  => URL::route('quotations.quotationInvoice', $qot->id)
-            ]);*/
-
-
         $quotation = Quotation::query()
-            ->with(['client', 'user', 'invoice'])
+            ->select(['id', 'quotation_id', 'status', 'total_price', 'client_id', 'created_by', 'discount', 'grand_total', 'qut_date', 'created_at'])
+            ->with(['client:id,name,email,phone', 'user:id,name', 'invoice:id,quotation_id'])
             ->latest()
-            ->when(!Auth::user()->hasRole('Administrator') && auth()->user()->can('quotation.ownonly'), function($query) {
-                $query->where('created_by', Auth::id());
+            ->when(!$admin && $ownOnly, function ($query) use ($user) {
+                $query->where('created_by', $user->id);
             })
             ->when(Request::filled('search'), function ($query) {
                 $search = '%' . Request::input('search') . '%';
                 $query->where(function ($query) use ($search) {
                     $query->where('subject', 'like', $search)
+                        ->orWhere('quotation_id', 'like', $search)
                         ->orWhereHas('client', function ($client) use ($search) {
                             $client->where('name', 'like', $search)
                                 ->orWhere('phone', 'like', $search)
@@ -214,6 +173,7 @@ class QuotationController extends Controller
                                 ->orWhere('email', 'like', $search);
                         });
                 });
+
             })
             ->when(Request::filled('byStatus'), function ($query) {
                 $query->where('status', Request::input('byStatus'));
@@ -225,99 +185,90 @@ class QuotationController extends Controller
                     Carbon::parse($dateRange[1])->endOfDay()
                 ]);
             })
-            ->paginate(Request::input('perPage') ?? 10)
-            ->withQueryString()
-            ->through(function ($qot) {
-                return [
-                    "id" => $qot->id,
-                    "qut_id" => $qot->quotation_id,
-                    "client" => $qot->client,
-                    "user" => $qot->user,
-                    "subject" => $qot->subject,
-                    "status" => $qot->status,
-                    "total_price" => $qot->total_price,
-                    "discount" => $qot->discount,
-                    "grand_total" => $qot->grand_total,
-                    "date" => $qot->qut_date->format('M-d-Y'),
-                    "created_at" => $qot->created_at->format('Y-m-d'),
-                    "show_url" => URL::route('quotations.show', $qot->id),
-                    "edit_url" => URL::route('quotations.edit', $qot->id),
-                    "invoice_url" => URL::route('quotations.quotationInvoice', $qot->id)
-                ];
-            });
-
-
-
-
-
-
-
-
-
-
+            ->when(Request::input('employee'), function ($query, $search) {
+                $query->where('created_by', $search);
+            })
+            ->paginate(Request::input('perPage') ?? config('app.perpage'))
+            ->withQueryString();
+//            ->through(function ($qot) {
+//                return [
+//                    "id" => $qot->id,
+//                    "qut_id" => $qot->quotation_id,
+//                    "client" => $qot->client,
+//                    "user" => $qot->user,
+//                    "subject" => $qot->subject,
+//                    "status" => $qot->status,
+//                    "total_price" => $qot->total_price,
+//                    "discount" => $qot->discount,
+//                    "grand_total" => $qot->grand_total,
+//                    "date" => Carbon::parse($qot->qut_date)->format('M-d-Y'),
+//                    "created_at" => $qot->created_at->format('Y-m-d'),
+//                    "show_url" => URL::route('quotations.show', $qot->id),
+//                    "edit_url" => URL::route('quotations.edit', $qot->id),
+//                    "invoice_url" => URL::route('quotations.quotationInvoice', $qot->id)
+//                ];
+//            });
 
 
         return inertia('Quotation/Index', [
-            'quotations'  => $quotation,
-            'filters'     => Request::only(['search','perPage', 'byStatus', 'dateRange']),
-            'url'         => URL::route('quotations.index'),
-            'change_status_url'  => URL::route('chnageQuotationStatus'),
+            'quotations' => $quotation,
+            'users' => User::query()->select('id', 'name')->get(),
+            'filters' => Request::only(['search', 'perPage', 'byStatus', 'dateRange']),
+            'url' => URL::route('quotations.index'),
+            'change_status_url' => URL::route('chnageQuotationStatus'),
         ]);
     }
-
-
 
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Inertia\Response
      */
-    public function create(){
+    public function create()
+    {
 
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.create')){
+        if (auth()->user()->hasRole('administrator') || !auth()->user()->can('quotation.create')) {
             abort(401);
         }
 
-   /*
-    * this is for package platform and features system
-    * but here change the logic
-    * now applied only service an service have multiple features and packages
-    *
-    *      $services = Searvice::all()->map(function ($service){
-            $service["platforms"] = Platform::with("packages")
-                ->whereIn('id', json_decode($service->platforms))
-                ->get()
-                ->map(function($platform){
-                    $platform["features"] = json_decode($platform->featureds);
-                    return collect($platform)->only(['id', 'name', 'features', 'packages']);
-                });
-            return collect($service)->only(['service_name', 'id', 'platforms']);
-        });*/
+        /*
+         * this is for package platform and features system
+         * but here change the logic
+         * now applied only service an service have multiple features and packages
+         *
+         *      $services = Searvice::all()->map(function ($service){
+                 $service["platforms"] = Platform::with("packages")
+                     ->whereIn('id', json_decode($service->platforms))
+                     ->get()
+                     ->map(function($platform){
+                         $platform["features"] = json_decode($platform->featureds);
+                         return collect($platform)->only(['id', 'name', 'features', 'packages']);
+                     });
+                 return collect($service)->only(['service_name', 'id', 'platforms']);
+             });*/
 
 //        $services = Searvice::with(['packages', 'features'])->get();
 //        return $services;
 
         $services = Searvice::with([
-            'packages'=>fn($query)=>$query->oldest('position'),
-            'features'=>fn($query)=>$query->oldest('position')
+            'packages' => fn($query) => $query->oldest('position'),
+            'features' => fn($query) => $query->oldest('position')
         ])->oldest('position')->get();
 
 
-
-        if((auth()->user()->can('leads.index') ||
+        if ((auth()->user()->can('leads.index') ||
                 auth()->user()->can('leads.ownonly') ||
                 auth()->user()->can('client.index') ||
-                auth()->user()->can('client.ownonly')) && auth()->user()->can('quotation.create'))
-        {
-            if(auth()->user()->hasRole('Administrator') ||
+                auth()->user()->can('client.ownonly')) && auth()->user()->can('quotation.create')) {
+            if (auth()->user()->hasRole('Administrator') ||
                 (auth()->user()->can('leads.index') && auth()->user()->can('client.index'))) {
                 $clients = Client::query()
-                    ->select(['id','name', 'email', 'phone'])
-                    ->latest()->get();
-            }
-            elseif(auth()->user()->can('leads.ownonly') && auth()->user()->can('client.ownonly')){
+                    ->select(['id', 'name', 'email', 'phone'])
+                    ->latest()
+                    ->get();
+            } elseif (auth()->user()->can('leads.ownonly') && auth()->user()->can('client.ownonly')) {
                 $clients = Client::query()
                     ->with(['users'])
                     ->where(function ($query) {
@@ -328,8 +279,7 @@ class QuotationController extends Controller
                     })
                     ->latest()
                     ->get();
-            }
-            elseif(auth()->user()->can('leads.ownonly') && auth()->user()->can('client.index')){
+            } elseif (auth()->user()->can('leads.ownonly') && auth()->user()->can('client.index')) {
                 $myLeads = Client::query()
                     ->with(['users'])
                     ->where(function ($query) {
@@ -340,20 +290,19 @@ class QuotationController extends Controller
                         $query->where('user_id', Auth::id());
                     })
                     ->where('is_client', false)
-                    ->select(['id','name', 'email', 'phone'])
+                    ->select(['id', 'name', 'email', 'phone'])
                     ->latest()
                     ->get();
 
 
                 $allCients = Client::query()
                     ->where('is_client', true)
-                    ->select(['id','name', 'email', 'phone'])
+                    ->select(['id', 'name', 'email', 'phone'])
                     ->latest()
                     ->get();
 
                 $clients = [...$myLeads, ...$allCients];
-            }
-            elseif(auth()->user()->can('leads.index') && auth()->user()->can('client.ownonly')){
+            } elseif (auth()->user()->can('leads.index') && auth()->user()->can('client.ownonly')) {
                 $myLeads = Client::query()
                     ->with(['users'])
                     ->where(function ($query) {
@@ -364,20 +313,19 @@ class QuotationController extends Controller
                         $query->where('user_id', Auth::id());
                     })
                     ->where('is_client', true)
-                    ->select(['id','name', 'email', 'phone'])
+                    ->select(['id', 'name', 'email', 'phone'])
                     ->latest()
                     ->get();
 
 
                 $allCients = Client::query()
                     ->where('is_client', false)
-                    ->select(['id','name', 'email', 'phone'])
+                    ->select(['id', 'name', 'email', 'phone'])
                     ->latest()
                     ->get();
 
                 $clients = [...$myLeads, ...$allCients];
-            }
-            elseif(auth()->user()->can('leads.ownonly')){
+            } elseif (auth()->user()->can('leads.ownonly')) {
                 $clients = Client::query()
                     ->with(['users'])
                     ->where(function ($query) {
@@ -388,11 +336,10 @@ class QuotationController extends Controller
                         $query->where('user_id', Auth::id());
                     })
                     ->where('is_client', false)
-                    ->select(['id','name', 'email', 'phone'])
+                    ->select(['id', 'name', 'email', 'phone'])
                     ->latest()
                     ->get();
-            }
-            elseif(auth()->user()->can('client.ownonly')){
+            } elseif (auth()->user()->can('client.ownonly')) {
                 $clients = Client::query()
                     ->with(['users'])
                     ->where(function ($query) {
@@ -403,29 +350,25 @@ class QuotationController extends Controller
                         $query->where('user_id', Auth::id());
                     })
                     ->where('is_client', true)
-                    ->select(['id','name', 'email', 'phone'])
+                    ->select(['id', 'name', 'email', 'phone'])
                     ->latest()
                     ->get();
-            }
-            elseif(auth()->user()->can('client.index')){
+            } elseif (auth()->user()->can('client.index')) {
                 $clients = Client::query()
                     ->where('is_client', true)
-                    ->select(['id','name', 'email', 'phone'])
+                    ->select(['id', 'name', 'email', 'phone'])
                     ->latest()->get();
-            }
-            elseif(auth()->user()->can('leads.index')){
+            } elseif (auth()->user()->can('leads.index')) {
                 $clients = Client::query()
                     ->where('is_client', false)
-                    ->select(['id','name', 'email', 'phone'])
+                    ->select(['id', 'name', 'email', 'phone'])
                     ->latest()->get();
             }
-        } elseif(auth()->user()->can('quotation.create')){
+        } elseif (auth()->user()->can('quotation.create')) {
             $clients = [];
-        }
-        else{
+        } else {
             abort(401);
         }
-
 
 
         return inertia('Quotation/Store', [
@@ -439,11 +382,11 @@ class QuotationController extends Controller
     public function createArrayGroups($items)
     {
         $added = array();
-        foreach($items as $item){
-            if (isset($item['p']) && $item['p'] == 'true'){
+        foreach ($items as $item) {
+            if (isset($item['p']) && $item['p'] == 'true') {
                 $id = $item['id'];
                 $added[$id] = [
-                    'price'    => $item['price']    ?? 0,
+                    'price' => $item['price'] ?? 0,
                     'quantity' => $item["quantity"] ?? 1,
                     'discount' => $item["discount"] ?? 0,
                 ];
@@ -461,7 +404,7 @@ class QuotationController extends Controller
     {
 
 
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.create')){
+        if (auth()->user()->hasRole('administrator') || !auth()->user()->can('quotation.create')) {
             abort(401);
         }
 
@@ -471,20 +414,19 @@ class QuotationController extends Controller
             'date' => 'required',
             'due_date' => 'required',
 //            'subject' => 'required'
-        ],[
+        ], [
             'clientId.required' => 'First Select An Client...',
             'qutDate.required' => 'Please Select Quotation Date...',
         ]);
 
 
-
         $storeItems = [];
-        foreach (Request::input('items') as $item){
+        foreach (Request::input('items') as $item) {
             $storeItems[] = [
                 'service' => $item['service'],
                 'customItem' => $item['customItem']["description"] ? $item['customItem'] : null,
                 'checkFeatrueds' => $item['checkFeatrueds'],
-                'checkPackages' =>  $item['checkPackages']
+                'checkPackages' => $item['checkPackages']
             ];
         }
 
@@ -508,10 +450,12 @@ class QuotationController extends Controller
             'payment_methods' => Request::input('attachPaymentMethods') ? Request::input('paymentMethos') : NULL,
             'currency' => Request::input('currency') ?? 'Taka',
         ]);
+        $quotation->quotation_id = $quotation->quotation_id . '' . $quotation->id;
+        $quotation->save();
 
-        if (Request::input('sendMail')){
+        if (Request::input('sendMail')) {
 
-            if ($quotation->client->email){
+            if ($quotation->client->email) {
                 activity('Quotation')
                     ->event('Mail Sent')
                     ->performedOn($quotation)
@@ -527,140 +471,139 @@ class QuotationController extends Controller
     }
 
 
+    /*    public function store()
+        {
 
-/*    public function store()
+            return dd(Request::all());
+            exit();
+
+            Quotation::create([
+
+            ]);
+
+
+
+    //
+    //        Request::validate([
+    //            'client_id'          => "required",
+    //            'subject'            => "required",
+    //            'valid_until'        => "required",
+    //            'date'               => "required",
+    //            'status'             => "required",
+    //        ]);
+
+
+            $price = 0;
+            $discount = 0;
+            $discount += Request::input('discount');
+            $quotation = Quotation::create([
+                'u_id'               => date('Yd', strtotime(now())),
+                'user_id'            => Auth::id(),
+                'client_id'          => Request::input('client_id'),
+                'subject'            => Request::input('subject'),
+                'date'               => Request::input('date'),
+                'valid_until'        => Request::input('valid_until'),
+                'payment_policy'     => Request::input('payment_policy'),
+                'terms_of_service'   => Request::input('Trams_Services'),
+                'status'             => Request::input('status')["name"],
+                'note'               => Request::input('note')
+            ]);
+
+            $quotationDomains        = Request::input('domains');
+            $quotationHostings       = Request::input('hostings');
+            $quotationWorks          = Request::input('works');
+            $quotationPackages       = Request::input('packages');
+
+    //        return $quotationPackages;
+    //        return $this->createArrayGroups($quotationPackages);
+
+            if (count($quotationDomains)) {
+                 $quotation->domains()->attach($this->createArrayGroups($quotationDomains));
+            }
+
+            if (count($quotationHostings)) {
+                $quotation->hostings()->attach($this->createArrayGroups($quotationHostings));
+            }
+
+            if (count($quotationWorks)) {
+                $quotation->works()->attach($this->createArrayGroups($quotationWorks));
+            }
+
+            if (count($quotationPackages)) {
+                $quotation->packages()->attach($this->createArrayGroups($quotationPackages));
+            }
+
+
+            $quotations = Request::input('quatations');
+            $quotationsOption = [];
+            foreach ($quotations as $option) {
+                $quotationsOption[] = [
+                    'quotation_id'   => $quotation->id,
+                    'item_name'       => $option['item_name'],
+                    'discount'       => $option['discount'] ?? 0,
+                    'price'          => $option['price']    ?? 0,
+                    'quantity'       => $option['quantity'] ?? 1
+                ];
+            }
+
+            foreach ($quotationsOption as $item) {
+                $price += $item['price'] * $item['quantity'];
+                $discount += $item['discount'];
+            }
+
+            foreach ($this->createArrayGroups($quotationDomains) as $item){
+                $price += $item['price'] * $item['quantity'];
+                $discount += $item['discount'];
+            }
+
+            foreach ($this->createArrayGroups($quotationHostings) as $item){
+                $price += $item['price'] * $item['quantity'];
+                $discount += $item['discount'];
+            }
+
+            foreach ($this->createArrayGroups($quotationPackages) as $item){
+                $price += $item['price'] * $item['quantity'];
+                $discount += $item['discount'];
+            }
+            foreach ($this->createArrayGroups($quotationWorks) as $item){
+                $price += $item['price'] * $item['quantity'];
+                $discount += $item['discount'];
+            }
+
+            $quotation->price = $price;
+            $quotation->discount = $discount;
+            $quotation->save();
+
+            $quotation->quotationItems()->createMany($quotationsOption);
+            return redirect()->route('quotations.index');
+
+
+
+    //        $totalPrice = 0;
+    //        $totalDiscount = 0;
+    //        foreach (Request::input('quatations') as $item){
+    //            $totalPrice += $item['price'];
+    //            $totalDiscount += $item['discount'];
+    //            InvoiceItem::create([
+    //                'invoice_id' => $quotation->id,
+    //                'item_name'  => $item['itemname'],
+    //                'price'      => $item['price'],
+    //                'discount'   => $item['discount'],
+    //            ]);
+    //        }
+    //
+    //        $quotation->total_price =  $totalPrice ?? 0;
+    //        $quotation->discount = $totalDiscount ?? 0;
+    //        $quotation->save();
+
+
+
+
+        }*/
+
+
+    public function oldStoreMethod()
     {
-
-        return dd(Request::all());
-        exit();
-
-        Quotation::create([
-
-        ]);
-
-
-
-//
-//        Request::validate([
-//            'client_id'          => "required",
-//            'subject'            => "required",
-//            'valid_until'        => "required",
-//            'date'               => "required",
-//            'status'             => "required",
-//        ]);
-
-
-        $price = 0;
-        $discount = 0;
-        $discount += Request::input('discount');
-        $quotation = Quotation::create([
-            'u_id'               => date('Yd', strtotime(now())),
-            'user_id'            => Auth::id(),
-            'client_id'          => Request::input('client_id'),
-            'subject'            => Request::input('subject'),
-            'date'               => Request::input('date'),
-            'valid_until'        => Request::input('valid_until'),
-            'payment_policy'     => Request::input('payment_policy'),
-            'terms_of_service'   => Request::input('Trams_Services'),
-            'status'             => Request::input('status')["name"],
-            'note'               => Request::input('note')
-        ]);
-
-        $quotationDomains        = Request::input('domains');
-        $quotationHostings       = Request::input('hostings');
-        $quotationWorks          = Request::input('works');
-        $quotationPackages       = Request::input('packages');
-
-//        return $quotationPackages;
-//        return $this->createArrayGroups($quotationPackages);
-
-        if (count($quotationDomains)) {
-             $quotation->domains()->attach($this->createArrayGroups($quotationDomains));
-        }
-
-        if (count($quotationHostings)) {
-            $quotation->hostings()->attach($this->createArrayGroups($quotationHostings));
-        }
-
-        if (count($quotationWorks)) {
-            $quotation->works()->attach($this->createArrayGroups($quotationWorks));
-        }
-
-        if (count($quotationPackages)) {
-            $quotation->packages()->attach($this->createArrayGroups($quotationPackages));
-        }
-
-
-        $quotations = Request::input('quatations');
-        $quotationsOption = [];
-        foreach ($quotations as $option) {
-            $quotationsOption[] = [
-                'quotation_id'   => $quotation->id,
-                'item_name'       => $option['item_name'],
-                'discount'       => $option['discount'] ?? 0,
-                'price'          => $option['price']    ?? 0,
-                'quantity'       => $option['quantity'] ?? 1
-            ];
-        }
-
-        foreach ($quotationsOption as $item) {
-            $price += $item['price'] * $item['quantity'];
-            $discount += $item['discount'];
-        }
-
-        foreach ($this->createArrayGroups($quotationDomains) as $item){
-            $price += $item['price'] * $item['quantity'];
-            $discount += $item['discount'];
-        }
-
-        foreach ($this->createArrayGroups($quotationHostings) as $item){
-            $price += $item['price'] * $item['quantity'];
-            $discount += $item['discount'];
-        }
-
-        foreach ($this->createArrayGroups($quotationPackages) as $item){
-            $price += $item['price'] * $item['quantity'];
-            $discount += $item['discount'];
-        }
-        foreach ($this->createArrayGroups($quotationWorks) as $item){
-            $price += $item['price'] * $item['quantity'];
-            $discount += $item['discount'];
-        }
-
-        $quotation->price = $price;
-        $quotation->discount = $discount;
-        $quotation->save();
-
-        $quotation->quotationItems()->createMany($quotationsOption);
-        return redirect()->route('quotations.index');
-
-
-
-//        $totalPrice = 0;
-//        $totalDiscount = 0;
-//        foreach (Request::input('quatations') as $item){
-//            $totalPrice += $item['price'];
-//            $totalDiscount += $item['discount'];
-//            InvoiceItem::create([
-//                'invoice_id' => $quotation->id,
-//                'item_name'  => $item['itemname'],
-//                'price'      => $item['price'],
-//                'discount'   => $item['discount'],
-//            ]);
-//        }
-//
-//        $quotation->total_price =  $totalPrice ?? 0;
-//        $quotation->discount = $totalDiscount ?? 0;
-//        $quotation->save();
-
-
-
-
-    }*/
-
-
-    public function oldStoreMethod(){
-
 
 
 //        return Request::all();
@@ -672,23 +615,23 @@ class QuotationController extends Controller
 
 
         $quotation = Quotation::create([
-            'user_id'          => Auth::id(),
-            'client_id'        => Request::input('client_id'),
-            'subject'          => Request::input('subject'),
-            'valid_until'      => Request::input('valid_until'),
-            'website_id'       => Request::input('website_id'),
-            'platform_id'      => Request::input('platform_id'),
-            'design_id'        => Request::input('design_id'),
-            'domain_id'        => Request::input('domain_id'),
-            'hosting_id'       => Request::input('hosting_id'),
-            'page'             => Request::input('page'),
-            'page_price'       => Request::input('page_price'),
-            'content_page'     => Request::input('content_page'),
-            'content_price'    => Request::input('content_price'),
-            'payment_policy'   => Request::input('payment_policy'),
+            'user_id' => Auth::id(),
+            'client_id' => Request::input('client_id'),
+            'subject' => Request::input('subject'),
+            'valid_until' => Request::input('valid_until'),
+            'website_id' => Request::input('website_id'),
+            'platform_id' => Request::input('platform_id'),
+            'design_id' => Request::input('design_id'),
+            'domain_id' => Request::input('domain_id'),
+            'hosting_id' => Request::input('hosting_id'),
+            'page' => Request::input('page'),
+            'page_price' => Request::input('page_price'),
+            'content_page' => Request::input('content_page'),
+            'content_price' => Request::input('content_price'),
+            'payment_policy' => Request::input('payment_policy'),
             'terms_of_service' => Request::input('terms_of_service'),
-            'date'             => Request::input('date'),
-            'status'           => filled(Request::input('status')),
+            'date' => Request::input('date'),
+            'status' => filled(Request::input('status')),
         ]);
 
         $works = Request::input('woarks');
@@ -764,11 +707,9 @@ class QuotationController extends Controller
      }*/
 
 
-
-
-    public function show($id, $attatchment=false)
+    public function show($id, $attatchment = false)
     {
-        if(auth()->user()->hasRole('Administrator')  || auth()->user()->can('quotation.show')) {
+        if (auth()->user()->hasRole('Administrator') || auth()->user()->can('quotation.show')) {
 
             $quotation = Quotation::with(['client', 'user:id,name', 'invoice'])->findOrFail($id);
 
@@ -813,7 +754,7 @@ class QuotationController extends Controller
                 $pdf = Pdf::loadView('invoice.quotation', compact('quotation', 'pref', 'isPrint'));
 //            return view('invoice.quotation', compact('quotation', 'pref', 'isPrint'));
 
-                $name =auth()->user()->name;
+                $name = auth()->user()->name;
 
                 activity('Quotation')
                     ->event('Download')
@@ -857,14 +798,15 @@ class QuotationController extends Controller
                     "invoice_url" => $downloadInvoiceUrl,
                 ]
             ]);
-        }else{
+        } else {
             abort(401);
         }
     }
 
-    public function givenDiscount($id){
+    public function givenDiscount($id)
+    {
 
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.edit')){
+        if (auth()->user()->hasRole('administrator') || !auth()->user()->can('quotation.edit')) {
             abort(401);
         }
 
@@ -876,7 +818,7 @@ class QuotationController extends Controller
         $quotation->grand_total = $grandTotal;
 
         $invoice = $quotation->invoice;
-        if ($invoice){
+        if ($invoice) {
 
             $discount = Request::input('discount') + $invoice->discount;
 
@@ -899,118 +841,119 @@ class QuotationController extends Controller
         return back();
     }
 
-/*    public function show($id)
-    {
+    /*    public function show($id)
+        {
 
-        $quotation = Quotation::with('client')->findOrFail($id);
+            $quotation = Quotation::with('client')->findOrFail($id);
 
-        return $quotation;
+            return $quotation;
 
-        $mainarray = array();
-        foreach ($quotation->domains as $item){
+            $mainarray = array();
+            foreach ($quotation->domains as $item){
 
-            $mainarray [] =[
-                'name' => $item->name,
-                'price' => $item->price ?? 0,
-                'discount' => $item->pivot->discount ?? 0,
-                'quantity' => $item->pivot->quantity > 0 ? $item->pivot->quantity  : 1
-            ];
-        }
+                $mainarray [] =[
+                    'name' => $item->name,
+                    'price' => $item->price ?? 0,
+                    'discount' => $item->pivot->discount ?? 0,
+                    'quantity' => $item->pivot->quantity > 0 ? $item->pivot->quantity  : 1
+                ];
+            }
 
-        foreach ($quotation->hostings as $item){
-            $mainarray [] =[
-                'name' => $item->name,
-                'price' => $item->price ?? 0,
-                'discount' => $item->pivot->discount ?? 0,
-                'quantity' => $item->pivot->quantity > 0 ? $item->pivot->quantity  : 1
-            ];
-        }
-        foreach ($quotation->works as $item){
-            $mainarray [] =[
-                'name' => $item->name,
-                'price' => $item->price ?? 0,
-                'discount' => $item->pivot->discount ?? 0,
-                'quantity' => $item->pivot->quantity > 0 ? $item->pivot->quantity  : 1
-            ];
-        }
-        foreach ($quotation->packages as $item){
-            $mainarray [] =[
-                'name' => $item->name,
-                'price' => $item->price ?? 0,
-                'discount' => $item->pivot->discount ?? 0,
-                'quantity' => $item->pivot->quantity > 0 ? $item->pivot->quantity  : 1
-            ];
-        }
-
-
-        foreach ($quotation->quotationItems as $item){
-            $mainarray [] =[
-                'name' => $item->name ?? $item->item_name,
-                'price' => $item->price ?? 0,
-                'discount' => $item->discount ?? 0,
-                'quantity' => $item->quantity > 0 ? $item->quantity  : 1,
-            ];
-        }
+            foreach ($quotation->hostings as $item){
+                $mainarray [] =[
+                    'name' => $item->name,
+                    'price' => $item->price ?? 0,
+                    'discount' => $item->pivot->discount ?? 0,
+                    'quantity' => $item->pivot->quantity > 0 ? $item->pivot->quantity  : 1
+                ];
+            }
+            foreach ($quotation->works as $item){
+                $mainarray [] =[
+                    'name' => $item->name,
+                    'price' => $item->price ?? 0,
+                    'discount' => $item->pivot->discount ?? 0,
+                    'quantity' => $item->pivot->quantity > 0 ? $item->pivot->quantity  : 1
+                ];
+            }
+            foreach ($quotation->packages as $item){
+                $mainarray [] =[
+                    'name' => $item->name,
+                    'price' => $item->price ?? 0,
+                    'discount' => $item->pivot->discount ?? 0,
+                    'quantity' => $item->pivot->quantity > 0 ? $item->pivot->quantity  : 1
+                ];
+            }
 
 
+            foreach ($quotation->quotationItems as $item){
+                $mainarray [] =[
+                    'name' => $item->name ?? $item->item_name,
+                    'price' => $item->price ?? 0,
+                    'discount' => $item->discount ?? 0,
+                    'quantity' => $item->quantity > 0 ? $item->quantity  : 1,
+                ];
+            }
 
-        if(Request::input('type') === 'show_invoice'){
-            return Inertia::render('Modules/Quotation/Invoice',   [
+
+
+            if(Request::input('type') === 'show_invoice'){
+                return Inertia::render('Modules/Quotation/Invoice',   [
+                    "info" => [
+                        'quotation'          => $quotation,
+                        'dates'              => [
+                            'date'           => $quotation->date->format('d/m/Y'),
+                            'valid_until'    => $quotation->valid_until->format('d/m/Y'),
+                        ],
+                        'others_info'        => [
+                            "items"          => $mainarray,
+                            "create_invoice" => URL::route('quotation.download', $quotation->id),
+                            "edit_url"     => URL::route('quotations.edit', $quotation->id)
+                        ],
+                        'quotation_owner'    => [
+                            'creator'        => $quotation->user,
+                            'client'         => $quotation->client,
+                        ],
+                        'invoice' => $quotation->invoice,
+                        'payment_methods'    => Method::all(),
+                        'add_payment'  => URL::route('quotations.addPayment'),
+                    ]
+                ]);
+            }
+
+
+            return Inertia::render('Modules/Quotation/NewShow',   [
                 "info" => [
                     'quotation'          => $quotation,
                     'dates'              => [
                         'date'           => $quotation->date->format('d/m/Y'),
                         'valid_until'    => $quotation->valid_until->format('d/m/Y'),
                     ],
+
                     'others_info'        => [
                         "items"          => $mainarray,
                         "create_invoice" => URL::route('quotation.download', $quotation->id),
                         "edit_url"     => URL::route('quotations.edit', $quotation->id)
+
                     ],
+
                     'quotation_owner'    => [
                         'creator'        => $quotation->user,
                         'client'         => $quotation->client,
                     ],
-                    'invoice' => $quotation->invoice,
+
                     'payment_methods'    => Method::all(),
-                    'add_payment'  => URL::route('quotations.addPayment'),
-                ]
-            ]);
-        }
+                    'change_status_url'  => URL::route('chnageQuotationStatus'),
+            ]
+        ]);
 
 
-        return Inertia::render('Modules/Quotation/NewShow',   [
-            "info" => [
-                'quotation'          => $quotation,
-                'dates'              => [
-                    'date'           => $quotation->date->format('d/m/Y'),
-                    'valid_until'    => $quotation->valid_until->format('d/m/Y'),
-                ],
-
-                'others_info'        => [
-                    "items"          => $mainarray,
-                    "create_invoice" => URL::route('quotation.download', $quotation->id),
-                    "edit_url"     => URL::route('quotations.edit', $quotation->id)
-
-                ],
-
-                'quotation_owner'    => [
-                    'creator'        => $quotation->user,
-                    'client'         => $quotation->client,
-                ],
-
-                'payment_methods'    => Method::all(),
-                'change_status_url'  => URL::route('chnageQuotationStatus'),
-        ]
-    ]);
+        }*/
 
 
-    }*/
+    public function createInvoice($id)
+    {
 
-
-    public function createInvoice($id){
-
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.edit')){
+        if (auth()->user()->hasRole('administrator') || !auth()->user()->can('quotation.edit')) {
             abort(401);
         }
 
@@ -1020,8 +963,8 @@ class QuotationController extends Controller
 
         $mainarray = array();
 
-        foreach ($quotation->domains as $item){
-            $mainarray [] =[
+        foreach ($quotation->domains as $item) {
+            $mainarray [] = [
                 'name' => $item->name,
                 'price' => $item->price,
                 'discount' => $item->pivot->discount,
@@ -1029,32 +972,32 @@ class QuotationController extends Controller
             ];
         }
 
-        foreach ($quotation->hostings as $item){
-            $mainarray [] =[
+        foreach ($quotation->hostings as $item) {
+            $mainarray [] = [
                 'name' => $item->name,
                 'price' => $item->price,
                 'discount' => $item->pivot->discount,
                 'quantity' => $item->pivot->quantitiy ?? 1
             ];
         }
-        foreach ($quotation->works as $item){
-            $mainarray [] =[
+        foreach ($quotation->works as $item) {
+            $mainarray [] = [
                 'name' => $item->name,
                 'price' => $item->price,
                 'discount' => $item->pivot->discount,
                 'quantity' => $item->pivot->quantitiy ?? 1
             ];
         }
-        foreach ($quotation->packages as $item){
-            $mainarray [] =[
+        foreach ($quotation->packages as $item) {
+            $mainarray [] = [
                 'name' => $item->name,
                 'price' => $item->price,
                 'discount' => $item->pivot->discount,
                 'quantity' => $item->pivot->quantitiy ?? 1
             ];
         }
-        foreach ($quotation->quotationItems as $item){
-            $mainarray [] =[
+        foreach ($quotation->quotationItems as $item) {
+            $mainarray [] = [
                 'name' => $item->name ?? $item->item_name,
                 'price' => $item->price,
                 'discount' => $item->discount,
@@ -1086,29 +1029,29 @@ class QuotationController extends Controller
 //            ];
 
         $data = [
-            'quotation'          => $quotation,
-            'dates'              => [
-                'date'           => $quotation->date->format('M-d-Y'),
-                'valid_until'    => $quotation->valid_until->format('M-d-Y'),
+            'quotation' => $quotation,
+            'dates' => [
+                'date' => $quotation->date->format('M-d-Y'),
+                'valid_until' => $quotation->valid_until->format('M-d-Y'),
             ],
 
-            'others_info'        => [
-                "items"          => $mainarray,
+            'others_info' => [
+                "items" => $mainarray,
                 "create_invoice" => URL::route('quotation.download', $quotation->id)
             ],
 
-            'quotation_owner'    => [
-                'creator'        => $quotation->user,
-                'client'         => $quotation->client,
+            'quotation_owner' => [
+                'creator' => $quotation->user,
+                'client' => $quotation->client,
             ],
 
 
-            'payment_methods'    => Method::all(),
-            'payment_url'        => URL::route('saveQuotationTransaction'),
+            'payment_methods' => Method::all(),
+            'payment_url' => URL::route('saveQuotationTransaction'),
         ];
 
         $isQuotation = true;
-        if(Request::input('is_invoice') === 'true'){
+        if (Request::input('is_invoice') === 'true') {
             $isQuotation = false;
             $data["invoice"] = $quotation->invoice;
         }
@@ -1125,34 +1068,33 @@ class QuotationController extends Controller
         return view('invoice.quotation', compact('data', 'isQuotation'));
 
         $pdf = Pdf::loadView('invoice.quotation', compact('data', 'isQuotation'));
-        return $pdf->download($data["quotation_owner"]["client"]["name"]."_".now()->format('d_m_Y')."_".'quotation.pdf');
+        return $pdf->download($data["quotation_owner"]["client"]["name"] . "_" . now()->format('d_m_Y') . "_" . 'quotation.pdf');
     }
 
 
+    public function editQuotation($id)
+    {
 
-    public function editQuotation($id){
-
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.edit')){
+        if (auth()->user()->hasRole('administrator') || !auth()->user()->can('quotation.edit')) {
             abort(401);
         }
 
         $quot = Quotation::with('client')->findOrFail($id);
 
-/*
- *
- * this is the old system of load services for package platforms modules
- *
- *         $services = Searvice::all()->map(function ($service){
-            $service["platforms"] = Platform::with("packages")
-                ->whereIn('id', json_decode($service->platforms))
-                ->get()
-                ->map(function($platform){
-                    $platform["features"] = json_decode($platform->featureds);
-                    return collect($platform)->only(['id', 'name', 'features', 'packages']);
-                });
-            return collect($service)->only(['service_name', 'id', 'platforms']);
-        });*/
-
+        /*
+         *
+         * this is the old system of load services for package platforms modules
+         *
+         *         $services = Searvice::all()->map(function ($service){
+                    $service["platforms"] = Platform::with("packages")
+                        ->whereIn('id', json_decode($service->platforms))
+                        ->get()
+                        ->map(function($platform){
+                            $platform["features"] = json_decode($platform->featureds);
+                            return collect($platform)->only(['id', 'name', 'features', 'packages']);
+                        });
+                    return collect($service)->only(['service_name', 'id', 'platforms']);
+                });*/
 
 
         $services = Searvice::with(['packages', 'features'])->get();
@@ -1160,7 +1102,7 @@ class QuotationController extends Controller
 //        $clients = Client::where('is_client', true)->latest()->get();
 
 
-        if(auth()->user()->can('quotation.ownonly')){
+        if (auth()->user()->can('quotation.ownonly')) {
             $clients = Client::query()
                 ->with(['users'])
                 ->where(function ($query) {
@@ -1171,7 +1113,7 @@ class QuotationController extends Controller
                     $query->where('user_id', Auth::id());
                 })->where('is_client', true)
                 ->latest()->get();
-        }else{
+        } else {
             $clients = Client::query()->where('is_client', true)
                 ->latest()->get();
         }
@@ -1181,7 +1123,8 @@ class QuotationController extends Controller
             abort(401);
         }
 
-        return Inertia::render('Quotation/Edit',   [
+
+        return Inertia::render('Quotation/Edit', [
             'quotation' => $quot,
             'services' => $services,
             'clients' => $clients,
@@ -1193,13 +1136,13 @@ class QuotationController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Quotation  $quotation
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Quotation $quotation
      * @return string
      */
     public function update(Request $request, Quotation $quotation)
     {
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.edit')){
+        if (auth()->user()->hasRole('administrator') || !auth()->user()->can('quotation.edit')) {
             abort(401);
         }
 
@@ -1208,18 +1151,18 @@ class QuotationController extends Controller
             'clientId' => 'required',
             'date' => 'required',
             'due_date' => 'required',
-        ],[
+        ], [
             'clientId.required' => 'First Select An Client...',
             'qutDate.required' => 'Please Select Quotation Date...',
         ]);
 
         $storeItems = [];
-        foreach (Request::input('items') as $item){
+        foreach (Request::input('items') as $item) {
             $storeItems[] = [
                 'service' => $item['service'],
                 'customItem' => $item['customItem']["description"] ? $item['customItem'] : null,
                 'checkFeatrueds' => $item['checkFeatrueds'],
-                'checkPackages' =>  $item['checkPackages']
+                'checkPackages' => $item['checkPackages']
             ];
         }
 
@@ -1240,10 +1183,16 @@ class QuotationController extends Controller
             'trams_of_service' => Request::input('attachServicePolicy') ? Request::input('servicePolicy') : NULL,
             'payment_methods' => Request::input('attachPaymentMethods') ? Request::input('paymentMethos') : NULL,
         ]);
+        $newQid = $quotation->quotation_id . '' . $quotation->id;
+        if (!str_contains($quotation->quotation_id, (string) $quotation->id)) {
+            $quotation->quotation_id = $newQid;
+            $quotation->save();
+        }
+
 
 
         $invoice = $quotation->invoice;
-        if ($invoice){
+        if ($invoice) {
             $grandTotal = $quotation->total_price - $invoice->discount;
             $invoice->update([
                 'total_price' => $quotation->total_price,
@@ -1256,145 +1205,145 @@ class QuotationController extends Controller
 
     }
 
-/*    public function oldUpdate(){
+    /*    public function oldUpdate(){
 
-        if(is_integer(Request::input("client_id"))){
-            $clientId = Request::input('client_id');
-        }else{
-            $clientId = $quotation->client->id;
-        }
-
-
-        $quotation->update([
-            'user_id'            => Auth::id(),
-            'client_id'          => $clientId,
-            'subject'            => Request::input('subject'),
-            'date'               => Request::input('date'),
-            'valid_until'        => Request::input('valid_until'),
-            'payment_policy'     => Request::input('payment_policy'),
-            'terms_of_service'   => Request::input('Trams_Services'),
-            'status'             => Request::input('status')["name"] ?? $quotation->status,
-            'note'               => Request::input('note')
-        ]);
-
-        $quotationDomains        = Request::input('domains');
-        $quotationHostings       = Request::input('hostings');
-        $quotationWorks          = Request::input('works');
-        $quotationPackages       = Request::input('packages');
-
-        if (count($quotationDomains)) {
-            $data = $quotation->domains()->sync($this->createArrayGroups($quotationDomains));
-        }
-
-        if (count($quotationHostings)) {
-            $quotation->hostings()->sync($this->createArrayGroups($quotationHostings));
-        }
-
-        if (count($quotationWorks)) {
-            $quotation->works()->sync($this->createArrayGroups($quotationWorks));
-        }
-
-        if (count($quotationPackages)) {
-            $quotation->packages()->sync($this->createArrayGroups($quotationPackages));
-        }
-
-
-        $price = 0;
-        $discount = 0;
-        $quotations = Request::input('quatations');
-
-        $quotationsOption = [];
-        foreach ($quotations as $key => $option) {
-            $quotationsOption[] = [
-                'id'             => $option["id"] ?? null,
-                'quotation_id'   => $quotation->id,
-                'item_name'       => $option['item_name'],
-                'discount'       => $option['discount'] ?? 0,
-                'price'          => $option['price']    ?? 0,
-                'quantity'       => $option['quantity'] ?? 1
-            ];
-        }
-
-        foreach ($quotationsOption as $item) {
-            $price += $item['price'] * $item['quantity'];
-            $discount += $item['discount'];
-        }
-
-        foreach ($this->createArrayGroups($quotationDomains) as $item){
-            $price += $item['price'] * $item['quantity'];
-            $discount += $item['discount'];
-        }
-
-        foreach ($this->createArrayGroups($quotationHostings) as $item){
-            $price += $item['price'] * $item['quantity'];
-            $discount += $item['discount'];
-        }
-
-        foreach ($this->createArrayGroups($quotationPackages) as $item){
-            $price += $item['price'] * $item['quantity'];
-            $discount += $item['discount'];
-        }
-        foreach ($this->createArrayGroups($quotationWorks) as $item){
-            $price += $item['price'] * $item['quantity'];
-            $discount += $item['discount'];
-        }
-
-        $quotation->price = $price;
-        $quotation->discount = $discount;
-        $quotation->save();
-
-        if ($quotation->invoice &&  $quotation->invoice != null){
-            $quotation->invoice->update([
-                'quotation_id' => $quotation->id,
-                'client_id' => $quotation->client->id,
-                'sub_total' => $quotation->price,
-                'discount' => $quotation->discount,
-                'grand_total' => $quotation->price - $quotation->discount,
-                'due' => $quotation->price - $quotation->discount,
-            ]);
-        }
-
-
-        $array = $quotation->quotationItems->toArray();
-        $deletedItems=[];
-        $deletedItems = array_map(function($item)use($quotationsOption){
-            return in_array($item['id'], array_column($quotationsOption, 'id')) ? null : $item["id"];
-        }, $array);
-        foreach ($deletedItems as $deletedItem){
-            if ($deletedItem){
-                $quotation->quotationItems()->find($deletedItem)->delete();
-            }
-        }
-
-
-        $relatedModels = $quotation->quotationItems;
-        foreach ($quotationsOption as $item) {
-            $updateData = $relatedModels->find($item['id']);
-            if($updateData){
-                $updateData->update($item);
+            if(is_integer(Request::input("client_id"))){
+                $clientId = Request::input('client_id');
             }else{
-                if ($item['id'] == null){
-                    $quotation->quotationItems()->create($item);
+                $clientId = $quotation->client->id;
+            }
+
+
+            $quotation->update([
+                'user_id'            => Auth::id(),
+                'client_id'          => $clientId,
+                'subject'            => Request::input('subject'),
+                'date'               => Request::input('date'),
+                'valid_until'        => Request::input('valid_until'),
+                'payment_policy'     => Request::input('payment_policy'),
+                'terms_of_service'   => Request::input('Trams_Services'),
+                'status'             => Request::input('status')["name"] ?? $quotation->status,
+                'note'               => Request::input('note')
+            ]);
+
+            $quotationDomains        = Request::input('domains');
+            $quotationHostings       = Request::input('hostings');
+            $quotationWorks          = Request::input('works');
+            $quotationPackages       = Request::input('packages');
+
+            if (count($quotationDomains)) {
+                $data = $quotation->domains()->sync($this->createArrayGroups($quotationDomains));
+            }
+
+            if (count($quotationHostings)) {
+                $quotation->hostings()->sync($this->createArrayGroups($quotationHostings));
+            }
+
+            if (count($quotationWorks)) {
+                $quotation->works()->sync($this->createArrayGroups($quotationWorks));
+            }
+
+            if (count($quotationPackages)) {
+                $quotation->packages()->sync($this->createArrayGroups($quotationPackages));
+            }
+
+
+            $price = 0;
+            $discount = 0;
+            $quotations = Request::input('quatations');
+
+            $quotationsOption = [];
+            foreach ($quotations as $key => $option) {
+                $quotationsOption[] = [
+                    'id'             => $option["id"] ?? null,
+                    'quotation_id'   => $quotation->id,
+                    'item_name'       => $option['item_name'],
+                    'discount'       => $option['discount'] ?? 0,
+                    'price'          => $option['price']    ?? 0,
+                    'quantity'       => $option['quantity'] ?? 1
+                ];
+            }
+
+            foreach ($quotationsOption as $item) {
+                $price += $item['price'] * $item['quantity'];
+                $discount += $item['discount'];
+            }
+
+            foreach ($this->createArrayGroups($quotationDomains) as $item){
+                $price += $item['price'] * $item['quantity'];
+                $discount += $item['discount'];
+            }
+
+            foreach ($this->createArrayGroups($quotationHostings) as $item){
+                $price += $item['price'] * $item['quantity'];
+                $discount += $item['discount'];
+            }
+
+            foreach ($this->createArrayGroups($quotationPackages) as $item){
+                $price += $item['price'] * $item['quantity'];
+                $discount += $item['discount'];
+            }
+            foreach ($this->createArrayGroups($quotationWorks) as $item){
+                $price += $item['price'] * $item['quantity'];
+                $discount += $item['discount'];
+            }
+
+            $quotation->price = $price;
+            $quotation->discount = $discount;
+            $quotation->save();
+
+            if ($quotation->invoice &&  $quotation->invoice != null){
+                $quotation->invoice->update([
+                    'quotation_id' => $quotation->id,
+                    'client_id' => $quotation->client->id,
+                    'sub_total' => $quotation->price,
+                    'discount' => $quotation->discount,
+                    'grand_total' => $quotation->price - $quotation->discount,
+                    'due' => $quotation->price - $quotation->discount,
+                ]);
+            }
+
+
+            $array = $quotation->quotationItems->toArray();
+            $deletedItems=[];
+            $deletedItems = array_map(function($item)use($quotationsOption){
+                return in_array($item['id'], array_column($quotationsOption, 'id')) ? null : $item["id"];
+            }, $array);
+            foreach ($deletedItems as $deletedItem){
+                if ($deletedItem){
+                    $quotation->quotationItems()->find($deletedItem)->delete();
                 }
             }
-        }
-        return Redirect::route('quotations.index');
-    }*/
+
+
+            $relatedModels = $quotation->quotationItems;
+            foreach ($quotationsOption as $item) {
+                $updateData = $relatedModels->find($item['id']);
+                if($updateData){
+                    $updateData->update($item);
+                }else{
+                    if ($item['id'] == null){
+                        $quotation->quotationItems()->create($item);
+                    }
+                }
+            }
+            return Redirect::route('quotations.index');
+        }*/
 
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Quotation  $quotation
+     * @param \App\Models\Quotation $quotation
      */
     public function destroy(Quotation $quotation)
     {
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.delete')){
+        if (auth()->user()->hasRole('administrator') || !auth()->user()->can('quotation.delete')) {
             abort(401);
         }
 
-        if ($quotation->invoice){
-            if ($quotation->invoice->transactions->count()){
+        if ($quotation->invoice) {
+            if ($quotation->invoice->transactions->count()) {
                 $quotation->invoice->transactions()->delete();
             }
             $quotation->invoice()->delete();
@@ -1404,17 +1353,18 @@ class QuotationController extends Controller
     }
 
 
-    public function chnageQuotationStatus(){
+    public function chnageQuotationStatus()
+    {
 
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.edit')){
+        if (auth()->user()->hasRole('administrator') || !auth()->user()->can('quotation.edit')) {
             abort(401);
         }
 
-        if(Request::input('quotId') != null && is_array(Request::input('status')) != null){
+        if (Request::input('quotId') != null && is_array(Request::input('status')) != null) {
             $status = Request::input('status')["name"];
             $quotaiton = Quotation::findOrfail(Request::input('quotId'))->load(['invoice', 'client']);
-            if ($status == 'Converted To Invoice'){
-                if ($quotaiton->invoice != null){
+            if ($status == 'Converted To Invoice') {
+                if ($quotaiton->invoice != null) {
                     $quotaiton->invoice->update([
                         'quotation_id' => $quotaiton->id,
                         'client_id' => $quotaiton->client->id,
@@ -1423,7 +1373,7 @@ class QuotationController extends Controller
                         'grand_total' => $quotaiton->price - $quotaiton->discount,
                         'due' => $quotaiton->price - $quotaiton->discount,
                     ]);
-                }else{
+                } else {
                     Invoice::create([
                         'u_id' => date('Yd', strtotime(now())),
                         'quotation_id' => $quotaiton->id,
@@ -1436,14 +1386,13 @@ class QuotationController extends Controller
                     ]);
                 }
                 $quotaiton->update(['status' => $status]);
-            }else{
-                if ($quotaiton->invoice != null){
+            } else {
+                if ($quotaiton->invoice != null) {
                     $quotaiton->invoice->delete();
                 }
                 $quotaiton->update(['status' => $status]);
             }
         }
-
 
 
         activity('Invoice')
@@ -1456,51 +1405,50 @@ class QuotationController extends Controller
             ])->log("Quotation To Invoice Created. Invoice id: {$quotaiton?->invoice?->invoice_id} & Quotation Id: {$quotaiton?->quotation_id}");
 
 
-
         return back();
     }
 
-    public function addPayment(){
+    public function addPayment()
+    {
 
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.edit')){
+        if (auth()->user()->hasRole('administrator') || !auth()->user()->can('quotation.edit')) {
             abort(401);
         }
-
 
 
         Request::validate([
             'payment_id' => 'required|integer'
         ]);
 
-        $quotation = Quotation::with(['invoice','client'])->findOrFail(Request::input('quotation_id'));
-        $invoice = Invoice::where('quotation_id',$quotation->id)->first();
-        $totalPay = Request::input('pay_amount')+Request::input('discount');
+        $quotation = Quotation::with(['invoice', 'client'])->findOrFail(Request::input('quotation_id'));
+        $invoice = Invoice::where('quotation_id', $quotation->id)->first();
+        $totalPay = Request::input('pay_amount') + Request::input('discount');
         $transaction = Transaction::create([
-            'u_id'       => date('Yd', strtotime(now())),
+            'u_id' => date('Yd', strtotime(now())),
             'transaction_model' => 'App\\Models\\Invoice',
             'transaction_model_id' => $invoice->id,
-            "purpose" => "#".env('INV_PREFIX')."_".$invoice->invoice_id ?? NULL,
-            'method_id'  => Request::input('payment_id'),
-            'user_id'    => Auth::id(),
-            'client_id'  => $quotation->client->id,
+            "purpose" => "#" . env('INV_PREFIX') . "_" . $invoice->invoice_id ?? NULL,
+            'method_id' => Request::input('payment_id'),
+            'user_id' => Auth::id(),
+            'client_id' => $quotation->client->id,
             'invoice_id' => $quotation->invoice->id,
 
-            'amount'     => $quotation->invoice->grand_total,
+            'amount' => $quotation->invoice->grand_total,
             'pay_amount' => Request::input('pay_amount'),
-            'discount'   => Request::input('discount'),
+            'discount' => Request::input('discount'),
 
-            'total_pay'  => $totalPay,
-            'total_due'  => $invoice->due - $totalPay,
+            'total_pay' => $totalPay,
+            'total_due' => $invoice->due - $totalPay,
 
-            'date'       => now(),
-            'note'       => Request::input('payment_note'),
+            'date' => now(),
+            'note' => Request::input('payment_note'),
 
-            'type'       => 'in'
+            'type' => 'in'
         ]);
 
         $tk = $invoice->due - $totalPay;
         $invoice->update([
-           'pay' =>  $quotation->invoice->pay + $totalPay,
+            'pay' => $quotation->invoice->pay + $totalPay,
             'due' => $tk
         ]);
 
@@ -1516,9 +1464,10 @@ class QuotationController extends Controller
         return back();
     }
 
-    public function sendMail($id=null){
+    public function sendMail($id = null)
+    {
 
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('quotation.edit')){
+        if (auth()->user()->hasRole('administrator') || !auth()->user()->can('quotation.edit')) {
             abort(401);
         }
 
@@ -1527,7 +1476,7 @@ class QuotationController extends Controller
         ]);
         $email = Request::input('email');
         $data = $this->show($id, true);
-        if($email){
+        if ($email) {
 //            Mail::send('emails.quotation', $data, function($message) use($data, $pdf) {
 //                $message->from('jk23717933@gmail.com', 'PuraBox');
 //                $message->to('jk23717933@gmail.com');
@@ -1541,8 +1490,8 @@ class QuotationController extends Controller
                 ->performedOn($data['quotation'])
                 ->causedBy(auth()->user())
                 ->withProperties([
-               'Email Send' => $email
-            ])->log("Email Sent");
+                    'Email Send' => $email
+                ])->log("Email Sent");
 
 
 //            activity()

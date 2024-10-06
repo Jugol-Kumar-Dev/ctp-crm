@@ -28,8 +28,8 @@
                                     </div>
                                 </div>
                                 <div class="pull-up add-new-user ms-2"
-                                     v-if="this.$page.props.auth.user.can.includes('project.edit') ||
-                                     this.$page.props.auth.user.role.includes('Administrator')"
+                                     v-if="$page.props.auth.user.can.includes('project.edit') ||
+                                     $page.props.auth.user.role.includes('Administrator')"
                                      v-c-tooltip="'Assign New User'"
                                      data-bs-toggle="modal"
                                      data-bs-target="#assignedDeveloper">
@@ -51,8 +51,8 @@
                         </li>
 
                         <li class="nav-item" role="presentation" v-if="
-                            this.$page.props.auth.user.can.includes('project.clients') ||
-                            this.$page.props.auth.user.role.includes('Administrator')">
+                            $page.props.auth.user.can.includes('project.clients') ||
+                            $page.props.auth.user.role.includes('Administrator')">
                             <button class="nav-link"
                                     id="client-tab" data-bs-toggle="tab"
                                     data-bs-target="#client" type="button"
@@ -61,8 +61,8 @@
                         </li>
                         <li class="nav-item" role="presentation" v-if="props.info.invoice">
                             <button class="nav-link"
-                                    v-if="this.$page.props.auth.user.can.includes('project.budget') ||
-                                    this.$page.props.auth.user.role.includes('Administrator')"
+                                    v-if="$page.props.auth.user.can.includes('project.budget') ||
+                                    $page.props.auth.user.role.includes('Administrator')"
                                     id="billing-tab" data-bs-toggle="tab"
                                     data-bs-target="#billing" type="button"
                                     role="tab" aria-controls="billing"
@@ -70,8 +70,8 @@
                         </li>
                         <li class="nav-item" role="presentation" v-if="props.info.invoice">
                             <button class="nav-link"
-                                    v-if="this.$page.props.auth.user.can.includes('invoice.show') ||
-                                    this.$page.props.auth.user.role.includes('Administrator')"
+                                    v-if="$page.props.auth.user.can.includes('invoice.show') ||
+                                    $page.props.auth.user.role.includes('Administrator')"
                                     id="invoice-tab" data-bs-toggle="tab"
                                     data-bs-target="#invoice" type="button"
                                     role="tab" aria-controls="invoice"
@@ -79,8 +79,8 @@
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link"
-                                    v-if="this.$page.props.auth.user.can.includes('project.edit') ||
-                                    this.$page.props.auth.user.role.includes('Administrator')"
+                                    v-if="$page.props.auth.user.can.includes('project.edit') ||
+                                    $page.props.auth.user.role.includes('Administrator')"
                                     id="mambers-tab" data-bs-toggle="tab"
                                     data-bs-target="#mambers" type="button"
                                     role="tab" aria-controls="mambers"
@@ -122,8 +122,8 @@
                                                 <p class="mb-0">{{ props.info.client?.address }}</p>
 
                                                 <a :href="`/admin/clients/${ props.info.client?.id}`"
-                                                   v-if="this.$page.props.auth.user.can.includes('client.show') ||
-                                                   this.$page.props.auth.user.role.includes('Administrator')"
+                                                   v-if="$page.props.auth.user.can.includes('client.show') ||
+                                                   $page.props.auth.user.role.includes('Administrator')"
                                                    class="btn btn-primary mt-3">Profile</a>
                                             </div>
                                         </div>
@@ -219,11 +219,11 @@ import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/v
 
 import {useForm} from "@inertiajs/vue3";
 import {router} from "@inertiajs/vue3";
-import Overview from "@/components/Partials/Overview.vue";
-import Billing from "@/components/Partials/Billing.vue";
-import Mambers from "@/components/Partials/Mambers.vue";
-import Progressment from "@/components/Partials/Progressment.vue";
-import Action from "@/components/Partials/Action.vue";
+import Overview from "@/Pages/Projects/Partials/Overview.vue";
+import Billing from "@/Pages/Projects/Partials/Billing.vue";
+import Mambers from "@/Pages/Projects/Partials/Mambers.vue";
+import Progressment from "@/Pages/Projects/Partials/Progressment.vue";
+import Action from "@/Pages/Projects/Partials/Action.vue";
 
 let props = defineProps({
     info: Object,

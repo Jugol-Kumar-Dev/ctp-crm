@@ -26,8 +26,9 @@
                                                 <option value="200">200</option>
                                                 <option value="500">500</option>
                                             </select>
+
                                             <Link href="quotations/create"
-                                                  v-if="this.$page.props.auth.user.can.includes('quotation.create') || this.$page.props.auth.user.role.includes('Administrator')"
+                                                  v-if="$page.props.auth.user.can.includes('quotation.create') || $page.props.auth.user.role.includes('Administrator')"
                                                   class="btn btn-primary ml-2 d-flex align-items-center">
                                                 <vue-feather type="plus" size="15"/>
                                                 <span>
@@ -47,6 +48,18 @@
                                                         format="y-mm-dd"
                                                         placeholder="Select Date Range" autoApply
                                                         @update:model-value="handleDate"></Datepicker>
+
+                                            <select class="form-select" v-model="employee"
+                                                    v-if="$page.props.auth.user.role.includes('Administrator') || $page.props.auth.user.can.includes('leads.index')">
+                                                <option :value="undefined" disabled selected>Filter By Employee</option>
+                                                <option :value="emp.id" v-for="emp in props.users" v-text="emp.name"/>
+                                            </select>
+                                            <a class="btn btn-sm btn-icon btn-primary" v-if="isReset"
+                                               href="/admin/leads">
+                                                <vue-feather type="x-circle"></vue-feather>
+                                            </a>
+
+
                                         </div>
                                         <div
                                             class="d-flex align-items-center justify-content-center justify-content-lg-end flex-lg-nowrap flex-wrap">
@@ -76,9 +89,9 @@
                                         <tbody>
                                         <tr v-for="qut in quotations.data" :key="qut.id">
                                             <td>
-                                                <a v-if="this.$page.props.auth.user.can.includes('quotation.show') ||
-                                                this.$page.props.auth.user.role.includes('Administrator')"
-                                                    :href="qut.show_url" >#{{ moment(new Date()).format('YYYYMMD')+qut.id}}</a>
+                                                <a v-if="$page.props.auth.user.can.includes('quotation.show') ||
+                                                $page.props.auth.user.role.includes('Administrator')"
+                                                    :href="props.url+'/'+qut?.id" >{{ qut.quotation_id }}</a>
 
                                                 <span v-else>#{{ moment(new Date()).format('YYYYMMD')+qut.id}}</span>
                                             </td>
@@ -109,16 +122,16 @@
                                                 <span>{{ qut.user.name }}</span>
                                             </td>
                                             <td>
-                                                {{ qut.created_at }}
+                                                {{ moment(qut.created_at)?.format('ll') }}
                                             </td>
                                             <td>
                                                 <CDropdown
                                                     v-if="
-                                                            this.$page.props.auth.user.can.includes('quotation.invoice') ||
-                                                            this.$page.props.auth.user.can.includes('quotation.edit') ||
-                                                            this.$page.props.auth.user.can.includes('quotation.show') ||
-                                                            this.$page.props.auth.user.can.includes('quotation.delete')||
-                                                            this.$page.props.auth.user.role.includes('Administrator')
+                                                            $page.props.auth.user.can.includes('quotation.invoice') ||
+                                                            $page.props.auth.user.can.includes('quotation.edit') ||
+                                                            $page.props.auth.user.can.includes('quotation.show') ||
+                                                            $page.props.auth.user.can.includes('quotation.delete')||
+                                                            $page.props.auth.user.role.includes('Administrator')
                                                          ">
 
 
@@ -126,26 +139,26 @@
                                                         <vue-feather type="more-vertical" />
                                                     </CDropdownToggle>
                                                     <CDropdownMenu >
-                                                        <CDropdownItem :href="qut.show_url+'?download=true'"
-                                                        v-if="this.$page.props.auth.user.can.includes('quotation.invoice') || this.$page.props.auth.user.role.includes('Administrator')">
+                                                        <CDropdownItem :href="props.url+'/'+qut.id+'?download=true'"
+                                                        v-if="$page.props.auth.user.can.includes('quotation.invoice') || $page.props.auth.user.role.includes('Administrator')">
                                                             <vue-feather type="download" size="15"/>
                                                             <span class="ms-1">Download</span>
                                                         </CDropdownItem>
 
-                                                        <CDropdownItem :href="qut.edit_url"
-                                                                       v-if="this.$page.props.auth.user.can.includes('quotation.edit') || this.$page.props.auth.user.role.includes('Administrator')">
+                                                        <CDropdownItem :href="`/admin/edit/quotation/${qut.id}`"
+                                                                       v-if="$page.props.auth.user.can.includes('quotation.edit') || $page.props.auth.user.role.includes('Administrator')">
                                                             <Icon title="pencil" />
                                                             <span class="ms-1">Edit</span>
                                                         </CDropdownItem>
 
-                                                        <CDropdownItem :href="qut.show_url+'?type=show'"
-                                                                       v-if="this.$page.props.auth.user.can.includes('quotation.show') || this.$page.props.auth.user.role.includes('Administrator')">
+                                                        <CDropdownItem :href="props.url+'/'+qut.id+'?type=show'"
+                                                                       v-if="$page.props.auth.user.can.includes('quotation.show') || $page.props.auth.user.role.includes('Administrator')">
 
                                                         <Icon title="eye" />
                                                             <span class="ms-1">Show</span>
                                                         </CDropdownItem>
                                                         <CDropdownItem @click="deleteItemModal(qut.id)"
-                                                                       v-if="this.$page.props.auth.user.can.includes('quotation.delete') || this.$page.props.auth.user.role.includes('Administrator')">
+                                                                       v-if="$page.props.auth.user.can.includes('quotation.delete') || $page.props.auth.user.role.includes('Administrator')">
                                                         <Icon title="trash" />
                                                             <span class="ms-1">Delete</span>
                                                         </CDropdownItem>
@@ -227,20 +240,21 @@ export default {
 import Pagination from "@/components/Pagination.vue";
 import Icon from "@/components/Icon.vue";
 import Modal from "@/components/Modal.vue";
-import {ref, watch} from "vue";
+import {computed, ref, watch} from "vue";
 import debounce from "lodash/debounce";
 import {router} from "@inertiajs/vue3";
 import Swal from 'sweetalert2'
 import {useForm} from "@inertiajs/vue3";
 import {defineProps} from "@vue/runtime-core";
 import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
-import {useDate} from "../../composables/useDate";
+import {useDate} from "@/composables/useDate.js";
 const range = useDate();
 
 
 
 let props = defineProps({
     quotations: Object,
+    users:Object|Array,
     filters: Object,
     notification:Object,
     url:String,
@@ -327,10 +341,13 @@ const handleDate = (event) => isCustom.value = event !== null;
 const searchByStatus = ref(props.filters.byStatus)
 let search = ref(props.filters.search);
 let perPage = ref(props.filters.perPage);
+const employee = ref(props.filters.employee)
 
-watch([search, perPage, searchByStatus, dateRange], debounce(function ([val, val2, val3, val4]) {
-    router.get(props.url, { search: val, perPage: val2, byStatus: val3 , dateRange: val4}, { preserveState: true, replace: true });
+watch([search, perPage, searchByStatus, dateRange, employee], debounce(function ([val, val2, val3, val4, val5]) {
+    router.get(props.url, { search: val, perPage: val2, byStatus: val3 , dateRange: val4, employee:val5}, { preserveState: true, replace: true });
 }, 300));
+
+const isReset = computed(() => !!props.filters?.perPage || props.filters?.byStatus || props.filters?.dateRange )
 
 </script>
 

@@ -74,7 +74,7 @@
 </template>
 
 <script setup>
-import {useDate} from '../../composables/useDate.js'
+import {useDate} from '@/composables/useDate.js'
  defineProps({
      project: Object,
  })

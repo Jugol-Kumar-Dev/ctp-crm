@@ -38,17 +38,17 @@
                                             </select>
 
 
-                                            <select class="form-select" v-model="employee" style="width:100%;" v-if="this.$page.props.auth.user.role.includes('Administrator') || this.$page.props.auth.user.can.includes('transaction.index')">
+                                            <select class="form-select" v-model="employee" style="width:100%;" v-if="$page.props.auth.user.role.includes('Administrator') || $page.props.auth.user.can.includes('transaction.index')">
                                                 <option :value="undefined" disabled selected>Filter By Employee</option>
                                                 <option :value="emp.id" v-for="emp in props.users" v-text="emp.name"/>
                                             </select>
 
-                                            <select class="form-select" v-model="logName" style="width:100%;" v-if="this.$page.props.auth.user.role.includes('Administrator') || this.$page.props.auth.user.can.includes('transaction.index')">
+                                            <select class="form-select" v-model="logName" style="width:100%;" v-if="$page.props.auth.user.role.includes('Administrator') || $page.props.auth.user.can.includes('transaction.index')">
                                                 <option :value="undefined" disabled selected>Filter By Name</option>
                                                 <option :value="log?.log_name" v-for="log in props.log_names" v-text="log?.log_name"/>
                                             </select>
 
-                                            <select class="form-select" v-model="filterEvents" style="width:100%;" v-if="this.$page.props.auth.user.role.includes('Administrator') || this.$page.props.auth.user.can.includes('transaction.index')">
+                                            <select class="form-select" v-model="filterEvents" style="width:100%;" v-if="$page.props.auth.user.role.includes('Administrator') || $page.props.auth.user.can.includes('transaction.index')">
                                                 <option :value="undefined" disabled selected>Filter By Action</option>
                                                 <option :value="emp?.event" v-for="emp in props.action" v-text="emp?.event"/>
                                             </select>
@@ -134,13 +134,13 @@
     </Modal>
 </template>
 <script setup>
-import Pagination from "../components/Pagination.vue"
-import moment, {months} from 'moment';
+import Pagination from "@/components/Pagination.vue"
+import moment from 'moment';
 import {ref, watch, computed} from "vue";
 import debounce from "lodash/debounce";
 import {router} from "@inertiajs/vue3";
 import axios from "axios";
-import {useDate} from "../composables/useDate.js";
+import {useDate} from "@/composables/useDate.js";
 const range = useDate();
 const formatted  = useDate();
 import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'

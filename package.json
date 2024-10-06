@@ -14,8 +14,8 @@
         "@vue/compiler-sfc": "^3.2.36",
         "@vue/runtime-core": "^3.2.37",
         "autoprefixer": "10.4.5",
-        "axios": "^0.25",
-        "bootstrap-vue": "2.21.1",
+        "axios": "^1.7.7",
+        "bootstrap-vue": "^2.23.1",
         "eslint-plugin-vue": "^9.0.1",
         "laravel-mix": "^6.0.6",
         "lodash": "^4.17.19",
@@ -37,7 +37,7 @@
         "@vitejs/plugin-vue": "^5.1.4",
         "@vuepic/vue-datepicker": "^3.3.0",
         "apexcharts": "^3.39.0",
-        "bootstrap": "^5.2.3",
+        "bootstrap": "^5.3.3",
         "chart.js": "^4.2.1",
         "dotenv": "^16.0.3",
         "feather-icons": "^4.29.0",
@@ -57,7 +57,7 @@
         "vue-prism-editor": "^2.0.0-alpha.2",
         "vue-select": "^4.0.0-beta.3",
         "vue-tel-input": "^9.1.3",
-        "vue3-perfect-scrollbar": "^1.6.0",
+        "vue3-perfect-scrollbar": "^2.0.0",
         "vue3-plugin-bootstrap5": "^0.2.5",
         "vuex": "^4.0.2"
     }

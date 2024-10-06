@@ -7,6 +7,7 @@ use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\URL;
 
@@ -15,28 +16,27 @@ class LeadController extends Controller
 
     public function index()
     {
+        $user = Auth::user();
+        $admin = $user->hasRole('Administrator');
+        $ownOnly = $user->can('leads.ownonly');
 
-        $show =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('leads.index');
-        $my =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('leads.ownonly');
-
-        if ( $show && $my){
-            abort(401);
+        if (!$admin) {
+            if (!auth()->user()->can('leads.index') && !$ownOnly) {
+                abort(401, 'Your Not Autorized For Access Tthis Page');
+            }
         }
 
 
-
-        $admin = auth()->user()->hasRole('Administrator');
-        $ownOnly = auth()->user()->can('leads.ownonly');
-
-
-        $clients = Client::query()->with(['projects', 'users', 'createdBy', 'updatedBy'])
+        $clients = Client::query()
+            ->select('id', 'name', 'phone', 'email', 'created_by', 'updated_by', 'status', 'created_at')
+            ->with(['users:id,name', 'createdBy:id,name', 'updatedBy:id,name'])
             ->where('is_client', false)
-            ->where('status', '!=', 'Converted to Customer')
-            ->when(!$admin && $ownOnly, function ($query) {
-                $query->where(function ($query) {
-                    $query->where('created_by', Auth::id())
-                        ->orWhereHas('users', function ($query) {
-                            $query->where('user_id', Auth::id());
+            ->Where('status', '!=', 'Converted to Customer')
+            ->when(!$admin && $ownOnly, function ($query) use ($user) {
+                $query->where(function ($query) use ($user) {
+                    $query->where('created_by', $user->id)
+                        ->orWhereHas('users', function ($query) use ($user) {
+                            $query->where('user_id', $user->id);
                         });
                 });
             })
@@ -57,34 +57,22 @@ class LeadController extends Controller
                 $endDateTime = Carbon::parse($dateRange[1])->endOfDay();
                 $query->whereBetween('created_at', [$startDateTime, $endDateTime]);
             })
+            ->when(Request::input('employee'), function ($query, $search) {
+                $query->where(function ($query)use($search) {
+                    $query->where('created_by', $search)
+                        ->orWhereHas('users', function ($query) use ($search) {
+                            $query->where('user_id', $search);
+                        });
+                });
+            })
             ->latest()
-            ->paginate(Request::input('perPage') ?? 10)
-            ->withQueryString()
-            ->through(fn($client) => [
-                'id' => $client->id ?? '--',
-                'name' => $client->name ?? '--',
-                'phone' => $client->phone ?? '--',
-                'email' => $client->email ?? '--',
-                'assigned' => $client->users ?? '--',
-                'createdBy' => $client->createdBy ?? '--',
-                'updatedBy' => $client->updatedBy ?? '--',
-                'photo' => '/images/avatar.png' ?? '--',
-                'status' => $client->status ?? '--',
-                'followUp' => $client->follow_up ?? null,
-                'followUpMessage' => $client->follow_up_message ?? null,
-                'note' => $client->note ?? '--',
-                'created_at' => $client?->created_at?->format('d M Y') ?? null,
-                'show_url' => URL::route('leads.show', $client->id ?? '--')
-            ]);
+            ->paginate(Request::input('perPage') ?? config('app.perpage'));
 
-        if (Request::input('export_pdf') === 'true') {
-            return $this->loadDownload($clients);
-        }
 
-        return inertia('Modules/Leads/Index', [
+        return inertia('Leads/Index', [
             'clients' => $clients,
-            'users' => User::all(),
-            'filters' => Request::only(['search', 'perPage', 'byStatus', 'dateRange']),
+            'users' => User::query()->select('id', 'name')->get(),
+            'filters' => Request::only(['search', 'perPage', 'byStatus', 'dateRange','employee']),
             "main_url" => Url::route('leads.index'),
         ]);
 
@@ -98,15 +86,14 @@ class LeadController extends Controller
      * */
 
 
-
     public function oldIndex()
     {
 
 
-        $show =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('leads.index');
-        $my =  auth()->user()->hasRole('administrator')  || !auth()->user()->can('leads.ownonly');
+        $show = auth()->user()->hasRole('administrator') || !auth()->user()->can('leads.index');
+        $my = auth()->user()->hasRole('administrator') || !auth()->user()->can('leads.ownonly');
 
-        if ( $show && $my){
+        if ($show && $my) {
             abort(401);
         }
 
@@ -150,17 +137,17 @@ class LeadController extends Controller
                     $endDateTime = Carbon::parse($search[1])->endOfDay();
                     $query->whereBetween('created_at', [$startDateTime, $endDateTime]);
                 })
-                ->when(Request::input('byStatus'), function ($query, $search){
+                ->when(Request::input('byStatus'), function ($query, $search) {
                     $query->where('status', $search);
                 });
-            if(Request::input('search')){
+            if (Request::input('search')) {
                 $search = Request::input('search');
                 $clients = $clients->where(function ($query) use ($search) {
                     $query->where('name', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%")
                         ->orWhere('phone', 'like', "%{$search}%");
                 })->where('is_client', false);
-            }else{
+            } else {
                 $clients = $clients->where('is_client', false);
             }
         } else {
@@ -187,7 +174,6 @@ class LeadController extends Controller
             ]);
 
 
-
         if (Request::input('export_pdf') === 'true') {
             return $this->loadDownload($clients);
         }
@@ -211,19 +197,18 @@ class LeadController extends Controller
 
     public function show($id)
     {
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('leads.show')){
+        if (auth()->user()->hasRole('administrator') || !auth()->user()->can('leads.show')) {
             abort(401);
         }
 
 
-
-        if(auth()->user()->hasRole('Administrator') || auth()->user()->can('leads.index')){
+        if (auth()->user()->hasRole('Administrator') || auth()->user()->can('leads.index')) {
             $user = Client::findOrFail($id)->load('users', 'transactions', 'transactions.receivedBy',
                 'invoices', 'invoices.user',
                 'transactions.method',
                 'quotations', 'quotations.user', 'projects',
                 'projects.users', 'createdBy', 'updatedBy');
-        }else{
+        } else {
             $user = Client::query()
                 ->with('users')
                 ->where(function ($query) use ($id) {
@@ -243,19 +228,19 @@ class LeadController extends Controller
         }
 
 
-        return inertia('Modules/Leads/Show', [
+        return inertia('Leads/Show', [
             "user" => $user,
             'users' => User::all(),
-            'image' => "/images/avatar.png",
+            'image' => "./images/avatar.png",
             'show_url' => URL::route('clients.show', $user->id),
         ]);
 
 
-
     }
+
     public function destroy($id)
     {
-        if (auth()->user()->hasRole('administrator')  || !auth()->user()->can('leads.delete')){
+        if (auth()->user()->hasRole('administrator') || !auth()->user()->can('leads.delete')) {
             abort(401);
         }
 

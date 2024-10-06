@@ -27,8 +27,8 @@
 <!--                                                <p v-if="props.user?.follow_up" v-c-tooltip="'follow up date'">{{ moment(props.user?.follow_up)  }}</p>-->
                                                 <div class="d-flex align-items-center gap-1">
                                                     <button  v-if="
-                                                this.$page.props.auth.user.role == 'Administrator' ||
-                                                this.$page.props.auth.user.can.includes('leads.edit')" @click="editClient" class="btn-sm btn btn-primary w-100">Edit Me</button>
+                                                $page.props.auth.user.role == 'Administrator' ||
+                                                $page.props.auth.user.can.includes('leads.edit')" @click="editClient" class="btn-sm btn btn-primary w-100">Edit Me</button>
 <!--                                                    <button v-if="props.user?.note" class="btn btn-info btn-sm" @click="showClientNote" v-c-tooltip="'click for show client note.'">-->
 <!--                                                        <vue-feather type="info"/>-->
 <!--                                                    </button>-->
@@ -420,13 +420,13 @@
 </template>
 
 <script setup>
-import Account from './Uerprofile/Account'
-import Billing from './Uerprofile/Billing'
-import Quotation from './Uerprofile/Quotation'
-import Invoice from './Uerprofile/Invoice'
-import Project from './Uerprofile/Project'
-import Domain from './Uerprofile/Domain'
-import Hosting from './Uerprofile/Hosting'
+import Account from '@/components/Uerprofile/Account.vue'
+import Billing from '@/components/Uerprofile/Billing.vue'
+import Quotation from '@/components/Uerprofile/Quotation.vue'
+import Invoice from '@/components/Uerprofile/Invoice.vue'
+import Project from '@/components/Uerprofile/Project.vue'
+import Domain from '@/components/Uerprofile/Domain.vue'
+import Hosting from '@/components/Uerprofile/Hosting.vue'
 import Modal from './Modal.vue'
 import moment from "moment";
 

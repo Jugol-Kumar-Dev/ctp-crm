@@ -23,7 +23,7 @@
                                     </div>
 
                                     <a class="dt-button add-new btn btn-primary"
-                                       v-if="this.$page.props.auth.user.can.includes('platform.create') || this.$page.props.auth.user.role.includes('Administrator')"
+                                       v-if="$page.props.auth.user.can.includes('platform.create') || $page.props.auth.user.role.includes('Administrator')"
                                     :href="props.main_url+'/create'">
                                         Add Platform
                                     </a>
@@ -61,12 +61,12 @@
 
                                     <div>
                                         <a :href="item.edit_url"
-                                           v-if="this.$page.props.auth.user.can.includes('platform.edit') || this.$page.props.auth.user.role.includes('Administrator')"
+                                           v-if="$page.props.auth.user.can.includes('platform.edit') || $page.props.auth.user.role.includes('Administrator')"
                                         >
                                             <vue-feather  type="edit" size="15" class="text-info cursor-pointer"/>
                                         </a>
                                         <vue-feather @click="deleteItem(props.main_url, item.id)"
-                                                     v-if="this.$page.props.auth.user.can.includes('platform.delete') || this.$page.props.auth.user.role.includes('Administrator')"
+                                                     v-if="$page.props.auth.user.can.includes('platform.delete') || $page.props.auth.user.role.includes('Administrator')"
                                                      type="trash-2" size="15" class="text-danger cursor-pointer"/>
                                     </div>
                                 </div>

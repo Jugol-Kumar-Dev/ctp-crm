@@ -30,7 +30,7 @@
                                 <div class="card-header border-bottom d-flex justify-content-between">
                                     <h4 class="card-title">Administration</h4>
                                     <button
-                                        v-if="this.$page.props.auth.user.can.includes('user.create') || this.$page.props.auth.user.role == 'Administrator' "
+                                        v-if="$page.props.auth.user.can.includes('user.create') || $page.props.auth.user.role == 'Administrator' "
                                         class="dt-button add-new btn btn-primary"
                                         @click="addDataModal"
                                     >
@@ -99,11 +99,11 @@
                                             <td>
                                                 <CDropdown
                                                     v-if="
-                                                            this.$page.props.auth.user.can.includes('user.show') ||
-                                                            this.$page.props.auth.user.can.includes('user.edit') ||
-                                                            this.$page.props.auth.user.can.includes('user.delete') ||
-                                                            this.$page.props.auth.user.can.includes('user.loginas') ||
-                                                            this.$page.props.auth.user.role.includes('Administrator')
+                                                            $page.props.auth.user.can.includes('user.show') ||
+                                                            $page.props.auth.user.can.includes('user.edit') ||
+                                                            $page.props.auth.user.can.includes('user.delete') ||
+                                                            $page.props.auth.user.can.includes('user.loginas') ||
+                                                            $page.props.auth.user.role.includes('Administrator')
                                                          ">
 
                                                     <CDropdownToggle class="p-0">
@@ -111,21 +111,21 @@
                                                     </CDropdownToggle>
                                                     <CDropdownMenu >
                                                         <CDropdownItem :href="user.show_url"
-                                                                       v-if="this.$page.props.auth.user.can.includes('user.show') || this.$page.props.auth.user.role.includes('Administrator')">
+                                                                       v-if="$page.props.auth.user.can.includes('user.show') || $page.props.auth.user.role.includes('Administrator')">
                                                             <Icon title="eye" />
                                                             <span class="ms-1">Show</span>
                                                         </CDropdownItem>
 
                                                         <CDropdownItem @click="editUser(user.show_url)"
-                                                                       v-if="this.$page.props.auth.user.can.includes('user.edit') ||
-                                                                       this.$page.props.auth.user.role.includes('Administrator')">
+                                                                       v-if="$page.props.auth.user.can.includes('user.edit') ||
+                                                                       $page.props.auth.user.role.includes('Administrator')">
                                                             <Icon title="pencil" />
                                                             <span class="ms-1">Edit</span>
                                                         </CDropdownItem>
 
                                                         <CDropdownItem @click="deleteItemModal(props.main_url, user.id)"
-                                                                       v-if="this.$page.props.auth.user.can.includes('user.delete') ||
-                                                                       this.$page.props.auth.user.role.includes('Administrator')">
+                                                                       v-if="$page.props.auth.user.can.includes('user.delete') ||
+                                                                       $page.props.auth.user.role.includes('Administrator')">
                                                             <Icon title="trash" />
                                                             <span class="ms-1">Delete</span>
                                                         </CDropdownItem>
@@ -134,7 +134,7 @@
 
                                                         <CDropdownItem
                                                             class="d-flex align-items-center"
-                                                            @click="loginAs(user)" v-if="(this.$page.props.auth.user.role.includes('Administrator') || this.$page.props.auth.user.can.includes('user.loginas')) && this.$page.props.auth.user?.id !== user?.id && !user.roles.includes('Administrator')">
+                                                            @click="loginAs(user)" v-if="($page.props.auth.user.role.includes('Administrator') || $page.props.auth.user.can.includes('user.loginas')) && $page.props.auth.user?.id !== user?.id && !user.roles.includes('Administrator')">
                                                             <vue-feather type="log-in" size="15"/>
                                                             <span class="ms-1">Login As</span>
                                                         </CDropdownItem>
@@ -316,10 +316,10 @@
 
 
 <script setup>
-    import Pagination from "../../../components/Pagination"
-    import Icon from '../../../components/Icon'
-    import Modal from '../../../components/Modal'
-    import Image from '../../../components/ImageUploader'
+    import Pagination from "@/components/Pagination.vue"
+    import Icon from '@/components/Icon.vue'
+    import Modal from '@/components/Modal.vue'
+    import Image from '@/components/ImageUploader.vue'
     import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
     import {ref, watch} from "vue";
     import debounce from "lodash/debounce";
@@ -327,7 +327,7 @@
     import Swal from 'sweetalert2'
     import {useForm} from "@inertiajs/vue3";
     import axios from "axios";
-    import {useAction} from "../../../composables/useAction";
+    import {useAction} from "@/composables/useAction.js";
     const {deleteItem} = useAction();
     let props = defineProps({
         users: Object,

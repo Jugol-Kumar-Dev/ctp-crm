@@ -32,7 +32,7 @@
                         {{ moment(qut.created_at).format('lll') }}
                     </td>
                     <td>
-                        <a v-if="this.$page.props.auth.user.role == 'Administrator' || this.$page.props.auth.user.can.includes('quotation.show')" :href="`/admin/quotations/${qut.id}`">
+                        <a v-if="$page.props.auth.user.role == 'Administrator' || $page.props.auth.user.can.includes('quotation.show')" :href="`/admin/quotations/${qut.id}`">
                             <vue-feather class="text-info" type="eye" size="15"/>
                         </a>
                     </td>
@@ -46,9 +46,9 @@
 </template>
 
 <script setup>
-import Icon from '../Icon'
+import Icon from '@/components/Icon.vue'
 import moment from "moment";
-import {useDate} from '../../composables/useDate.js'
+import {useDate} from '@/composables/useDate.js'
     defineProps({
         quotations: Object
     })

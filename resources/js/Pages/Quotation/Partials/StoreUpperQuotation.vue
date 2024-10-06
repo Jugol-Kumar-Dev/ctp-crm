@@ -390,7 +390,7 @@ import {useQuotationStore} from "../../../Store/useQuotationStore";
 import Fuse from "fuse.js";
 import {useForm} from "@inertiajs/vue3";
 import {usePolicyStore} from "../../../Store/usePolicyStore";
-import Modal from "../../../components/Modal.vue";
+import Modal from "@/components/Modal.vue";
 import { storeToRefs } from 'pinia'
 
 const quotationStore = useQuotationStore();

@@ -218,7 +218,7 @@ Route::prefix('admin')->group(function(){
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('log.index');
     });
 
-    Route::post('/logout', [LoginController::class, 'destroy']);
+    Route::any('/logout', [LoginController::class, 'destroy']);
 });
 
 Route::get('/qut-email', [TestController::class, 'testEmail']);

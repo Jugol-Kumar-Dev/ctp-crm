@@ -15,7 +15,7 @@
                                 <div class="card-header border-bottom d-flex justify-content-between">
                                     <h4 class="card-title">Methods Information's </h4>
                                     <button class="dt-button add-new btn btn-primary"
-                                            v-if="this.$page.props.auth.user.can.includes('method.create') || this.$page.props.auth.user.role.includes('Administrator')"
+                                            v-if="$page.props.auth.user.can.includes('method.create') || $page.props.auth.user.role.includes('Administrator')"
                                             @click="createDataModal">Add Method</button>
                                 </div>
                                 <div class="card-datatable table-responsive pt-0">
@@ -59,7 +59,7 @@
                                             <td>
                                                 <div class="demo-inline-spacing">
                                                     <button @click="deleteItem(props.main_url, method.id)"
-                                                            v-if="this.$page.props.auth.user.can.includes('method.create') || this.$page.props.auth.user.role.includes('Administrator')"
+                                                            v-if="$page.props.auth.user.can.includes('method.create') || $page.props.auth.user.role.includes('Administrator')"
                                                             type="button" class="btn btn-icon btn-icon rounded-circle btn-warning waves-effect waves-float waves-light btn-danger">
                                                         <Icon title="trash" />
                                                     </button>
@@ -109,16 +109,16 @@
 
 </script>
 <script setup>
-    import Pagination from "../../../components/Pagination"
-    import Icon from '../../../components/Icon'
-    import Modal from '../../../components/Modal'
+    import Pagination from "@/components/Pagination.vue"
+    import Icon from '@/components/Icon.vue'
+    import Modal from '@/components/Modal.vue'
     import {ref, watch} from "vue";
     import debounce from "lodash/debounce";
     import {router} from "@inertiajs/vue3";
     import Swal from 'sweetalert2'
     import {useForm} from "@inertiajs/vue3";
     import axios from "axios";
-    import {useAction} from "../../../composables/useAction";
+    import {useAction} from "@/composables/useAction.js";
     const {deleteItem} = useAction()
 
     let props = defineProps({

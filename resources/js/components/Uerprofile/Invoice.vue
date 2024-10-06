@@ -34,7 +34,7 @@
                     <td>{{ invoice.due ?? '---'}} </td>
                     <td>{{ invoice.created_at }}</td>
                     <td>
-                        <a v-if="this.$page.props.auth.user.role == 'Administrator' || this.$page.props.auth.user.can.includes('invoice.show')" :href="`/admin/invoices/${invoice.id}`">
+                        <a v-if="$page.props.auth.user.role == 'Administrator' || $page.props.auth.user.can.includes('invoice.show')" :href="`/admin/invoices/${invoice.id}`">
                             <vue-feather class="text-info" type="eye" size="15"/>
                         </a>
                     </td>
@@ -46,7 +46,7 @@
 </template>
 
 <script setup>
-import {useDate} from '../../composables/useDate'
+import {useDate} from '@/composables/useDate.js'
     defineProps({
         invoices: Object
     })

@@ -52,7 +52,7 @@ export function useAction(){
 
     const isShow = ref(false);
     const changeIsShow = (value) => isShow.value = value;
-    const chatStyle = process.env.CHAT_STYLE;
+    const chatStyle = import.meta.env.CHAT_STYLE
 
 
     return {swalSuccess, swalError, deleteItem, isShow, changeIsShow, chatStyle}

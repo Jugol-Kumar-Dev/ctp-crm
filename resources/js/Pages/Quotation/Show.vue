@@ -36,11 +36,10 @@
                                             <p>Email: info@creativetechpark.com</p>
                                         </div>
                                         <div class="invoice-number-date mt-md-0 mt-2">
-
-                                            <div class="d-flex align-items-center justify-content-md-end mb-1">
+                                            <div class="d-flex align-items-end justify-content-md-end mb-1">
                                                 Quotation Id:  <vue-feather type="hash" size="15"/>_{{  props.quotation.quotation_id }}{{ props.quotation.id }}
                                             </div>
-                                            <div class="d-flex align-items-center mb-1 flex-column">
+                                            <div class="d-flex align-items-end mb-1 flex-column">
                                                 <p>Created on: {{moment(props.quotation.qut_date).format('D-M-Y')  }}</p>
                                                 <p>Valid until: {{moment(props.quotation.due_date).format('D-M-Y')  }}</p>
                                             </div>
@@ -153,8 +152,8 @@
                         <!-- Invoice Edit Right starts -->
                         <div class="col-xl-3 col-md-4 col-12">
                             <div class="card">
-                                <div class="card-body" v-if="this.$page.props.auth.user.can.includes('quotation.edit') ||
-                                this.$page.props.auth.user.role.includes('Administrator')" >
+                                <div class="card-body" v-if="$page.props.auth.user.can.includes('quotation.edit') ||
+                                $page.props.auth.user.role.includes('Administrator')" >
                                     <a :href="props.url.edit_url" class="btn btn-primary w-100 mb-75">
                                         Edit Quotation
                                     </a>
@@ -570,6 +569,7 @@
 .newlineStringStyle {
     white-space: pre-wrap;
     font-size: 11px;
+    padding:0 !important;
 }
 .vs__dropdown-toggle{
     border: 1px solid;

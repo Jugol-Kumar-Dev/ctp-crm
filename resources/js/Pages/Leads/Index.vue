@@ -46,8 +46,7 @@
                                     <div class="d-flex align-items-center justify-content-between border-bottom">
                                         <div class="select-search-area d-flex align-items-center">
                                             <select class="form-select" v-model="perPage">
-                                                <option :value="undefined">10</option>
-                                                <option value="25">25</option>
+                                                <option :value="undefined">25</option>
                                                 <option value="50">50</option>
                                                 <option value="100">100</option>
                                                 <option value="200">200</option>
@@ -72,7 +71,11 @@
                                                         :format="'dd-MM-Y'"
                                                         placeholder="Select Date Range" autoApply
                                                         @update:model-value="handleDate" ></Datepicker>
-
+                                            <select class="form-select" v-model="employee" style="width:100%;"
+                                                    v-if="$page.props.auth.user.role.includes('Administrator') || $page.props.auth.user.can.includes('leads.index')">
+                                                <option :value="undefined" disabled selected>Filter By Employee</option>
+                                                <option :value="emp.id" v-for="emp in props.users" v-text="emp.name"/>
+                                            </select>
                                             <a class="btn btn-sm btn-icon btn-primary" v-if="isReset"
                                                href="/admin/leads">
                                                 <vue-feather type="x-circle"></vue-feather>
@@ -128,10 +131,8 @@
                                             $page.props.auth.user.can.includes('leads.edit') ||
                                             $page.props.auth.user.can.includes('leads.delete') ||
                                             $page.props.auth.user.can.includes('leads.show')" class="cursor-pointer" @click="singleShowlead(user)">
-                                                <div class="d-flex align-items-center gap-1 user-info">
-                                                    <div class="icon">
+                                                <div class="d-flex align-items-center gap-3 user-info">
                                                         <vue-feather type="more-vertical"/>
-                                                    </div>
                                                     <div class="d-flex flex-column">
                                                         <div class="user_name text-truncate text-body">
                                                             <span class="fw-bolder text-capitalize">{{ user.name ?? '---' }}</span>
@@ -160,7 +161,7 @@
 
 
                                             <td>
-                                                <span v-for="user in user.assigned">{{ user.name }}, </span>
+                                                <span v-for="user in user.users">{{ user.name }}, </span>
                                             </td>
                                             <td class="d-flex flex-column" style="padding:40px 0;">
                                                 <span class="badge"
@@ -171,7 +172,7 @@
                                                 'badge-light-warning' : user.status === 'Quote Sent',
                                                 'badge-light-secondary' : user.status === 'Qualified',
                                                 'badge-light-danger' : user.status === 'Disqualified',
-                                                'badge-light-purple' : user.status === 'New Lead',
+                                                'badge-light-secondary' : user.status === 'New Lead',
                                                 'badge-light-indego' : user.status === 'Follow Up',
                                             }">{{ user.status }}
                                             </span>
@@ -179,9 +180,9 @@
                                                     {{ moment(user.followUp).format('ll') }}
                                                 </span>
                                             </td>
-                                            <td>{{ user.created_at }}</td>
-                                            <td>{{ user.createdBy?.name ?? '---' }}</td>
-                                            <td>{{ user.updatedBy?.name ?? '---' }}</td>
+                                            <td>{{ moment(user.created_at)?.format('ll')}}</td>
+                                            <td>{{ user.created_by?.name ?? '---' }}</td>
+                                            <td>{{ user.updated_by?.name ?? '---' }}</td>
                                             <td>
                                                 <CDropdown v-if="$page.props.auth.user.can.includes('leads.edit') ||
                                                 $page.props.auth.user.can.includes('leads.show') ||
@@ -198,7 +199,7 @@
                                                                 <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/>
                                                             </svg>                                                            <span class="ms-1">Change Status</span>
                                                         </CDropdownItem>
-                                                        <CDropdownItem @click="editClient(user.show_url)"
+                                                        <CDropdownItem @click="editClient(user.id)"
                                                                        v-if="$page.props.auth.user.can.includes('leads.edit') || $page.props.auth.user.role == 'Administrator'">
                                                             <Icon title="pencil"/>
                                                             <span class="ms-1">Edit</span>
@@ -235,8 +236,6 @@
                         </div>
                     </div>
                 </section>
-                <!--/ Advanced Search -->
-                <!--/ Multilingual -->
             </div>
         </div>
     </div>
@@ -295,18 +294,6 @@
                     </div>
                 </div>
                 <div class="row mb-1">
-<!--                    <div v-if="clientStatus" class="'col-md'">
-                        <label>Lead Status <span class="text-danger">*</span></label>
-                        <v-select v-model="createForm.status"
-                                  @update:modelValue="changeStatus"
-                                  label="name"
-                                  class="form-control select-padding"
-                                  :options="status"
-                                  placeholder="Select Lead Status">
-                        </v-select>
-                        <span v-if="errors.status" class="error text-sm text-danger">{{ errors.status }}</span>
-                    </div>-->
-
 
                     <div class="col-md-12">
                         <label>Nots: </label>
@@ -717,7 +704,7 @@
 import Pagination from "@/components/Pagination.vue"
 import Icon from '@/components/Icon.vue'
 import Modal from '@/components/Modal.vue'
-import {ref, watch, onMounted, computed} from "vue";
+import {ref, watch, computed} from "vue";
 import debounce from "lodash/debounce";
 import {router} from "@inertiajs/vue3";
 import Swal from 'sweetalert2'
@@ -726,11 +713,9 @@ import axios from 'axios';
 import moment from "moment";
 import {CDropdown, CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
 import {useDate} from "@/composables/useDate.js";
-import intlTelInput from "intl-tel-input";
 import "intl-tel-input/build/css/intlTelInput.min.css"
-import PhoneInput from "../../../components/PhoneInput.vue";
+import PhoneInput from "@/components/PhoneInput.vue";
 const range = useDate();
-
 
 
 let props = defineProps({
@@ -878,9 +863,9 @@ let updateClientForm = (id) => {
     })
 }
 
-let editClient = (url, changeStatus) => {
+let editClient = (id, changeStatus) => {
 
-    axios.get(url + "?edit=true").then(res => {
+    axios.get(props.main_url+"/"+id + "?edit=true").then(res => {
         editData.value = res.data;
         updateForm.name = res.data.name;
         updateForm.email = res.data.email;
@@ -950,9 +935,10 @@ const handleDate = (event) => isCustom.value = event !== null;
 const searchByStatus = ref(props.filters.byStatus)
 let search = ref(props.filters.search);
 let perPage = ref(props.filters.perPage);
+const employee = ref(props.filters.employee)
 
-watch([search, perPage, searchByStatus, dateRange], debounce(function ([val, val2, val3, val4]) {
-    router.get(props.main_url, {search: val, perPage: val2, byStatus: val3, dateRange: val4}, {
+watch([search, perPage, searchByStatus, dateRange, employee], debounce(function ([val, val2, val3, val4, val5]) {
+    router.get(props.main_url, {search: val, perPage: val2, byStatus: val3, dateRange: val4, employee:val5}, {
         preserveState: true,
         replace: true
     });
@@ -1033,11 +1019,7 @@ const singleShowlead = (user) => {
     singleLeadShow.value = user;
     document.getElementById('showSingleLead').$vb.modal.show()
 }
-
-
-const isReset = computed(() => {
-    return !!props.filters?.perPage || props.filters?.byStatus || props.filters?.dateRange;
-})
+const isReset = computed(() => !!props.filters?.perPage || props.filters?.byStatus || props.filters?.dateRange )
 
 
 </script>

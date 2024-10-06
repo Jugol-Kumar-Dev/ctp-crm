@@ -46,7 +46,7 @@
                                                 </label>
                                             </div>
                                         </div>
-                                        <button v-if="this.$page.props.auth.user.can.includes('packages.create') || this.$page.props.auth.user.role.includes('Administrator')"
+                                        <button v-if="$page.props.auth.user.can.includes('packages.create') || $page.props.auth.user.role.includes('Administrator')"
                                                                                            @click="addDataModal" class="btn btn-primary">Add New</button>
                                     </div>
                                 </div>
@@ -57,21 +57,21 @@
                                                 <div class="d-flex align-items-center justify-content-between">
                                                     <h5 class="text-capitalize">{{ pac.name }}</h5>
                                                     <CDropdown
-                                                        v-if="this.$page.props.auth.user.can.includes('packages.delete') || this.$page.props.auth.user.can.includes('packages.edit') || this.$page.props.auth.user.role.includes('Administrator')">
+                                                        v-if="$page.props.auth.user.can.includes('packages.delete') || $page.props.auth.user.can.includes('packages.edit') || $page.props.auth.user.role.includes('Administrator')">
                                                         <CDropdownToggle class="p-0">
                                                             <vue-feather type="more-vertical" />
                                                         </CDropdownToggle>
                                                         <CDropdownMenu>
                                                             <CDropdownItem
                                                                 @click="editPackage(pac.id)"
-                                                                v-if="this.$page.props.auth.user.can.includes('packages.edit') || this.$page.props.auth.user.role.includes('Administrator')"
+                                                                v-if="$page.props.auth.user.can.includes('packages.edit') || $page.props.auth.user.role.includes('Administrator')"
                                                             >
                                                                 <vue-feather type="edit" size="15"/>
                                                                 <span class="ms-1">Edit</span>
                                                             </CDropdownItem>
 
                                                             <CDropdownItem
-                                                                v-if="this.$page.props.auth.user.can.includes('packages.delete') || this.$page.props.auth.user.role.includes('Administrator')"
+                                                                v-if="$page.props.auth.user.can.includes('packages.delete') || $page.props.auth.user.role.includes('Administrator')"
                                                                 @click="deleteItem(`${props.main_url}/delete-package`, pac.id)">
                                                                 <vue-feather type="trash-2" size="15"/>
                                                                 <span class="ms-1">Delete</span>
@@ -108,7 +108,7 @@
                                             </div>
                                         </div>
 
-                                        <button @click="addNewFeture" class="btn btn-primary" v-if="this.$page.props.auth.user.can.includes('features.create') || this.$page.props.auth.user.role.includes('Administrator')">Add New</button>
+                                        <button @click="addNewFeture" class="btn btn-primary" v-if="$page.props.auth.user.can.includes('features.create') || $page.props.auth.user.role.includes('Administrator')">Add New</button>
                                     </div>
                                 </div>
 
@@ -136,20 +136,20 @@
                                                     </td>
                                                     <td>{{ feature?.price }}</td>
                                                     <td>
-                                                        <CDropdown  v-if="this.$page.props.auth.user.can.includes('features.edit') ||
-                                                        this.$page.props.auth.user.can.includes('features.delete') ||
-                                                        this.$page.props.auth.user.role.includes('Administrator')">
+                                                        <CDropdown  v-if="$page.props.auth.user.can.includes('features.edit') ||
+                                                        $page.props.auth.user.can.includes('features.delete') ||
+                                                        $page.props.auth.user.role.includes('Administrator')">
                                                             <CDropdownToggle>
                                                                 <vue-feather type="more-vertical" />
                                                             </CDropdownToggle>
                                                             <CDropdownMenu>
-                                                                <CDropdownItem  @click="editFeatured(feature.id)"   v-if="this.$page.props.auth.user.can.includes('features.edit') || this.$page.props.auth.user.role.includes('Administrator')">
+                                                                <CDropdownItem  @click="editFeatured(feature.id)"   v-if="$page.props.auth.user.can.includes('features.edit') || $page.props.auth.user.role.includes('Administrator')">
                                                                     <Icon title="pencil" />
                                                                     <span class="ms-1">Edit</span>
                                                                 </CDropdownItem>
 
                                                                 <CDropdownItem @click="deleteItem(`${props.main_url}/delete-feature`, feature?.id)" type="button"
-                                                                               v-if="this.$page.props.auth.user.can.includes('features.delete') || this.$page.props.auth.user.role.includes('Administrator') ">
+                                                                               v-if="$page.props.auth.user.can.includes('features.delete') || $page.props.auth.user.role.includes('Administrator') ">
                                                                     <Icon title="trash" />
                                                                     <span class="ms-1">Delete</span>
                                                                 </CDropdownItem>
