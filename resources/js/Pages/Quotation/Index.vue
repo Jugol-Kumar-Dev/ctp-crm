@@ -19,8 +19,7 @@
                                     <div class="d-flex align-items-center justify-content-between border-bottom">
                                         <div class="select-search-area d-flex align-items-center">
                                             <select class="form-select" v-model="perPage">
-                                                <option :value="undefined">10</option>
-                                                <option value="25">25</option>
+                                                <option :value="undefined">25</option>
                                                 <option value="50">50</option>
                                                 <option value="100">100</option>
                                                 <option value="200">200</option>
@@ -35,13 +34,6 @@
                                                     Add Quotations
                                                 </span>
                                             </Link>
-<!--                                            <div class="ml-2">
-                                                <select v-model="searchByStatus" class="select2 form-select select w-100">
-                                                    <option selected disabled :value="undefined">Filter By Quotation Status</option>
-                                                    <option :value="null">All</option>
-                                                    <option v-for="item in status" :value="item.name" >{{ item.name }}</option>
-                                                </select>
-                                            </div>-->
 
                                             <Datepicker v-model="dateRange" :monthChangeOnScroll="false" range
                                                         multi-calendars
@@ -50,15 +42,14 @@
                                                         @update:model-value="handleDate"></Datepicker>
 
                                             <select class="form-select" v-model="employee"
-                                                    v-if="$page.props.auth.user.role.includes('Administrator') || $page.props.auth.user.can.includes('leads.index')">
+                                                    v-if="$page.props.auth.user.role.includes('Administrator') || $page.props.auth.user.can.includes('quotation.index')">
                                                 <option :value="undefined" disabled selected>Filter By Employee</option>
                                                 <option :value="emp.id" v-for="emp in props.users" v-text="emp.name"/>
                                             </select>
                                             <a class="btn btn-sm btn-icon btn-primary" v-if="isReset"
-                                               href="/admin/leads">
+                                               href="/admin/quotations">
                                                 <vue-feather type="x-circle"></vue-feather>
                                             </a>
-
 
                                         </div>
                                         <div

@@ -190,7 +190,7 @@
         <div class="col-1">
             <div class="to" style="text-align: right">
                 <h3>ID:{{ env('INV_PREFIX') }}{{ $invoice->invoice_id }}{{ $invoice->id }}</h3>
-                <p>Date: {{ $invoice?->invoice_date?->format('d-m-Y') }}</p>
+                <p>Date: {{ \Carbon\Carbon::parse($invoice?->invoice_date)?->format('d-m-Y') }}</p>
             </div>
         </div>
     </div>
@@ -310,7 +310,7 @@
                                 Trx_{{ $item?->transaction_id }}
                             </td>
                             <td class="border text-center">
-                                {{ $item?->payment_date->format('d-m-Y')}}
+                                {{ \Carbon\Carbon::parse($item?->payment_date)->format('d-m-Y')}}
                             </td>
                             <td class="border text-center">
                                 {{ $item?->pay ?? '---'}}

@@ -37,7 +37,7 @@
                                         </div>
                                         <div class="invoice-number-date mt-md-0 mt-2">
                                             <div class="d-flex align-items-end justify-content-md-end mb-1">
-                                                Quotation Id:  <vue-feather type="hash" size="15"/>_{{  props.quotation.quotation_id }}{{ props.quotation.id }}
+                                                Quotation Id:  <vue-feather type="hash" size="15"/>_{{  props.quotation.quotation_id }}
                                             </div>
                                             <div class="d-flex align-items-end mb-1 flex-column">
                                                 <p>Created on: {{moment(props.quotation.qut_date).format('D-M-Y')  }}</p>
@@ -138,7 +138,7 @@
                                         <div class="col-12">
                                             <div class="mb-2">
                                                 <label for="note" class="form-label fw-bold">Note:</label>
-                                                <p id="note">{{ props.quotation.note }}</p>
+                                                <p id="note" class="text-wrap">{{ props.quotation.note }}</p>
                                                 <p class="text-justify"></p>
                                             </div>
                                         </div>

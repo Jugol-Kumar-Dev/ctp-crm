@@ -213,7 +213,7 @@ class QuotationController extends Controller
         return inertia('Quotation/Index', [
             'quotations' => $quotation,
             'users' => User::query()->select('id', 'name')->get(),
-            'filters' => Request::only(['search', 'perPage', 'byStatus', 'dateRange']),
+            'filters' => Request::only(['search', 'perPage', 'byStatus', 'dateRange', 'employee']),
             'url' => URL::route('quotations.index'),
             'change_status_url' => URL::route('chnageQuotationStatus'),
         ]);

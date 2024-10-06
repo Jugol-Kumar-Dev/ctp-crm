@@ -14,6 +14,7 @@ use App\Models\QuotationItem;
 use App\Models\Transaction;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use FontLib\Table\Type\kern;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Auth;
@@ -38,59 +39,63 @@ class InvoiceController extends Controller
     {
 
 
-        if (!auth()->user()->hasRole('Administrator')){
-            $show =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('invoice.index');
-            $my =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('invoice.ownonly');
-            if($show && $my){
-                abort(401);
+//        if (!auth()->user()->hasRole('Administrator')){
+//            $show =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('invoice.index');
+//            $my =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('invoice.ownonly');
+//            if($show && $my){
+//                abort(401);
+//            }
+//        }
+
+
+        $user = Auth::user();
+        $admin = $user->hasRole('Administrator');
+        $ownOnly = $user->can('invoice.ownonly');
+
+        if (!$admin) {
+            if (!auth()->user()->can('invoice.index') && !$ownOnly) {
+                abort(401, 'Your Not Autorized For Access This Page');
             }
         }
 
-        return inertia('Invoice/Index',[
-            'invoices' => Invoice::query()
-                ->with(['client', 'user', 'quotation', 'transactions'])
-                ->latest()
-                ->when(!Auth::user()->hasRole('Administrator') && auth()->user()->can('invoice.ownonly'), function($query){
-                    $query->where('user_id', Auth::id());
-                })
-                ->when(Request::input('search'), function ($query, $search) {
-                    $query->whereHas('client', function ($client) use($search){
-                            $client
-                                ->where('name',    'like', "%{$search}%")
-                                ->orWhere('phone', 'like', "%{$search}%")
-                                ->orWhere('email', 'like', "%{$search}%");
-                        })
-                        ->orWhereHas('user', function ($user) use($search){
-                            $user
-                                ->where('name',    'like', "%{$search}%")
-                                ->orWhere('phone', 'like', "%{$search}%")
-                                ->orWhere('email', 'like', "%{$search}%");
-                        })
-                        ->orWhereHas('quotation', function ($user) use($search){
-                            $user->where('subject', 'like', "%{$search}%");
-                        })
-                    ;
-                })
-                ->paginate(Request::input('perPage') ?? 10)
-                ->withQueryString()
-                ->through(fn($invoice) => [
-                    'id' => $invoice->id,
-                    'invoice_id' => $invoice->invoice_id,
-                    'quotation_id' => $invoice->quotation_id,
-                    'client' => $invoice->client ?? $invoice->quotation?->client,
-                    'user' => $invoice->user,
-                    'total_amount' => $invoice->total_price,
-                    'discount' => $invoice->discount,
-                    'grand_total' => $invoice->grand_total,
-                    'pay' => $invoice->pay,
-                    'due' => $invoice->due,
-                    'invoice_type' => $invoice->invoice_type,
-                    'created_at' => $invoice->created_at->format('d M Y'),
-                    'edit_url' => URL::route('invoices.edit', $invoice->id),
-                    'show_url' => URL::route('invoices.show', $invoice->id),
-                    'invoice_url' => URL::route('invoices.downloadInvoice', $invoice->id),
-                ]),
-            'filters' => Request::only(['search','perPage']),
+        $invoices = Invoice::query()
+            ->select(['id', 'invoice_id', 'client_id', 'user_id', 'quotation_id', 'total_price', 'discount', 'grand_total', 'pay', 'due', 'invoice_type', 'created_at'])
+            ->with(['client:id,name,email,phone', 'user:id,name', 'quotation:id,client_id'])
+            ->latest()
+            ->when(!$admin && $ownOnly, function ($query) {
+                $query->where('user_id', Auth::id());
+            })
+            ->when(Request::filled('dateRange'), function ($query) {
+                $dateRange = Request::input('dateRange');
+                $query->whereBetween('created_at', [
+                    Carbon::parse($dateRange[0])->startOfDay(),
+                    Carbon::parse($dateRange[1])->endOfDay()
+                ]);
+            })
+            ->when(Request::input('search'), function ($query, $search) {
+                $query->where('invoice_id', 'like', "%{$search}%")
+                    ->orWhereHas('client', function ($client) use ($search) {
+                        $client->where('name', 'like', "%{$search}%")
+                            ->orWhere('phone', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    })->orWhereHas('user', function ($user) use ($search) {
+                        $user->where('name', 'like', "%{$search}%")
+                            ->orWhere('phone', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    })->orWhereHas('quotation', function ($user) use ($search) {
+                        $user->where('subject', 'like', "%{$search}%");
+                    });
+            })
+            ->when(Request::input('employee'), function ($query, $search) {
+                $query->where('user_id', $search);
+            })
+            ->paginate(Request::input('perPage') ?? config('app.perpage'))
+            ->withQueryString();
+
+        return inertia('Invoice/Index', [
+            'invoices' => $invoices,
+            'users' => User::query()->select('id', 'name')->get(),
+            'filters' => Request::only(['search', 'perPage', 'byStatus', 'dateRange', 'employee']),
             'main_url' => URL::route('invoices.index'),
         ]);
 
@@ -98,134 +103,122 @@ class InvoiceController extends Controller
 
     public function create()
     {
-          if((auth()->user()->can('leads.index') ||
-              auth()->user()->can('leads.ownonly') ||
-              auth()->user()->can('client.index') ||
-              auth()->user()->can('client.ownonly')) && auth()->user()->can('invoice.create'))
-          {
-              if(auth()->user()->hasRole('Administrator') ||
-                  (auth()->user()->can('leads.index') && auth()->user()->can('client.index'))) {
-                  $clients = Client::query()
-                      ->select(['id','name', 'email', 'phone'])
-                      ->latest()->get();
-              }
-              elseif(auth()->user()->can('leads.ownonly') && auth()->user()->can('client.ownonly')){
-                  $clients = Client::query()
-                      ->with(['users'])
-                      ->where(function ($query) {
-                          $query->where('is_client', true)
-                              ->where('created_by', Auth::id());
-                      })
-                      ->orWhereHas('users', function ($query) {
-                          $query->where('user_id', Auth::id());
-                      })
-                      ->latest()
-                      ->get();
-              }
-              elseif(auth()->user()->can('leads.ownonly') && auth()->user()->can('client.index')){
-                  $myLeads = Client::query()
-                      ->with(['users'])
-                      ->where(function ($query) {
-                          $query->where('is_client', false)
-                              ->where('created_by', Auth::id());
-                      })
-                      ->orWhereHas('users', function ($query) {
-                          $query->where('user_id', Auth::id());
-                      })
-                      ->where('is_client', false)
-                      ->select(['id','name', 'email', 'phone'])
-                      ->latest()
-                      ->get();
+        if ((auth()->user()->can('leads.index') ||
+                auth()->user()->can('leads.ownonly') ||
+                auth()->user()->can('client.index') ||
+                auth()->user()->can('client.ownonly')) && auth()->user()->can('invoice.create')) {
+            if (auth()->user()->hasRole('Administrator') ||
+                (auth()->user()->can('leads.index') && auth()->user()->can('client.index'))) {
+                $clients = Client::query()
+                    ->select(['id', 'name', 'email', 'phone'])
+                    ->latest()->get();
+            } elseif (auth()->user()->can('leads.ownonly') && auth()->user()->can('client.ownonly')) {
+                $clients = Client::query()
+                    ->with(['users'])
+                    ->where(function ($query) {
+                        $query->where('is_client', true)
+                            ->where('created_by', Auth::id());
+                    })
+                    ->orWhereHas('users', function ($query) {
+                        $query->where('user_id', Auth::id());
+                    })
+                    ->latest()
+                    ->get();
+            } elseif (auth()->user()->can('leads.ownonly') && auth()->user()->can('client.index')) {
+                $myLeads = Client::query()
+                    ->with(['users'])
+                    ->where(function ($query) {
+                        $query->where('is_client', false)
+                            ->where('created_by', Auth::id());
+                    })
+                    ->orWhereHas('users', function ($query) {
+                        $query->where('user_id', Auth::id());
+                    })
+                    ->where('is_client', false)
+                    ->select(['id', 'name', 'email', 'phone'])
+                    ->latest()
+                    ->get();
 
 
-                  $allCients = Client::query()
-                      ->where('is_client', true)
-                      ->select(['id','name', 'email', 'phone'])
-                      ->latest()
-                      ->get();
+                $allCients = Client::query()
+                    ->where('is_client', true)
+                    ->select(['id', 'name', 'email', 'phone'])
+                    ->latest()
+                    ->get();
 
-                  $clients = [...$myLeads, ...$allCients];
-              }
-              elseif(auth()->user()->can('leads.index') && auth()->user()->can('client.ownonly')){
-                  $myLeads = Client::query()
-                      ->with(['users'])
-                      ->where(function ($query) {
-                          $query->where('is_client', false)
-                              ->where('created_by', Auth::id());
-                      })
-                      ->orWhereHas('users', function ($query) {
-                          $query->where('user_id', Auth::id());
-                      })
-                      ->where('is_client', true)
-                      ->select(['id','name', 'email', 'phone'])
-                      ->latest()
-                      ->get();
-
-
-                  $allCients = Client::query()
-                      ->where('is_client', false)
-                      ->select(['id','name', 'email', 'phone'])
-                      ->latest()
-                      ->get();
-
-                  $clients = [...$myLeads, ...$allCients];
-              }
-              elseif(auth()->user()->can('leads.ownonly')){
-                  $clients = Client::query()
-                      ->with(['users'])
-                      ->where(function ($query) {
-                          $query->where('is_client', false)
-                              ->where('created_by', Auth::id());
-                      })
-                      ->orWhereHas('users', function ($query) {
-                          $query->where('user_id', Auth::id());
-                      })
-                      ->where('is_client', false)
-                      ->select(['id','name', 'email', 'phone'])
-                      ->latest()
-                      ->get();
-              }
-              elseif(auth()->user()->can('client.ownonly')){
-                  $clients = Client::query()
-                      ->with(['users'])
-                      ->where(function ($query) {
-                          $query->where('is_client', true)
-                              ->where('created_by', Auth::id());
-                      })
-                      ->orWhereHas('users', function ($query) {
-                          $query->where('user_id', Auth::id());
-                      })
-                      ->where('is_client', true)
-                      ->select(['id','name', 'email', 'phone'])
-                      ->latest()
-                      ->get();
-              }
-              elseif(auth()->user()->can('client.index')){
-                  $clients = Client::query()
-                      ->where('is_client', true)
-                      ->select(['id','name', 'email', 'phone'])
-                      ->latest()->get();
-              }
-              elseif(auth()->user()->can('leads.index')){
-                  $clients = Client::query()
-                      ->where('is_client', false)
-                      ->select(['id','name', 'email', 'phone'])
-                      ->latest()->get();
-              }
-          } elseif(auth()->user()->can('invoice.create')){
-              $clients = [];
-          }
-          else{
-              abort(401);
-          }
+                $clients = [...$myLeads, ...$allCients];
+            } elseif (auth()->user()->can('leads.index') && auth()->user()->can('client.ownonly')) {
+                $myLeads = Client::query()
+                    ->with(['users'])
+                    ->where(function ($query) {
+                        $query->where('is_client', false)
+                            ->where('created_by', Auth::id());
+                    })
+                    ->orWhereHas('users', function ($query) {
+                        $query->where('user_id', Auth::id());
+                    })
+                    ->where('is_client', true)
+                    ->select(['id', 'name', 'email', 'phone'])
+                    ->latest()
+                    ->get();
 
 
+                $allCients = Client::query()
+                    ->where('is_client', false)
+                    ->select(['id', 'name', 'email', 'phone'])
+                    ->latest()
+                    ->get();
 
+                $clients = [...$myLeads, ...$allCients];
+            } elseif (auth()->user()->can('leads.ownonly')) {
+                $clients = Client::query()
+                    ->with(['users'])
+                    ->where(function ($query) {
+                        $query->where('is_client', false)
+                            ->where('created_by', Auth::id());
+                    })
+                    ->orWhereHas('users', function ($query) {
+                        $query->where('user_id', Auth::id());
+                    })
+                    ->where('is_client', false)
+                    ->select(['id', 'name', 'email', 'phone'])
+                    ->latest()
+                    ->get();
+            } elseif (auth()->user()->can('client.ownonly')) {
+                $clients = Client::query()
+                    ->with(['users'])
+                    ->where(function ($query) {
+                        $query->where('is_client', true)
+                            ->where('created_by', Auth::id());
+                    })
+                    ->orWhereHas('users', function ($query) {
+                        $query->where('user_id', Auth::id());
+                    })
+                    ->where('is_client', true)
+                    ->select(['id', 'name', 'email', 'phone'])
+                    ->latest()
+                    ->get();
+            } elseif (auth()->user()->can('client.index')) {
+                $clients = Client::query()
+                    ->where('is_client', true)
+                    ->select(['id', 'name', 'email', 'phone'])
+                    ->latest()->get();
+            } elseif (auth()->user()->can('leads.index')) {
+                $clients = Client::query()
+                    ->where('is_client', false)
+                    ->select(['id', 'name', 'email', 'phone'])
+                    ->latest()->get();
+            }
+        } elseif (auth()->user()->can('invoice.create')) {
+            $clients = [];
+        } else {
+            abort(401);
+        }
 
 
         return Inertia::render('Invoice/Create', [
             "quotations" => Quotation::all(),
-            "clients"   => $clients,
+            "clients" => $clients,
             "paymentMethods" => Method::all(),
             "store_url" => URL::route('invoices.store')
         ]);
@@ -234,28 +227,28 @@ class InvoiceController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.create')){
+        if (auth()->user()->hasRole('administrator') || !auth()->user()->can('invoice.create')) {
             abort(401);
         }
         Request::validate([
             'clientId' => 'required',
             'date' => 'required',
-        ],[
+        ], [
             'clientId.required' => 'First Select An Client...',
             'qutDate.required' => 'Please Select Quotation Date...',
         ]);
 
 //        return dd(Request::all());
 
-        Invoice::create([
+        $invoice = Invoice::create([
             'invoice_id' => now()->format('Ymd'),
             'client_id' => Request::input('clientId'),
-            'invoice_date' => Request::input('date'),
+            'invoice_date' => Carbon::parse(Request::input('date')),
             'user_id' => Auth::id(),
             'subject' => Request::input('subject'),
             'invoice_type' => 'custom',
@@ -271,61 +264,64 @@ class InvoiceController extends Controller
             'payment_methods' => Request::input('attachPaymentMethods') ? Request::input('payemtnPolicy') : NULL,
         ]);
 
+        $invoice->invoice_id = $invoice->invoice_id . '' . $invoice->id;
+        $invoice->save();
+
         return back();
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Invoice  $invoice
+     * @param \App\Models\Invoice $invoice
      * @return \Inertia\Response
      */
 
 
+    public function invoiceItemsGenerate($invoice)
+    {
 
-    public function invoiceItemsGenerate($invoice){
 
-
-        if(!auth()->user()->can('invoice.show')){
+        if (!auth()->user()->can('invoice.show')) {
             abort(401);
         }
 
         $pref = [];
-        if (!is_null($invoice) && !is_null($invoice->quotation_id)){
-            foreach (json_decode($invoice->quotation?->items) as $item){
-                if ($item->checkPackages){
-                    foreach ($item->checkPackages as $package){
-                        $pref[] =[
-                            'name'=> $package->descriptions,
+        if (!is_null($invoice) && !is_null($invoice->quotation_id)) {
+            foreach (json_decode($invoice->quotation?->items) as $item) {
+                if ($item->checkPackages) {
+                    foreach ($item->checkPackages as $package) {
+                        $pref[] = [
+                            'name' => $package->descriptions,
                             'qty' => $package->qty,
                             'price' => $package->price,
                         ];
                     }
                 }
-                if ($item->checkFeatrueds){
-                    foreach ($item->checkFeatrueds as $feared){
-                        $pref[] =[
-                            'name'=> $feared->name,
+                if ($item->checkFeatrueds) {
+                    foreach ($item->checkFeatrueds as $feared) {
+                        $pref[] = [
+                            'name' => $feared->name,
                             'qty' => $feared->qty,
                             'price' => $feared->price,
                         ];
                     }
                 }
-                if ($item->customItem){
+                if ($item->customItem) {
 //                foreach ($item->customItem as $cItem){
-                    $pref[] =[
-                        'name'=> $item?->customItem->description ?? 'custom_service',
+                    $pref[] = [
+                        'name' => $item?->customItem->description ?? 'custom_service',
                         'qty' => $item?->customItem->qty,
                         'price' => $item?->customItem->price,
                     ];
 //                }
                 }
             }
-        }else{
-            if (json_decode($invoice?->items)){
-                foreach(json_decode($invoice->items) as $item){
-                    $pref[] =[
-                        'name'=> $item->description,
+        } else {
+            if (json_decode($invoice?->items)) {
+                foreach (json_decode($invoice->items) as $item) {
+                    $pref[] = [
+                        'name' => $item->description,
                         'qty' => 1,
                         'price' => $item->price,
                     ];
@@ -338,8 +334,8 @@ class InvoiceController extends Controller
 
     public function show(Invoice $invoice)
     {
-        if(!auth()->user()->hasRole('Administrator') && auth()->user()->can('invoice.ownonly')){
-            if($invoice->user_id != Auth::id()){
+        if (!auth()->user()->hasRole('Administrator') && auth()->user()->can('invoice.ownonly')) {
+            if ($invoice->user_id != Auth::id()) {
                 abort(401);
             }
         }
@@ -350,12 +346,12 @@ class InvoiceController extends Controller
 
 //        return $invoice->quotation->items;//->quotation->customItem;
 
-        return Inertia::render('Invoice/Show',   [
-            "invoice" =>$invoice,
+        return Inertia::render('Invoice/Show', [
+            "invoice" => $invoice,
             "pref" => $pref,
             "paymentMethods" => Method::all(),
             $downloadInvoiceUrl =
-            "url" =>[
+                "url" => [
                 "edit_url" => URL::route('invoices.edit', $invoice->id),
                 "add_discount" => URL::route('invoices.addDiscount', $invoice->id),
                 "invoice_url" => URL::route('invoices.downloadInvoice', $invoice->id),
@@ -364,13 +360,13 @@ class InvoiceController extends Controller
         ]);
     }
 
-    public function addDiscount($id){
+    public function addDiscount($id)
+    {
 
 
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.edit')){
+        if (auth()->user()->hasRole('administrator') || !auth()->user()->can('invoice.edit')) {
             abort(401);
         }
-
 
 
         $invoice = Invoice::findOrFail($id);
@@ -385,7 +381,7 @@ class InvoiceController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Invoice  $invoice
+     * @param \App\Models\Invoice $invoice
      * @return \Illuminate\Http\RedirectResponse
      */
 
@@ -393,7 +389,7 @@ class InvoiceController extends Controller
     public function createInvoice($id)
     {
 
-        if(auth()->user()->hasRole('Administrator')  || auth()->user()->can('invoice.edit') || auth()->user()->can('quotation.show')) {
+        if (auth()->user()->hasRole('Administrator') || auth()->user()->can('invoice.edit') || auth()->user()->can('quotation.show')) {
             if (Request::input("pay") != null) {
                 Request::validate([
                     'payment_method' => 'required'
@@ -447,50 +443,51 @@ class InvoiceController extends Controller
                 }
             }
             return back();
-        }else{
+        } else {
             abort(401);
         }
 
     }
 
-    public function downloadInvoice($id, $emailData=false){
+    public function downloadInvoice($id, $emailData = false)
+    {
         $invoice = Invoice::with(['user', 'quotation', 'client', 'transactions'])->findOrFail($id);
         $pref = [];
 
-        if (!is_null($invoice) && !is_null($invoice->quotation_id)){
-            foreach (json_decode($invoice->quotation?->items) as $item){
-                if ($item->checkPackages){
-                    foreach ($item->checkPackages as $package){
-                        $pref[] =[
-                            'name'=> $package->descriptions,
+        if (!is_null($invoice) && !is_null($invoice->quotation_id)) {
+            foreach (json_decode($invoice->quotation?->items) as $item) {
+                if ($item->checkPackages) {
+                    foreach ($item->checkPackages as $package) {
+                        $pref[] = [
+                            'name' => $package->descriptions,
                             'qty' => $package->qty,
                             'price' => $package->price,
                         ];
                     }
                 }
-                if ($item->checkFeatrueds){
-                    foreach ($item->checkFeatrueds as $feared){
-                        $pref[] =[
-                            'name'=> $feared->name,
+                if ($item->checkFeatrueds) {
+                    foreach ($item->checkFeatrueds as $feared) {
+                        $pref[] = [
+                            'name' => $feared->name,
                             'qty' => $feared->qty,
                             'price' => $feared->price,
                         ];
                     }
                 }
-                if ($item->customItem){
+                if ($item->customItem) {
 //                foreach ($item->customItem as $cItem){
-                    $pref[] =[
-                        'name'=> $item?->customItem->description ?? 'custom_service',
+                    $pref[] = [
+                        'name' => $item?->customItem->description ?? 'custom_service',
                         'qty' => $item?->customItem->qty,
                         'price' => $item?->customItem->price,
                     ];
 //                }
                 }
             }
-        }else{
-            foreach(json_decode($invoice->items) as $item){
-                $pref[] =[
-                    'name'=> $item->description,
+        } else {
+            foreach (json_decode($invoice->items) as $item) {
+                $pref[] = [
+                    'name' => $item->description,
                     'qty' => 1,
                     'price' => $item->price,
                 ];
@@ -500,60 +497,59 @@ class InvoiceController extends Controller
         $clientName = $invoice->quotation?->client?->name ?? $invoice->client?->name;
         $isPrint = false;
 
-        if($emailData){
+        if ($emailData) {
             return [
                 'invoice' => $invoice,
                 'pref' => $pref,
             ];
         }
 
-        $pdf = Pdf::loadView('invoice.quotationInvoice', compact('invoice','pref', 'isPrint'));
+        $pdf = Pdf::loadView('invoice.quotationInvoice', compact('invoice', 'pref', 'isPrint'));
 //        return view('invoice.quotationInvoice', compact('invoice','pref', 'isPrint'));
-        return $pdf->download($clientName."_".now()->format('d_m_Y')."_".'invoice.pdf');
+        return $pdf->download($clientName . "_" . now()->format('d_m_Y') . "_" . 'invoice.pdf');
     }
 
-    public function generateInvoicePDFFile($id){
+    public function generateInvoicePDFFile($id)
+    {
 
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.edit')){
+        if (auth()->user()->hasRole('administrator') || !auth()->user()->can('invoice.edit')) {
             abort(401);
         }
-
-
 
 
         $invoice = CustomInvoice::findOrFail($id);
 
         $transactions = [];
-        foreach($invoice->transactions as $item){
+        foreach ($invoice->transactions as $item) {
             $transactions[] = [
-                "amount"     => $item->amount ?? 0,
-                "user"       => $item->user,
-                "method"     => $item->method->name,
+                "amount" => $item->amount ?? 0,
+                "user" => $item->user,
+                "method" => $item->method->name,
 
                 "pay_amount" => $item->pay_amount ?? 0,
-                "discount"   => $item->discount ?? 0,
-                "total_due"  => $item->total_due ?? 0,
+                "discount" => $item->discount ?? 0,
+                "total_due" => $item->total_due ?? 0,
                 "old_total_pay" => $item->old_total_pay ?? 0,
-                "date"       => $item->date->format('d M,y'),
-                "note"       => $item->note,
+                "date" => $item->date->format('d M,y'),
+                "note" => $item->note,
             ];
         }
 
         $totalPay = $invoice->transactions->sum('pay_amount') + $invoice->transactions->sum('discount');
 
         $invoiceLastTransaction = $invoice->transactions->last() ?? [
-                'pay_amount' => 0,
-                'discount' => 0
-            ];
+            'pay_amount' => 0,
+            'discount' => 0
+        ];
 
         $data = [
-            "invoice"       => $invoice,
-            "client"        => $invoice->client,
-            "invoice_item"  => $invoice->invoiceItems,
-            'transactions'    => $transactions,
-            "total_pay"       => $totalPay,
-            "last_payment"    => $invoiceLastTransaction,
-            'invoice_id' =>$invoice->created_at->format('Ymd').$invoice->id,
+            "invoice" => $invoice,
+            "client" => $invoice->client,
+            "invoice_item" => $invoice->invoiceItems,
+            'transactions' => $transactions,
+            "total_pay" => $totalPay,
+            "last_payment" => $invoiceLastTransaction,
+            'invoice_id' => $invoice->created_at->format('Ymd') . $invoice->id,
             'creator' => $invoice->user,
             "created" => $invoice->created_at->format('D, d F, Y'),
             'download_url' => URL::route('invoices.generateInvoicePDFFile', $invoice->id),
@@ -567,16 +563,17 @@ class InvoiceController extends Controller
     }
 
 
-    public function edit($id){
+    public function edit($id)
+    {
 
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.edit')){
+        if (auth()->user()->hasRole('administrator') || !auth()->user()->can('invoice.edit')) {
             abort(401);
         }
 
         $invoice = Invoice::with('client')->findOrFail($id);
 
 
-        if(auth()->user()->can('invoice.ownonly')){
+        if (auth()->user()->can('invoice.ownonly')) {
             $clients = Client::query()
                 ->with(['users'])
                 ->where(function ($query) {
@@ -587,24 +584,23 @@ class InvoiceController extends Controller
                     $query->where('user_id', Auth::id());
                 })->where('is_client', true)
                 ->latest()->get();
-        }else{
+        } else {
             $clients = Client::query()->where('is_client', true)
                 ->latest()->get();
         }
 
 
         return Inertia::render('Invoice/Edit', [
-            "clients"   => $clients,
-            "invoice"       => $invoice,
-            "update_url"    => URL::route('updateInvoices', $invoice->id),
+            "clients" => $clients,
+            "invoice" => $invoice,
+            "update_url" => URL::route('updateInvoices', $invoice->id),
         ]);
     }
 
 
-    public function updateInvoice(Request $request, $id){
-
-
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.edit')){
+    public function updateInvoice(Request $request, $id)
+    {
+        if (auth()->user()->hasRole('administrator') || !auth()->user()->can('invoice.edit')) {
             abort(401);
         }
 
@@ -613,18 +609,18 @@ class InvoiceController extends Controller
         Request::validate([
             'clientId' => 'required',
             'date' => 'required',
-        ],[
+        ], [
             'clientId.required' => 'First Select An Client...',
             'qutDate.required' => 'Please Select Quotation Date...',
         ]);
 
 
         $invoice->update([
-            'invoice_id' => now()->format('Ymd'),
             'client_id' => Request::input('clientId')['id'] ?? Request::input("clientId"),
             'user_id' => Auth::id(),
             'subject' => Request::input('subject'),
             'invoice_type' => 'custom',
+            'invoice_date' => Carbon::parse(Request::input('date')),
             'items' => json_encode(Request::input('items')),
             'total_price' => Request::input('totalPrice'),
             'discount' => Request::input('discount') ?? 0,
@@ -635,7 +631,11 @@ class InvoiceController extends Controller
             'trams_of_service' => Request::input('attachServicePolicy') ? Request::input('servicePolicy') : NULL,
             'payment_methods' => Request::input('attachPaymentMethods') ? Request::input('payemtnPolicy') : NULL,
         ]);
-
+        $newQid = $invoice->invoice_id . '' . $invoice->id;
+        if (!str_contains($invoice->invoice_id, (string)$invoice->id)) {
+            $invoice->invoice_id = $newQid;
+            $invoice->save();
+        }
         return Redirect::route('invoices.index');
     }
 
@@ -643,13 +643,13 @@ class InvoiceController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Invoice  $invoice
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Invoice $invoice
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Invoice $invoice)
     {
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.edit')){
+        if (auth()->user()->hasRole('administrator') || !auth()->user()->can('invoice.edit')) {
             abort(401);
         }
 
@@ -659,20 +659,20 @@ class InvoiceController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Invoice  $invoice
+     * @param \App\Models\Invoice $invoice
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy($id)
     {
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.delete')){
+        if (auth()->user()->hasRole('administrator') || !auth()->user()->can('invoice.delete')) {
             abort(401);
         }
 
         $invoice = Invoice::findOrFail($id);
-        if ($invoice->transactions){
+        if ($invoice->transactions) {
             $invoice->transactions()->delete();
         }
-        if ($invoice->project){
+        if ($invoice->project) {
             $invoice->project()->delete();
         }
         $invoice->delete();
@@ -680,41 +680,42 @@ class InvoiceController extends Controller
     }
 
 
-    public function addPayment(){
+    public function addPayment()
+    {
 
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.edit')){
+        if (auth()->user()->hasRole('administrator') || !auth()->user()->can('invoice.edit')) {
             abort(401);
         }
 
         $invoice = CustomInvoice::with(['client'])->findOrFail(Request::input('invoice_id'));
 
-        $totalPay = Request::input('pay_amount')+Request::input('discount');
+        $totalPay = Request::input('pay_amount') + Request::input('discount');
 
         Transaction::create([
-            'u_id'       => date('Yd', strtotime(now())),
+            'u_id' => date('Yd', strtotime(now())),
             'transaction_model' => 'App\\Models\\CustomInvoice',
             'transaction_model_id' => $invoice->id,
-            'method_id'  => Request::input('payment_id'),
-            'user_id'    => Auth::id(),
-            'client_id'  => $invoice->client->id,
+            'method_id' => Request::input('payment_id'),
+            'user_id' => Auth::id(),
+            'client_id' => $invoice->client->id,
             'invoice_id' => $invoice->id,
-            "purpose" => "#".env('INV_PREFIX')."_".$invoice->invoice_id ?? NULL,
-            'amount'     => $invoice->grand_total,
+            "purpose" => "#" . env('INV_PREFIX') . "_" . $invoice->invoice_id ?? NULL,
+            'amount' => $invoice->grand_total,
             'pay_amount' => Request::input('pay_amount'),
-            'discount'   => Request::input('discount'),
+            'discount' => Request::input('discount'),
 
-            'total_pay'  => $totalPay,
-            'total_due'  => $invoice->due - $totalPay,
+            'total_pay' => $totalPay,
+            'total_due' => $invoice->due - $totalPay,
 
-            'date'       => now(),
-            'note'       => Request::input('payment_note'),
+            'date' => now(),
+            'note' => Request::input('payment_note'),
 
-            'type'       => 'in'
+            'type' => 'in'
         ]);
 
         $tk = $invoice->due - $totalPay;
         $invoice->update([
-            'pay' =>  $invoice->pay + $totalPay,
+            'pay' => $invoice->pay + $totalPay,
             'due' => $tk
         ]);
 
@@ -722,9 +723,10 @@ class InvoiceController extends Controller
         return back();
     }
 
-    public function sendMail($id=null){
+    public function sendMail($id = null)
+    {
 
-        if(auth()->user()->hasRole('administrator')  || !auth()->user()->can('invoice.edit')){
+        if (auth()->user()->hasRole('administrator') || !auth()->user()->can('invoice.edit')) {
             abort(401);
         }
 
@@ -733,7 +735,7 @@ class InvoiceController extends Controller
         ]);
         $email = Request::input('email');
         $data = $this->downloadInvoice($id, true);
-        if($data && $email){
+        if ($data && $email) {
             Mail::to($email)->send(new InvoiceMail($data['invoice'], $data['pref']));
             return redirect()->back()->with([
                 'message' => 'Email Send Success...'
