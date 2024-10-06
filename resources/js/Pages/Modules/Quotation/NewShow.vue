@@ -243,8 +243,8 @@
 import { computed, ref } from "vue";
 import {useForm} from "@inertiajs/vue3";
 import {router} from "@inertiajs/vue3";
-import {useDate} from "../../../composables/useDate";
-import Modal from '../../../components/Modal.vue'
+import {useDate} from "@/composables/useDate.js";
+import Modal from '@/components/Modal.vue'
 import moment from 'moment';
 
 

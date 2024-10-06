@@ -100,22 +100,12 @@
 
 
 <script setup>
-import Pagination from "../../../components/Pagination"
-import Icon from '../../../components/Icon'
-import Modal from '../../../components/Modal'
-import {ref, watch} from "vue";
-import debounce from "lodash/debounce";
+import Pagination from "@/components/Pagination.vue"
+import Icon from '@/components/Icon.vue'
+import Modal from '@/components/Modal.vue'
 import {router} from "@inertiajs/vue3";
 import Swal from 'sweetalert2'
 import {useForm} from "@inertiajs/vue3";
-import TextEditor from "../../../components/TextEditor";
-import TextArea from "../../../components/Textarea";
-import QuantityButton from "../../../components/QuantityButton";
-import ServiceItem from "../../../components/ServiceItem";
-import ServiceCard from "../../../components/ServiceCard";
-import InputFieldError from "../../../components/InputFieldError";
-import QtyButton from "../../../components/QtyButton";
-
 let props=defineProps({
     works:null,
 })

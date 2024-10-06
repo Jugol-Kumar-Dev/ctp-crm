@@ -363,11 +363,11 @@
 import { computed } from "vue";
 import {useForm} from "@inertiajs/vue3";
 import {router} from "@inertiajs/vue3";
-import {useDate} from "../../../composables/useDate";
-import Modal from '../../../components/Modal.vue'
+import {useDate} from "@/composables/useDate.js";
+import Modal from '@/components/Modal.vue'
 import moment from 'moment';
 import Swal from "sweetalert2";
-import InputFieldError from "../../../components/InputFieldError";
+import InputFieldError from "@/components/InputFieldError.vue";
 
 let { formatted } = useDate();
 

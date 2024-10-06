@@ -231,9 +231,9 @@
 
 
 <script setup>
-    import Pagination from "../../../components/Pagination"
-    import Icon from '../../../components/Icon'
-    import Modal from '../../../components/Modal'
+    import Pagination from "@/components/Pagination.vue"
+    import Icon from '@/components/Icon.vue'
+    import Modal from '@/components/Modal.vue'
     import {ref, watch} from "vue";
     import debounce from "lodash/debounce";
     import {router} from "@inertiajs/vue3";
@@ -241,7 +241,7 @@
     import {useForm} from "@inertiajs/vue3";
     import {defineProps} from "@vue/runtime-core";
     import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
-    import {useDate} from "../../../composables/useDate";
+    import {useDate} from "@/composables/useDate.js";
     const range = useDate();
 
 

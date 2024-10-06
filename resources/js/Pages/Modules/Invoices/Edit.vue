@@ -176,21 +176,21 @@
 
 
 <script setup>
-    import Pagination from "../../../components/Pagination"
-    import Icon from '../../../components/Icon'
-    import Modal from '../../../components/Modal'
+    import Pagination from "@/components/Pagination.vue"
+    import Icon from '@/components/Icon.vue'
+    import Modal from '@/components/Modal.vue'
     import {ref, watch} from "vue";
     import debounce from "lodash/debounce";
     import {router} from "@inertiajs/vue3";
     import Swal from 'sweetalert2'
     import {useForm} from "@inertiajs/vue3";
-    import TextEditor from "../../../components/TextEditor";
-    import TextArea from "../../../components/Textarea";
-    import QuantityButton from "../../../components/QuantityButton";
-    import ServiceItem from "../../../components/ServiceItem";
-    import ServiceCard from "../../../components/ServiceCard";
-    import InputFieldError from "../../../components/InputFieldError";
-    import QtyButton from "../../../components/QtyButton";
+        import TextEditor from "@/components/TextEditor.vue";
+    import TextArea from "@/components/Textarea.vue";
+    import QuantityButton from "@/components/QuantityButton.vue";
+    import ServiceItem from "@/components/ServiceItem.vue";
+    import ServiceCard from "@/components/ServiceCard.vue";
+    import InputFieldError from "@/components/InputFieldError.vue";
+    import QtyButton from "@/components/QtyButton.vue";
 
     let props = defineProps({
         info    : Object,
