@@ -89,7 +89,7 @@ class QuotationController extends Controller
                       $query->whereDate('created_at', '<=', $end_date);
                   }
               })
-              ->paginate(Request::input('perPage') ?? 10)
+              ->paginate(Request::input('perPage') ?? config('app.perpage'))
               ->withQueryString()
               ->through(fn($qot) => [
                   "id"           => $qot->id,
@@ -403,7 +403,6 @@ class QuotationController extends Controller
     public function store()
     {
 
-
         if (auth()->user()->hasRole('administrator') || !auth()->user()->can('quotation.create')) {
             abort(401);
         }
@@ -443,6 +442,7 @@ class QuotationController extends Controller
             "total_price" => Request::input('totalPrice'),
             "grand_total" => Request::input('totalPrice'),
             'items' => json_encode($storeItems),
+            'custom_items' => json_encode(Request::input('customFeatures')),
             'status' => true,
             'note' => Request::input('note'),
             'payment_policy' => Request::input('attachPaymentPolicy') ? Request::input('paymentPolicy') : NULL,
@@ -745,12 +745,20 @@ class QuotationController extends Controller
                 }
             }
 
+
             if (!auth()->user()->hasRole('Administrator') && (auth()->user()->can('quotation.ownonly') && $quotation->created_by != Auth::id())) {
                 abort(401);
             }
 
             if (Request::input('download')) {
                 $isPrint = false;
+
+//                $config = ['instanceConfigurator' => function ($mpdf) {
+//                    $mpdf->SetWatermarkImage(asset('fav/cropped-FAV-270x270.png'));
+//                    $mpdf->showWatermarkImage = true;
+//                    // $mpdf->watermarkImageAlpha = 0.2; // image opacity
+//                }];
+
                 $pdf = Pdf::loadView('invoice.quotation', compact('quotation', 'pref', 'isPrint'));
 //            return view('invoice.quotation', compact('quotation', 'pref', 'isPrint'));
 
@@ -1176,6 +1184,7 @@ class QuotationController extends Controller
             'discount' => $quotation->discount,
             'grand_total' => $grandTotal,
             'items' => json_encode($storeItems),
+            'custom_items' => json_encode(Request::input('customFeatures')),
             'status' => true,
             'note' => Request::input('note'),
             'currency' => Request::input('currency') ?? 'Taka',

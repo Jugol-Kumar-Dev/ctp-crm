@@ -25,7 +25,8 @@ class AutorizaitonController extends Controller
             abort(401);
         }
 
-        $roles = Role::with(["users"])->withCount("users")->get();
+        $roles = Role::with(["users"])->select('id', 'name', 'is_delete')
+            ->withCount("users")->get();
 
         $roles->map(function ($item){
            $item->is_delete = $item->is_delete == 0 ? false : true;
@@ -33,7 +34,7 @@ class AutorizaitonController extends Controller
         });
 
 
-        return inertia('Modules/Roles/Index', [
+        return inertia('Roles/Index', [
             'permissions' => Permission::with(['roles', 'users'])->get()->groupBy('module_name'),
             'all_permissions' => Permission::with("roles", "users")->get(),
             'roles'       => $roles,

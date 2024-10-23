@@ -110,5 +110,5 @@ let submit = () => {
 </script>
 
 <style lang="scss">
-@import '../../../sass/base/pages/authentication.scss';
+@import '@@/sass/base/pages/authentication.scss';
 </style>

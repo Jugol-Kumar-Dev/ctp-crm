@@ -43,7 +43,7 @@ class ActivityLogController extends Controller
         }
 
         $logs = $data->latest()
-        ->paginate(Request::input('perPage') ?? 10)
+        ->paginate(Request::input('perPage') ?? config('app.perpage'))
         ->withQueryString();
 
 

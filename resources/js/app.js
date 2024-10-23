@@ -5,7 +5,14 @@ import Required from '@/components/RequiredBatch.vue'
 import Layout from "@/Shared/Layout.vue";
 import store from './Store'
 import {createVbPlugin} from 'vue3-plugin-bootstrap5'
-import CKEditor from '@ckeditor/ckeditor5-vue'
+
+import $ from 'jquery';
+window.$ = window.jQuery = $;
+
+import 'summernote/dist/summernote-lite.css';
+import 'summernote/dist/summernote-lite.min.js';
+
+
 import {
     Alert,
     Button,
@@ -38,19 +45,18 @@ let vbPlugin = createVbPlugin({
 import 'vue-select/dist/vue-select.css';
 import vSelect from 'vue-select'
 import CoreuiVue from "@coreui/vue";
-import {VTooltip, VPopover, VClosePopover} from 'v-tooltip'
+import {VTooltip} from 'v-tooltip'
 import {createPinia} from "pinia";
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
-import al from "@vuepic/vue-datepicker";
 import moment from "moment";
 import Prism from "prismjs";
 import {createToaster} from "@meforma/vue-toaster";
-import {PrismEditor} from 'vue-prism-editor';
 import 'vue-prism-editor/dist/prismeditor.min.css'; // import the styles
 
 import VueTelInput from 'vue-tel-input';
 import 'vue-tel-input/vue-tel-input.css';
+import {usePolicyStore} from "@/Store/usePolicyStore.js";
 
 window.$toast = createToaster({
     position: 'bottom'
@@ -73,7 +79,6 @@ createInertiaApp({
             .use(CoreuiVue)
             .use(store)
             .directive('tooltip', VTooltip)
-            .use(CKEditor)
             .use(createPinia())
             .use(moment)
             .use(Prism)
@@ -85,6 +90,9 @@ createInertiaApp({
             .component("v-select", vSelect)
             .component("Datepicker", Datepicker)
             .mount(el);
+
+        const policyStore = usePolicyStore()
+        policyStore.setServicePolicy();
     },
 
     title: title => `${title} | Creative Tech Park`,
@@ -103,6 +111,4 @@ createInertiaApp({
         showSpinner: false,
     },
 });
-
-
 

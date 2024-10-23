@@ -263,7 +263,7 @@ const removeUser = (url)=> {
 </script>
 
 <style lang="sass">
-@import "../../../sass/base/pages/app-invoice.scss"
+@import "@@/sass/base/pages/app-invoice.scss"
 </style>
 
 <style lang="css">

@@ -11,8 +11,8 @@
 
     {{--      <link href="{{ mix('/css/app.css') }}" rel="stylesheet" crossorigin="anonymous"/>--}}
     {{--      <script src="{{ mix('/js/app.js') }}" defer crossorigin="anonymous"></script>--}}
-    {{--    <script src="{{ asset("/js/vendors.min.js?v=".time()) }}" crossorigin="anonymous"></script>--}}
-    {{--    <script src="{{ asset('/js/json.js') }}" crossorigin="anonymous"></script>--}}
+        <script src="{{ asset("/js/vendors.min.js?v=".time()) }}" crossorigin="anonymous"></script>
+        <script src="{{ asset('/js/json.js') }}" crossorigin="anonymous"></script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @inertiaHead

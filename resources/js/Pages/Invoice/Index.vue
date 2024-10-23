@@ -103,7 +103,7 @@
                                                         <vue-feather type="more-vertical" />
                                                     </CDropdownToggle>
                                                     <CDropdownMenu>
-                                                        <CDropdownItem :href="invoice.invoice_url">
+                                                        <CDropdownItem :href="`/admin/invoice/download/${invoice.id}`">
                                                             <vue-feather type="download" size="15"/>
                                                             <span class="ms-1">Download</span>
                                                         </CDropdownItem>

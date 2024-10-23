@@ -237,6 +237,23 @@
             </button>
         </div>
         <!-- Product Details ends -->
+
+
+
+        <div class="card">
+            <div class="card-boy position-relative" v-for="(item , index) in formData.customFeatures" >
+                <SummernoteEditor v-model="formData.customFeatures[index].featrues"></SummernoteEditor>
+                <button @click="removeFeature(index)" v-if="index !== 0" class="btn btn-secondary btn-sm position-absolute top-0 end-0">
+                    <vue-feather type="x"/>
+                </button>
+            </div>
+            <div class="card-footer">
+                <button type="button" @click="addFeatrues" class="btn btn-primary btn-sm btn-add-new" data-repeater-create>
+                    <i data-feather="plus" class="me-25"></i>
+                    <span class="align-middle">Add Features</span>
+                </button>
+            </div>
+        </div>
     </UpperQuotation>
 </template>
 
@@ -247,6 +264,7 @@
     import {useQuotationStore} from "../../Store/useQuotationStore";
     import {router} from "@inertiajs/vue3";
     import Swal from "sweetalert2";
+    import SummernoteEditor from "vue3-summernote-editor";
 
     const quotationStore = useQuotationStore()
 
@@ -277,7 +295,10 @@
                 subTotal:0
             },
             activeTab:'custom'
-        }]
+        }],
+        customFeatures:[
+            {featrues:null}
+        ],
     })
 
     const processing = ref(false)
@@ -314,6 +335,12 @@
     const removeItem = (index) => {
         alert("want to delete "+ index)
         formData.items.splice(index, 1);
+    }
+    const addFeatrues = () => formData.customFeatures.push({featrues:null})
+
+    const removeFeature = (index) => {
+        alert("want to delete " + index)
+        formData.customFeatures.splice(index, 1);
     }
 
 
@@ -562,6 +589,7 @@
             return item;
         })
 
+        formData.customFeatures = props.quotation.custom_items ? JSON.parse(props.quotation.custom_items) : [{featrues:null}]
 
 
         formData.items = allItems;
@@ -570,7 +598,7 @@
 
 
 <style lang="sass" scoped>
-    @import "../../../sass/base/pages/app-invoice.scss"
+    @import "@@/sass/base/pages/app-invoice.scss"
 
 </style>
 <style lang="css" scoped>

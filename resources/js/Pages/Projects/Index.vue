@@ -13,7 +13,7 @@
                             <div class="card">
                                 <div class="card-header border-bottom d-flex justify-content-between">
                                     <h4 class="card-title">Project Information's </h4>
-<!--                                    <button class="dt-button add-new btn btn-primary" tabindex="0" type="button" data-bs-toggle="modal" data-bs-target="#addItemModal">Add Client</button>-->
+                                    <!--                                    <button class="dt-button add-new btn btn-primary" tabindex="0" type="button" data-bs-toggle="modal" data-bs-target="#addItemModal">Add Client</button>-->
                                     <button
                                         v-if="$page.props.auth.user.can.includes('project.create')|| $page.props.auth.user.role.includes('Administrator')"
                                         class="dt-button add-new btn btn-primary"
@@ -23,8 +23,10 @@
                                     </button>
                                 </div>
                                 <div class="card-datatable table-responsive pt-0">
-                                    <div class="d-flex justify-content-between align-items-center header-actions mx-0 row mt-75">
-                                        <div class="col-sm-12 col-lg-4 d-flex justify-content-center justify-content-lg-start">
+                                    <div
+                                        class="d-flex justify-content-between align-items-center header-actions mx-0 row mt-75">
+                                        <div
+                                            class="col-sm-12 col-lg-4 d-flex justify-content-center justify-content-lg-start">
                                             <div class="select-search-area">
                                                 <label>Show <select class="form-select" v-model="perPage">
                                                     <option :value="undefined">10</option>
@@ -54,7 +56,7 @@
                                             <th class="sorting">Client</th>
                                             <th class="sorting">Project Name</th>
                                             <th class="sorting">Developers</th>
-<!--                                            <th class="sorting">Project Status</th>-->
+                                            <!--                                            <th class="sorting">Project Status</th>-->
                                             <th class="sorting">Project Progress</th>
                                             <th class="sorting">Delivery Date</th>
                                             <th class="sorting">Actions</th>
@@ -66,84 +68,86 @@
                                                 <div class="d-flex justify-content-left align-items-center">
                                                     <div class="d-flex flex-column">
                                                         <div class="user_name text-truncate text-body">
-                                                            <span class="fw-bolder text-capitalize" v-if="projects.project.client">{{ projects.project.client.name }}</span>
+                                                            <span class="fw-bolder text-capitalize" v-if="projects.client">{{ projects.client.name }}</span>
                                                         </div>
-                                                        <small class="emp_post text-muted" v-if="projects.project.client">{{ projects.project.client.phone }}</small>
-                                                        <small class="emp_post text-muted" v-if="projects.project.client">{{ projects.project.client.email }}</small>
+                                                        <small class="emp_post text-muted" v-if="projects.client">{{
+                                                                projects.client.phone
+                                                            }}</small>
+                                                        <small class="emp_post text-muted" v-if="projects.client">{{ projects.client.email }}</small>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>
-                                                <a v-if="projects?.project?.url" :href="projects?.project?.url" >{{ projects.project.name }}</a>
-                                                <span v-else>{{ projects.project.name }}</span>
+                                                <a v-if="projects?.url" :href="projects?.url">{{ projects.name }}</a>
+                                                <span v-else>{{ projects.name }}</span>
                                             </td>
                                             <th>
                                                 <div class="avatar-group mt-50">
                                                     <div
                                                         v-c-tooltip="developer.name"
-                                                         title=""
-                                                         class="avatar pull-up"
-                                                         data-bs-original-title="Elicia Rieske"
-                                                         v-for="(developer, index) in projects.project.users" :key="developer.id">
+                                                        title=""
+                                                        class="avatar pull-up"
+                                                        data-bs-original-title="Elicia Rieske"
+                                                        v-for="(developer, index) in projects.users"
+                                                        :key="developer.id">
                                                         <img :src="developer.photo" alt="Avatar" height="30" width="30">
                                                     </div>
                                                 </div>
                                             </th>
-<!--                                            <td>
-                                                <span
-                                                    class="badge"
-                                                    :class="{
-                                                    'badge-light-primary'   : projects.project.status === 'New Project',
-                                                    'badge-light-warning'   : projects.project.status === 'Testing',
-                                                    'badge-light-success'   : projects.project.status === 'Complete',
-                                                    'badge-light-secandery' : projects.project.status === 'Revision',
-                                                    'badge-light-danger'    : projects.project.status === 'Canceled',
-                                                }">
-                                                    {{ projects.project.status }}
-                                                </span>
-                                            </td>-->
+                                            <!--                                            <td>
+                                                                                            <span
+                                                                                                class="badge"
+                                                                                                :class="{
+                                                                                                'badge-light-primary'   : projects.project.status === 'New Project',
+                                                                                                'badge-light-warning'   : projects.project.status === 'Testing',
+                                                                                                'badge-light-success'   : projects.project.status === 'Complete',
+                                                                                                'badge-light-secandery' : projects.project.status === 'Revision',
+                                                                                                'badge-light-danger'    : projects.project.status === 'Canceled',
+                                                                                            }">
+                                                                                                {{ projects.project.status }}
+                                                                                            </span>
+                                                                                        </td>-->
                                             <td>
                                                 <div class="progress" style="height: 7px;">
                                                     <div role="progressbar"
-                                                         v-c-tooltip="`Project ${projects.project.status} ${projects.project.progress} %`"
+                                                         v-c-tooltip="`Project ${projects.status} ${projects.progress} %`"
                                                          aria-valuemin="0"
                                                          aria-valuemax="100"
                                                          aria-valuenow="50"
                                                          class="progress-bar progress-bar-striped cursor-pointer"
                                                          :class="{
-                                                                'bg-primary'   : projects.project.status === 'New Project',
-                                                                'bg-warning'   : projects.project.status === 'Testing',
-                                                                'bg-success'   : projects.project.status === 'Complete',
-                                                                'bg-secondary' : projects.project.status === 'Revision',
-                                                                'bg-danger'    : projects.project.status === 'Canceled',
-                                                                'bg-indego'    : projects.project.status === 'Development',
+                                                                'bg-primary'   : projects.status === 'New Project',
+                                                                'bg-warning'   : projects.status === 'Testing',
+                                                                'bg-success'   : projects.status === 'Complete',
+                                                                'bg-secondary' : projects.status === 'Revision',
+                                                                'bg-danger'    : projects.status === 'Canceled',
+                                                                'bg-indego'    : projects.status === 'Development',
                                                             }"
-                                                         :style="{ width: `${projects.project.progress}%`}">
+                                                         :style="{ width: `${projects.progress}%`}">
                                                     </div>
                                                 </div>
                                             </td>
 
-                                            <td>{{ projects.start_date + " - " + projects.end_date }} </td>
+                                            <td>{{ projects.start + " TO " + projects.end }}</td>
                                             <td>
-                                                <CDropdown
-                                                    v-if="$page.props.auth.user.can.includes('project.show')||
+                                                <CDropdown v-if="$page.props.auth.user.can.includes('project.show')||
                                                     $page.props.auth.user.can.includes('project.edit')||
                                                     $page.props.auth.user.role.includes('Administrator')">
                                                     <CDropdownToggle>
-                                                        <vue-feather type="more-vertical" />
+                                                        <vue-feather type="more-vertical"/>
                                                     </CDropdownToggle>
                                                     <CDropdownMenu>
-                                                        <CDropdownItem  :href="projects.show_url"
-                                                                        v-if="$page.props.auth.user.can.includes('project.show')||
+                                                        <CDropdownItem :href="`/admin/projects/${projects.id}`"
+                                                                       v-if="$page.props.auth.user.can.includes('project.show')||
                                                                         $page.props.auth.user.role.includes('Administrator')">
 
-                                                        <Icon title="eye" />
+                                                            <Icon title="eye"/>
                                                             <span class="ms-1">Show</span>
                                                         </CDropdownItem>
                                                         <CDropdownItem @click="deleteItem(props.main_url, projects.id)"
                                                                        v-if="$page.props.auth.user.can.includes('project.delete')||
                                                                         $page.props.auth.user.role.includes('Administrator')">
-                                                            <Icon title="trash" />
+                                                            <Icon title="trash"/>
                                                             <span class="ms-1">Delete</span>
                                                         </CDropdownItem>
                                                     </CDropdownMenu>
@@ -152,7 +156,8 @@
                                         </tr>
                                         </tbody>
                                     </table>
-                                    <Pagination :links="projects.links" :from="projects.from" :to="projects.to" :total="projects.total"/>
+                                    <Pagination :links="projects.links" :from="projects.from" :to="projects.to"
+                                                :total="projects.total"/>
                                 </div>
                             </div>
                         </div>
@@ -164,7 +169,8 @@
         </div>
     </div>
 
-    <Modal id="addItemModal" title="Add New Project" v-vb-is:modal size="lg" v-if="$page.props.auth.user.can.includes('project.create') || $page.props.auth.user.role.includes('Administrator') ">
+    <Modal id="addItemModal" title="Add New Project" v-vb-is:modal size="lg"
+           v-if="$page.props.auth.user.can.includes('project.create') || $page.props.auth.user.role.includes('Administrator') ">
         <form @submit.prevent="createProject">
             <div class="modal-body">
                 <div class="row mb-1">
@@ -173,21 +179,24 @@
                             <Required/>
                         </label>
                         <div class="">
-                            <input v-model="createForm.name" type="text" placeholder="project name" class="form-control">
+                            <input v-model="createForm.name" type="text" placeholder="project name"
+                                   class="form-control">
                             <span v-if="errors.name" class="error text-sm text-danger">{{ errors.name }}</span>
                         </div>
                     </div>
-<!--                    <div class="col-md">-->
-<!--                        <label>Project Domain Name <small>(Optional)</small>:-->
-<!--                        </label>-->
-<!--                        <div class="">-->
-<!--                            <input v-model="createForm.url" type="text" placeholder="project url" class="form-control">-->
-<!--                            <InputFieldError :errors="errors.url"/>-->
-<!--                        </div>-->
-<!--                    </div>-->
+                    <!--                    <div class="col-md">-->
+                    <!--                        <label>Project Domain Name <small>(Optional)</small>:-->
+                    <!--                        </label>-->
+                    <!--                        <div class="">-->
+                    <!--                            <input v-model="createForm.url" type="text" placeholder="project url" class="form-control">-->
+                    <!--                            <InputFieldError :errors="errors.url"/>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
                     <div class="col-md">
                         <label>{{ isClient ? 'Invoice' : 'Client' }}: <span class="text-danger">*</span></label>
-                        <a href="javascript:void(0)" @click="changeSelect">{{  isClient ? 'Use Clients' : 'Use Invoice' }}</a>
+                        <a href="javascript:void(0)" @click="changeSelect">{{
+                                isClient ? 'Use Clients' : 'Use Invoice'
+                            }}</a>
                         <div v-if="isClient">
                             <v-select v-model="createForm.invoiceId" :options="preparedInvoices"
                                       @update:modelValue="setClientId"
@@ -198,16 +207,16 @@
                                     <li class="d-flex align-items-start py-1">
                                         <div class="d-flex align-items-center justify-content-between w-100">
                                             <div class="me-1 d-flex flex-column">
-                                                <strong class="mb-25">{{ 'Invoice Id: #_'+option.invoiceId }}</strong>
+                                                <strong class="mb-25">{{ 'Invoice Id: #_' + option.invoiceId }}</strong>
                                                 <span>{{ option.clientName }}</span>
-                                                <span>{{ option.clientEmail ?? ''}}</span>
-                                                <span>{{ option.clientPhone ?? ''}}</span>
+                                                <span>{{ option.clientEmail ?? '' }}</span>
+                                                <span>{{ option.clientPhone ?? '' }}</span>
                                             </div>
                                         </div>
                                     </li>
                                 </template>
                             </v-select>
-<!--                            <InputFieldError :errors="errors.invoiceId"/>-->
+                            <!--                            <InputFieldError :errors="errors.invoiceId"/>-->
                         </div>
                         <div v-else class="">
                             <v-select v-model="createForm.clientId"
@@ -220,14 +229,14 @@
                                         <div class="d-flex align-items-center justify-content-between w-100">
                                             <div class="me-1 d-flex flex-column">
                                                 <span>{{ option.name }}</span>
-                                                <span>{{ option.email ?? ''}}</span>
-                                                <span>{{ option.phone ?? ''}}</span>
+                                                <span>{{ option.email ?? '' }}</span>
+                                                <span>{{ option.phone ?? '' }}</span>
                                             </div>
                                         </div>
                                     </li>
                                 </template>
                             </v-select>
-<!--                            <InputFieldError :errors="errors.invoiceId"/>-->
+                            <!--                            <InputFieldError :errors="errors.invoiceId"/>-->
                         </div>
                         <InputFieldError :errors="errors.invoiceId || errors.clientId"/>
 
@@ -281,18 +290,19 @@
                 </div>
 
 
-
                 <div class="row mb-1">
                     <div class="col-md-12">
-                        <label>Project Description  :</label>
+                        <label>Project Description :</label>
                         <div class="">
-                            <textarea v-model="createForm.project_details" class="form-control" rows="6" placeholder="e.g Project description explain here help for developer..."></textarea>
+                            <textarea v-model="createForm.project_details" class="form-control" rows="6"
+                                      placeholder="e.g Project description explain here help for developer..."></textarea>
                         </div>
                     </div>
                     <div class="col-md-12 mt-2">
                         <label>Project Credential's : </label>
                         <div class="">
-                            <textarea v-model="createForm.credintials" class="form-control" rows="6" placeholder="e.g Details explain about this project credentials..."></textarea>
+                            <textarea v-model="createForm.credintials" class="form-control" rows="6"
+                                      placeholder="e.g Details explain about this project credentials..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -300,7 +310,7 @@
                 <div class="row mb-1">
                     <div class="col-md">
                         <label>Upload Files</label>
-                        <ImageUploader v-model="createForm.files" label="Project Files" />
+                        <ImageUploader v-model="createForm.files" label="Project Files"/>
                     </div>
                 </div>
 
@@ -335,7 +345,7 @@
                                     <div class="d-flex align-items-center justify-content-between w-100">
                                         <div class="me-1 d-flex flex-column">
                                             <strong class="mb-25">{{ option.name }}</strong>
-                                            <span >{{ option.email }}</span>
+                                            <span>{{ option.email }}</span>
                                         </div>
                                     </div>
                                 </li>
@@ -348,7 +358,8 @@
                     <div class="col-md-12 mt-2">
                         <label>Notes : </label>
                         <div class="">
-                            <textarea v-model="createForm.note" class="form-control" placeholder="e.g Write an note about this project..." rows="6"></textarea>
+                            <textarea v-model="createForm.note" class="form-control"
+                                      placeholder="e.g Write an note about this project..." rows="6"></textarea>
                         </div>
                     </div>
                 </div>
@@ -369,125 +380,128 @@
 </template>
 
 
-
 <script setup>
-    import Pagination from "@/components/Pagination.vue";
-    import Icon from "@/components/Icon.vue";
-    import Modal from "@/components/Modal.vue";
-    import InputFieldError from "@/components/InputFieldError.vue";
+import Pagination from "@/components/Pagination.vue";
+import Icon from "@/components/Icon.vue";
+import Modal from "@/components/Modal.vue";
+import InputFieldError from "@/components/InputFieldError.vue";
 
 
-    import TextEditor from "@/components/TextEditor.vue";
+import TextEditor from "@/components/TextEditor.vue";
 
 
-    import ImageUploader from "@/components/ImageUploader.vue";
-    import {ref, watch, computed} from "vue";
-    import debounce from "lodash/debounce";
-    import {router} from "@inertiajs/vue3";
-    import Swal from 'sweetalert2'
-    import {useForm} from "@inertiajs/vue3";
-    import axios from 'axios';
-    import {CDropdown,CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
-    import {useAction} from "../../composables/useAction";
+import ImageUploader from "@/components/ImageUploader.vue";
+import {ref, watch, computed} from "vue";
+import debounce from "lodash/debounce";
+import {router} from "@inertiajs/vue3";
+import Swal from 'sweetalert2'
+import {useForm} from "@inertiajs/vue3";
+import axios from 'axios';
+import {CDropdown, CDropdownToggle, CDropdownMenu, CDropdownItem} from '@coreui/vue'
+import {useAction} from "../../composables/useAction";
 
-    const {deleteItem} = useAction();
+const {deleteItem} = useAction();
 
-    const props = defineProps({
-        projects: Object,
-        filters: Object,
-        errors: Object,
-        clients:Object,
-        invoice:Object|null,
-        main_url:String|null,
-        users:Object,
-    });
+const props = defineProps({
+    projects: Object,
+    filters: Object,
+    errors: Object,
+    clients: Object,
+    invoice: Object | null,
+    main_url: String | null,
+    users: Object,
+});
 
-    const isClient = ref(true);
-    const changeSelect =()=> isClient.value = !isClient.value
+const isClient = ref(true);
+const changeSelect = () => isClient.value = !isClient.value
 
 
-    const createForm = useForm({
-        name: null,
-        url:null,
-        note: null,
-        status: null,
-        date:null,
-        start_date:null,
-        end_date:null,
-        agents:null,
-        clientId:null,
-        invoiceId:null,
-        descriptions:null,
-        credintials:null,
-        project_details:null,
-        files:null,
-        processing: Boolean,
+const createForm = useForm({
+    name: null,
+    url: null,
+    note: null,
+    status: null,
+    date: null,
+    start_date: null,
+    end_date: null,
+    agents: null,
+    clientId: null,
+    invoiceId: null,
+    descriptions: null,
+    credintials: null,
+    project_details: null,
+    files: null,
+    processing: Boolean,
+})
+
+
+const status = [
+    'New Project',
+    'In Process',
+    'Testing',
+    'Revision',
+    'Complete',
+    'Canceled'
+]
+
+const addDataModal = () => {
+    document.getElementById('addItemModal').$vb.modal.show()
+}
+const createProject = () => {
+    router.post('projects', createForm, {
+        preserveState: true,
+        onStart: () => {
+            createForm.processing = true
+        },
+        onFinish: () => {
+            createForm.processing = false
+        },
+        onSuccess: () => {
+            document.getElementById('addItemModal').$vb.modal.hide()
+            createForm.reset()
+            Swal.fire(
+                'Saved!',
+                'Your file has been Saved.',
+                'success'
+            )
+        },
+        onError: () => {
+
+        }
     })
+}
 
 
-    const status = [
-        'New Project',
-        'In Process',
-        'Testing',
-        'Revision',
-        'Complete',
-        'Canceled'
-    ]
-
-    const addDataModal = () => {
-        document.getElementById('addItemModal').$vb.modal.show()
-    }
-    const createProject = () => {
-        router.post('projects', createForm, {
-            preserveState: true,
-            onStart: () => {createForm.processing = true},
-            onFinish: () => {createForm.processing = false},
-            onSuccess: () => {
-                document.getElementById('addItemModal').$vb.modal.hide()
-                createForm.reset()
-                Swal.fire(
-                    'Saved!',
-                    'Your file has been Saved.',
-                    'success'
-                )
-            },
-            onError:()=>{
-
-            }
-        })
-    }
-
-
-
-    const preparedInvoices = computed(()=>{
-        return props.invoice.map(item =>{
-            return {
-                id:item.id,
-                invoiceId:item.invoice_id+''+item.id,
-                clientId:item.client?.id,
-                clientName:item.client?.name,
-                clientEmail:item.client?.email ?? item.client?.secondary_email,
-                clientPhone:item.client?.phone ?? item.client?.secondary_phone,
-            }
-        })
+const preparedInvoices = computed(() => {
+    return props.invoice.map(item => {
+        return {
+            id: item.id,
+            invoiceId: item.invoice_id + '' + item.id,
+            clientId: item.client?.id,
+            clientName: item.client?.name,
+            clientEmail: item.client?.email ?? item.client?.secondary_email,
+            clientPhone: item.client?.phone ?? item.client?.secondary_phone,
+        }
     })
-    const setClientId =(event)=>createForm.clientId = preparedInvoices.value.filter(item => item.id === event)[0].clientId;
+})
+const setClientId = (event) => createForm.clientId = preparedInvoices.value.filter(item => item.id === event)[0].clientId;
 
 
-    const search = ref(props.filters.search);
-    const perPage = ref(props.filters.perPage);
+const search = ref(props.filters.search);
+const perPage = ref(props.filters.perPage);
 
-    watch([search, perPage], debounce(function ([val, val2]) {
-        router.get(props.main_url, {search: val, perPage: val2}, {preserveState: true, replace: true});
-    }, 300));
+watch([search, perPage], debounce(function ([val, val2]) {
+    router.get(props.main_url, {search: val, perPage: val2}, {preserveState: true, replace: true});
+}, 300));
 
 </script>
 
 <style scoped>
-    .ck.ck-editor__main>.ck-editor__editable.ck-rounded-corners{
-        min-height: 15rem !important;
-    }
-    .bg-indego{
-        background: #02fa34;
-    }
+.ck.ck-editor__main > .ck-editor__editable.ck-rounded-corners {
+    min-height: 15rem !important;
+}
+
+.bg-indego {
+    background: #02fa34;
+}
 </style>

@@ -56,7 +56,7 @@ class TodoController extends Controller
                     ->orWhere('about_todo', 'like', "%{$serch}%");
             })
             ->latest()
-            ->paginate(Request::input('perPage') ?? 10)
+            ->paginate(Request::input('perPage') ?? config('app.perpage'))
             ->withQueryString();
 
 

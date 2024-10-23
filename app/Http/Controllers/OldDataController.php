@@ -45,7 +45,7 @@ class OldDataController extends Controller
                         ->whereDate('created_at', '<=', $end_date);
                 })
                 ->oldest()
-                ->paginate(Request::input('perPage') ?? 10)
+                ->paginate(Request::input('perPage') ?? config('app.perpage'))
                 ->withQueryString()
                 ->through(fn($quotation) => [
                     'quotation' => $quotation,
@@ -95,7 +95,7 @@ class OldDataController extends Controller
                         ->whereDate('created_at', '<=', $end_date);
                 })
                 ->oldest()
-                ->paginate(Request::input('perPage') ?? 10)
+                ->paginate(Request::input('perPage') ?? config('app.perpage'))
                 ->withQueryString()
                 ->through(fn($invoice) => [
                     'invoice' => $invoice,

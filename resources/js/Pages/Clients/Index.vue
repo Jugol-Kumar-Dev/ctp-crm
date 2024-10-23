@@ -26,8 +26,7 @@
                                     <div class="d-flex align-items-center justify-content-between border-bottom">
                                         <div class="select-search-area d-flex align-items-center">
                                             <select class="form-select" v-model="perPage">
-                                                <option :value="undefined">10</option>
-                                                <option value="25">25</option>
+                                                <option :value="undefined">25</option>
                                                 <option value="50">50</option>
                                                 <option value="100">100</option>
                                                 <option value="200">200</option>
@@ -51,7 +50,7 @@
                                                         placeholder="Select Date Range" autoApply
                                                         @update:model-value="handleDate"></Datepicker>
 
-                                            <select class="form-select" v-model="employee" style="width:100%;"
+                                            <select class="form-select" v-model="employee" style="width:200px;"
                                                     v-if="$page.props.auth.user.role.includes('Administrator') || $page.props.auth.user.can.includes('leads.index')">
                                                 <option :value="undefined" disabled selected>Filter By Employee</option>
                                                 <option :value="emp.id" v-for="emp in props.users" v-text="emp.name"/>

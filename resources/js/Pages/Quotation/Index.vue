@@ -41,7 +41,7 @@
                                                         placeholder="Select Date Range" autoApply
                                                         @update:model-value="handleDate"></Datepicker>
 
-                                            <select class="form-select" v-model="employee"
+                                            <select class="form-select" style="width:200px;" v-model="employee"
                                                     v-if="$page.props.auth.user.role.includes('Administrator') || $page.props.auth.user.can.includes('quotation.index')">
                                                 <option :value="undefined" disabled selected>Filter By Employee</option>
                                                 <option :value="emp.id" v-for="emp in props.users" v-text="emp.name"/>

@@ -274,7 +274,7 @@ import Swal from 'sweetalert2'
 import { usePage, useForm } from '@inertiajs/vue3'
 import {computed, ref} from "vue"
 
-const APP_URL = usePage().props.value.ADMIN_URL;
+const APP_URL = usePage().props.value?.ADMIN_URL;
 
 let props = defineProps({
     option:[],

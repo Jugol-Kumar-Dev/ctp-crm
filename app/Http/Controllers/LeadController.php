@@ -155,7 +155,7 @@ class LeadController extends Controller
         }
 
         $clients = $clients->latest()
-            ->paginate(Request::input('perPage') ?? 10)
+            ->paginate(Request::input('perPage') ?? config('app.perpage'))
             ->withQueryString()
             ->through(fn($client) => [
                 'id' => $client->id,

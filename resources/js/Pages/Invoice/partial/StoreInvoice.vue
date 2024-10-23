@@ -377,12 +377,11 @@
 </template>
 
 <script setup>
-import moment from 'moment/moment';
 import {ref, computed,onMounted  } from "vue";
-import {useQuotationStore} from "../../../Store/useQuotationStore";
+import {useQuotationStore} from "@/Store/useQuotationStore.js";
 import Fuse from "fuse.js";
 import {useForm} from "@inertiajs/vue3";
-import {usePolicyStore} from "../../../Store/usePolicyStore";
+import {usePolicyStore} from "@/Store/usePolicyStore.js";
 import Modal from "@/components/Modal.vue";
 import {storeToRefs} from "pinia";
 
@@ -447,6 +446,6 @@ const saveInvoice =()=> emits("storeEvent", formData)
 </script>
 
 <style lang="sass" scoped>
-@import "../../../../sass/base/pages/app-invoice.scss"
+@import "@@/sass/base/pages/app-invoice.scss"
 </style>
 

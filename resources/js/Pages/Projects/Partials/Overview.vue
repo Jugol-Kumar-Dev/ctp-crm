@@ -323,7 +323,7 @@
 
 import {computed, onMounted, ref} from "vue";
 import moment from "moment";
-import ProgressChart from "../../../components/ProgressChart.vue";
+import ProgressChart from "@/components/ProgressChart.vue";
 import {useForm, router} from "@inertiajs/vue3";
 import Modal from '@/components/Modal.vue';
 import Swal from "sweetalert2";

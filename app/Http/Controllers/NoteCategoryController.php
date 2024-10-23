@@ -36,7 +36,7 @@ class NoteCategoryController extends Controller
                     ;
                 })
                 ->latest()
-                ->paginate(Request::input('perPage') ?? 10)
+                ->paginate(Request::input('perPage') ?? config('app.perpage'))
                 ->withQueryString()
                 ->through(fn($note) => [
                     'id' => $note->id,

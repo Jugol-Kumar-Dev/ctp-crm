@@ -21,12 +21,12 @@ class PurposeController extends Controller
             abort(401);
         }
 
-        return inertia('Modules/Purpose/Index', [
+        return inertia('Purpose/Index', [
             'purposes' => Purpose::query()
                 ->when(Request::input('search'), function ($query, $search) {
                     $query->where('name', 'like', "%{$search}%");
                 })
-                ->paginate(Request::input('perPage') ?? 10)
+                ->paginate(Request::input('perPage') ?? config('app.perpage'))
                 ->withQueryString()
                 ->through(fn($purpose) => [
                     'id' => $purpose->id,

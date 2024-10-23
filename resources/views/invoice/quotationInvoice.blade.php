@@ -132,6 +132,14 @@
         small {
             font-size: 14px;
         }
+        .footer {
+            position: fixed;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -214,9 +222,9 @@
                 <tbody>
 
                 @foreach ($pref as $item)
-{{--                    <tr @if($loop->last) style="border-bottom:1px solid #e7e7e7" @endif>--}}
+                    {{--                    <tr @if($loop->last) style="border-bottom:1px solid #e7e7e7" @endif>--}}
                     <tr style="border-bottom:1px solid #e7e7e7">
-                        <td class="border text-left"  colspan="3" @if($loop->last) style="padding-bottom: 7px" @endif>
+                        <td class="border text-left" colspan="3" @if($loop->last) style="padding-bottom: 7px" @endif>
                             {!! nl2br($item['name']) !!}
                         </td>
                         <td class="border text-right" @if($loop->last) style="padding-bottom: 7px" @endif>
@@ -237,15 +245,19 @@
                 @endif
                 <tr style="border-top: 1px solid #e7e7e7">
                     <td class="text-right border" style="padding: 10px" colspan="3"><strong>Grand Total</strong></td>
-                    <td class="text-right border" style="padding: 10px"><strong>{{ $invoice->grand_total }}</strong></td>
+                    <td class="text-right border" style="padding: 10px"><strong>{{ $invoice->grand_total }}</strong>
+                    </td>
                 </tr>
                 <tr>
                     <td class="text-right border" colspan="3">Total Pay</td>
                     <td class="text-right border"><strong> {{ $invoice->pay ?? 0  }}</strong></td>
                 </tr>
                 <tr style="border-top: 1px solid #e7e7e7">
-                    <td class="text-right border" style="padding: 10px; font-weight: bolder; font-size: 18px" colspan="3">Total Due</td>
-                    <td class="text-right border" style="padding: 10px; font-weight: bolder; font-size: 18px" ><strong>{{ $invoice->due }}</strong></td>
+                    <td class="text-right border" style="padding: 10px; font-weight: bolder; font-size: 18px"
+                        colspan="3">Total Due
+                    </td>
+                    <td class="text-right border" style="padding: 10px; font-weight: bolder; font-size: 18px">
+                        <strong>{{ $invoice->due }}</strong></td>
                 </tr>
 
                 </tbody>
@@ -280,68 +292,70 @@
     <div class="row mt-3">
         <div class="col-3 text-center">
             <p class="text-center">Created By {{ $invoice->user?->name }}</p>
-            <p>{{ config('app.electrically_generated_message') }}</p>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ $showUrl }}"
+                 style="width:100px; margin-top: 30px;" alt="qr-code">
+            <p class="text-center">Scan QR Code For Online Payment</p>
+            <p class="footer">{{ config('app.electrically_generated_message') }}</p>
         </div>
     </div>
-
-
-
 
 
     @if($invoice?->transactions->count())
+        <div class="page-break"></div>
         <div class="row" style="margin-top: 3rem;">
-        <div class="col-3">
-            <h3>Payment Details:</h3>
-            <table class="trx-table">
-                <thead>
-                <tr>
-                    <th class="text-left">Trx Id</th>
-                    <th class="text-center">Trx Date</th>
-                    <th class="text-center">Total Pay</th>
-                    <th class="text-center">Total Due</th>
-                    <th class="text-right">Payment Method</th>
-                </tr>
-                </thead>
-                <tbody>
-                @forelse($invoice?->transactions as $item)
-                    @if($item)
-                        <tr style="border-bottom:1px solid #e7e7e7">
-                            <td class="border text-left">
-                                Trx_{{ $item?->transaction_id }}
-                            </td>
-                            <td class="border text-center">
-                                {{ \Carbon\Carbon::parse($item?->payment_date)->format('d-m-Y')}}
-                            </td>
-                            <td class="border text-center">
-                                {{ $item?->pay ?? '---'}}
-                            </td>
-                            <td class="border text-center">
-                                {{ $item?->due ?? '---'}}
-                            </td>
-                            <td class="border text-right">
-                                {{ $item?->method?->name  ?? '---'}}
-                            </td>
-                        </tr>
-                    @endif
+            <div class="col-3">
+                <h3>Payment Details:</h3>
+                <table class="trx-table">
+                    <thead>
+                    <tr>
+                        <th class="text-left">Trx Id</th>
+                        <th class="text-center">Trx Date</th>
+                        <th class="text-center">Total Pay</th>
+                        <th class="text-center">Total Due</th>
+                        <th class="text-right">Payment Method</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @forelse($invoice?->transactions as $item)
+                        @if($item)
+                            <tr style="border-bottom:1px solid #e7e7e7">
+                                <td class="border text-left">
+                                    Trx_{{ $item?->transaction_id }}
+                                </td>
+                                <td class="border text-center">
+                                    {{ \Carbon\Carbon::parse($item?->payment_date)->format('d-m-Y')}}
+                                </td>
+                                <td class="border text-center">
+                                    {{ $item?->pay ?? '---'}}
+                                </td>
+                                <td class="border text-center">
+                                    {{ $item?->due ?? '---'}}
+                                </td>
+                                <td class="border text-right">
+                                    {{ $item?->method?->name  ?? '---'}}
+                                </td>
+                            </tr>
+                        @endif
                     @empty
                     @endforelse
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
     @endif
 
-
-    <div class="page-break"></div>
-    <div class="row">
-        <div class="col-3">
-            @if (!is_null($invoice?->payment_methods ?? $invoice?->quotation?->payment_methods))
+    @if (!is_null($invoice?->payment_methods ?? $invoice?->quotation?->payment_methods))
+        <div class="page-break"></div>
+        <div class="row">
+            <div class="col-3">
                 <h3>Payment Mehod:</h3>
                 {!! nl2br($invoice?->payment_methods ?? $invoice?->quotation?->payment_methods) !!}
-                <h3>Direct Payment Bill Online at <a href="https://creativetechpark.com/pay" >https://creativetechpark.com/pay</a></h3>
-            @endif
+                <h3>Direct Payment Bill Online at <a href="https://creativetechpark.com/pay">https://creativetechpark.com/pay</a>
+                </h3>
+            </div>
         </div>
-    </div>
+    @endif
+
     @if (!is_null($invoice?->payment_policy ?? $invoice?->quotation?->payment_policy))
         <div class="row">
             <div class="col-3">
@@ -350,7 +364,6 @@
             </div>
         </div>
     @endif
-
     @if (!is_null($invoice?->trams_of_service ?? $invoice?->quotation?->trams_of_service))
         <div class="row mb-50">
             <div class="col-3">

@@ -85,6 +85,7 @@
         td:nth-child(2) {
             border-right: 0 !important;
         }
+
         td:nth-child(3) {
             border-right: 0 !important;
         }
@@ -128,6 +129,22 @@
 
         small {
             font-size: 14px;
+        }
+        .footer {
+            position: fixed;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+        }
+        .custom-items{
+            width: 100%;
+            overflow: hidden;
+        }
+        .custom-items img {
+            max-width: 100% !important;
+            width: auto !important; /* Override the fixed width */
         }
     </style>
 </head>
@@ -206,7 +223,7 @@
                 @foreach ($pref as $item)
                     {{--                    <tr @if($loop->last) style="border-bottom:1px solid #e7e7e7" @endif>--}}
                     <tr style="border-bottom:1px solid #e7e7e7">
-                        <td class="border text-left"  colspan="3" @if($loop->last) style="padding-bottom: 7px" @endif>
+                        <td class="border text-left" colspan="3" @if($loop->last) style="padding-bottom: 7px" @endif>
                             @if(isset($item['packageName']))
                                 <h4 style="margin:0;border-bottom:1px dashed #e7e7e7;display:inline;">{{ $item['packageName'] ?? '' }}</h4>
                                 </br>
@@ -220,10 +237,10 @@
                 @endforeach
 
 
-                    <tr>
-                        <td class="text-right border" colspan="3">Sub Total</td>
-                        <td class="text-right border"><strong>{{ $quotation->total_price  }}</strong></td>
-                    </tr>
+                <tr>
+                    <td class="text-right border" colspan="3">Sub Total</td>
+                    <td class="text-right border"><strong>{{ $quotation->total_price  }}</strong></td>
+                </tr>
                 @if($quotation->discount > 0)
                     <tr>
                         <td class="text-right border" colspan="3">Discount</td>
@@ -231,10 +248,13 @@
                     </tr>
                 @endif
 
-                    <tr style="border-top: 1px solid #e7e7e7">
-                        <td class="text-right border" style="padding: 10px; font-weight: bolder; font-size: 18px" colspan="3">Grand Total</td>
-                        <td class="text-right border" style="padding: 10px; font-weight: bolder; font-size: 18px" ><strong>{{ $quotation->grand_total }}</strong></td>
-                    </tr>
+                <tr style="border-top: 1px solid #e7e7e7">
+                    <td class="text-right border" style="padding: 10px; font-weight: bolder; font-size: 18px"
+                        colspan="3">Grand Total
+                    </td>
+                    <td class="text-right border" style="padding: 10px; font-weight: bolder; font-size: 18px">
+                        <strong>{{ $quotation->grand_total }}</strong></td>
+                </tr>
                 </tbody>
             </table>
         </div>
@@ -253,34 +273,48 @@
     </div>
 
     @if($quotation?->note)
-    <div class="row">
-          <div class="col-3">
-              <h3>Note:</h3>
-              <span style="margin-bottom: 20px">
+        <div class="row">
+            <div class="col-3">
+                <h3>Note:</h3>
+                <span style="margin-bottom: 20px">
                   {!! nl2br($quotation->note ?? ' ') !!}
               </span>
-              <br>
-              <br>
-          </div>
-      </div>
+                <br>
+                <br>
+            </div>
+        </div>
     @endif
 
     <div class="row mt-3">
         <div class="col-3 text-center">
             <p class="text-center">Created By {{ $quotation->user->name }}</p>
-            <p>{{ config('app.electrically_generated_message') }}</p>
+            <p class="footer">{{ config('app.electrically_generated_message') }}</p>
         </div>
     </div>
-    <div class="page-break"></div>
-    <div class="row">
-        <div class="col-3">
-            @if (!is_null($quotation->payment_methods))
+
+
+    @if($quotation->custom_items && collect(json_decode($quotation->custom_items))->first()?->featrues)
+        <div class="page-break"></div>
+        @foreach(json_decode($quotation->custom_items) as $item)
+            <div class="row">
+                <div class="col-3 custom-items">
+                    {!! $item->featrues !!}
+                </div>
+            </div>
+        @endforeach
+    @endif
+
+    @if (!is_null($quotation->payment_methods))
+        <div class="page-break"></div>
+        <div class="row">
+            <div class="col-3">
                 <h3>Payment Mehod:</h3>
                 {!! nl2br($quotation->payment_methods) !!}
-                <h3>Direct Payment Bill Online at <a href="https://creativetechpark.com/pay" >https://creativetechpark.com/pay</a></h3>
-            @endif
+                <h3>Direct Payment Bill Online at <a href="https://creativetechpark.com/pay">https://creativetechpark.com/pay</a>
+                </h3>
+            </div>
         </div>
-    </div>
+    @endif
     @if (!is_null($quotation->payment_policy))
         <div class="row">
             <div class="col-3">
@@ -300,10 +334,12 @@
     @endif
 </div>
 
-
+<div class="footer">
+    <p>{{ config('app.electrically_generated_message') }}</p>
+</div>
 <script>
-    if ({{ $isPrint }}){
-        document.addEventListener('DOMContentLoaded', function() {
+    if ({{ $isPrint }}) {
+        document.addEventListener('DOMContentLoaded', function () {
             window.print();
         });
     }

@@ -8,6 +8,7 @@ use App\Models\Purpose;
 use App\Models\Transaction;
 use App\Models\TransactionLine;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
@@ -34,38 +35,31 @@ class ExpanceController extends Controller
             }
         }
 
+        $search = Request::input('search');
+        $expances = Expanse::query()
+            ->select('id', 'purpose_id', 'user_id', 'method_id', 'date','amount', 'created_at')
+            ->with(['purpse:id,name', 'user:id,name','method:id,name'])
+            ->when(!Auth::user()->hasRole('Administrator') && auth()->user()->can('expanse.own'), function($query){
+                $query->where('user_id', Auth::id());
+            })
+            ->when(Request::input('search'), function ($query, $search) {
+                $query->where('subject', 'like', "%{$search}%")
+                    ->orWherehas('purpse', function ($query)use($search){
+                        $query->where('name', 'like', "%{$search}%");
+                    })->orWherehas('method', function ($query)use($search){
+                        $query->where('name',    'like', "%{$search}%");
+                    }) ->orWherehas('user', function ($query)use($search){
+                        $query->where('name', 'like', "%{$search}%")
+                            ->orWhere('phone', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    });
+            })->latest()
+            ->paginate(Request::input('perPage') ?? config('app.perpage'))
+            ->withQueryString();
 
-        return inertia('Modules/Expanse/Index', [
-            $search = Request::input('search'),
-            'expanses' => Expanse::query()->with(['purpse', 'user','method'])
-                ->when(!Auth::user()->hasRole('Administrator') && auth()->user()->can('expanse.own'), function($query){
-                    $query->where('user_id', Auth::id());
-                })
-                ->when(Request::input('search'), function ($query, $search) {
-                    $query->where('subject', 'like', "%{$search}%")
-                            ->orWherehas('purpse', function ($query)use($search){
-                                $query->where('name', 'like', "%{$search}%");
-                            })->orWherehas('method', function ($query)use($search){
-                                $query->where('name',    'like', "%{$search}%");
-                            }) ->orWherehas('user', function ($query)use($search){
-                            $query->where('name', 'like', "%{$search}%")
-                                ->orWhere('phone', 'like', "%{$search}%")
-                                ->orWhere('email', 'like', "%{$search}%");
-                            });
-                })->latest()
-                ->paginate(Request::input('perPage') ?? 10)
-                ->withQueryString()
-                ->through(fn($expance) => [
-                    'id' => $expance->id,
-                    'user' => $expance->user,
-                    'purpse' => $expance->purpse,
-                    'method' => $expance->method,
-                    'amount' => $expance->amount,
-                    'subject' => $expance->subject,
-                    'date' => $expance->date->format('d M Y'),
-                    'created_at' => $expance->created_at->format('d M Y'),
-                    'show_url' => URL::route('expense.show', $expance->id),
-                ]),
+
+        return inertia('Expanse/Index', [
+            'expanses' => $expances,
             'purposes' => Purpose::all(),
             'methods' => Method::all(),
             'filters' => Request::only(['search','perPage']),

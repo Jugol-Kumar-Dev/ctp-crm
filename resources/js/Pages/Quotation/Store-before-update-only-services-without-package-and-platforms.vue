@@ -61,11 +61,11 @@
                                         <div class="showContentQuotation border p-2" v-if="formData.items[index].isFeatured">
                                             <table class="table table-striped details-table">
                                                 <thead>
-                                                    <th>Name</th>
-                                                    <th>Price</th>
-                                                    <th>Qty</th>
-                                                    <th>Total</th>
-                                                    <th>Action</th>
+                                                    <td>Name</td>
+                                                    <td>Price</td>
+                                                    <td>Qty</td>
+                                                    <td>Total</td>
+                                                    <td>Action</td>
                                                 </thead>
                                                 <tbody>
                                                     <tr v-for="(fes, j)  in formData.items[index].checkFeatrueds">
@@ -300,7 +300,7 @@
 
 
 <style lang="sass" scoped>
-    @import "../../../sass/base/pages/app-invoice.scss"
+    @import "@@/sass/base/pages/app-invoice.scss"
 
 </style>
 <style lang="css" scoped>

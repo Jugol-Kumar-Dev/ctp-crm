@@ -7,6 +7,7 @@ use App\Models\CustomInvoice;
 use App\Models\Invoice;
 use App\Models\Project;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
@@ -24,11 +25,20 @@ class ProjectController extends Controller
     public function index()
     {
 
-        if (!auth()->user()->hasRole('Administrator')){
-            $show =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('project.index');
-            $my =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('project.employees');
-            if($show && $my){
-                abort(401);
+//        if (!auth()->user()->hasRole('Administrator')){
+//            $show =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('project.index');
+//            $my =  auth()->user()->hasRole('Administrator')  || !auth()->user()->can('project.employees');
+//            if($show && $my){
+//                abort(401);
+//            }
+//        }
+
+        $user = Auth::user();
+        $admin = $user->hasRole('Administrator');
+        $ownOnly = $user->can('project.employees');
+        if (!$admin) {
+            if (!auth()->user()->can('project.index') && !$ownOnly) {
+                abort(401, 'Your Not Autorized For Access This Page');
             }
         }
 
@@ -40,21 +50,23 @@ class ProjectController extends Controller
             auth()->user()->can('client.ownonly')){
 
             $clients = Client::query()
-                ->with(['users'])
-                ->where(function ($query) {
+                ->with(['users:id,name,email,phone,photo'])
+                ->where(function ($query) use($user){
                     $query->where('is_client', true)
-                        ->where('created_by', Auth::id());
+                        ->where('created_by', $user->id);
                 })
-                ->orWhereHas('users', function ($query) {
-                    $query->where('user_id', Auth::id());
+                ->orWhereHas('users', function ($query) use($user){
+                    $query->where('user_id', $user->id);
                 })->where('is_client', true)
-                ->select(['id', 'name', 'email', 'phone'])
-                ->latest()->get();
+                ->select('id','name','email','phone')
+                ->latest()
+                ->get();
         }elseif((auth()->user()->can('project.employees') ||
             auth()->user()->can('project.index')) &&
             auth()->user()->can('client.index')){
 
             $clients = Client::query()->where('is_client', true)
+                ->select('id','name','email','phone')
                 ->latest()->get();
         }else{
             $clients = [];
@@ -64,31 +76,29 @@ class ProjectController extends Controller
                 auth()->user()->can('project.index'))  &&
                 auth()->user()->can('invoice.ownonly')){
 
-            $invoices = Invoice::query()->where('user_id', Auth::id())->with(['quotation', 'client'])->get();
+            $invoices = Invoice::query()->select(['id', 'invoice_id', 'client_id'])->where('user_id', $user->id)->with('client:id,name,email,phone')->get();
 
         }elseif((auth()->user()->can('project.employees') ||
                 auth()->user()->can('project.index')) &&
                 auth()->user()->can('invoice.index')){
-            $invoices = Invoice::query()->with(['quotation', 'client'])->get();
+            $invoices = Invoice::query()->select(['id', 'invoice_id', 'client_id'])->with('client:id,name,email,phone')->get();
         }else{
             $invoices = [];
         }
-
-
-        return inertia('Projects/Index', [
-            'projects' => Project::query()
-                ->with(['user', 'users', 'client', 'invoice'])
-                ->latest()
-                ->when(!Auth::user()->hasRole('Administrator') && auth()->user()->can('project.employees'), function($query){
-                    $query->where('user_id', Auth::id())
-                        ->orWhereHas('users', function ($developer){
-                            $developer->where('user_id', Auth::id());
-                        });
-                })
-                ->when(Request::input('search'), function ($query, $search) {
-                    $query
-                        ->where('name', 'like', "%{$search}%")
-                        ->orWhere('status', 'like', "%{$search}%")
+        $projects = Project::query()
+            ->select(['id','name','user_id', 'client_id', 'progress', 'status', 'invoice_id', 'start', 'end'])
+            ->with(['user:id,name,photo', 'users:id,name,photo', 'client:id,name,email,phone'])
+            ->latest()
+            ->when(!Auth::user()->hasRole('Administrator') && auth()->user()->can('project.employees'), function($query)use($user){
+                $query->where('user_id', $user->id)
+                    ->orWhereHas('users', function ($developer)use($user){
+                        $developer->where('user_id', $user->id);
+                    });
+            })
+            ->when(Request::input('search'), function ($query, $search) {
+                $query
+                    ->where('name', 'like', "%{$search}%")
+                    ->orWhere('status', 'like', "%{$search}%")
                     ->orWhereHas('client', function ($client) use($search){
                         $client
                             ->where('name',    'like', "%{$search}%")
@@ -106,26 +116,15 @@ class ProjectController extends Controller
                             ->orWhere('phone', 'like', "%{$search}%")
                             ->orWhere('email', 'like', "%{$search}%");
                     });
-                })
-                ->paginate(Request::input('perPage') ?? 10)
-                ->withQueryString()
-                ->through(fn($project) => [
-                    'id'            => $project->id,
-                    'project'       => $project,
-                    'creator'       => $project->user ? $project->user->name : "asdfasdf",
-                    'project_date'  => $project->date->format('d M Y'),
-                    'start_date'    => $project->start->format('d M'),
-                    'end_date'      => $project->end->format('d M Y'),
-                    'create_at'     => $project->created_at->format('d M Y'),
-                    "edit_url"      => URL::route('projects.edit', $project->id),
-                    "show_url"      => URL::route('projects.show', $project->id),
-                ]),
+            })
+            ->paginate(Request::input('perPage') ?? config('app.perpage'))
+            ->withQueryString();
 
 
-
-
-            'clients'  => $clients, //Client::all(['id','name', 'email', 'phone']),
-            'invoice' => $invoices, //Invoice::with(['quotation', 'client'])->get(),
+        return inertia('Projects/Index', [
+            'projects' => $projects,
+            'clients'  => $clients,
+            'invoice' => $invoices,
             'users'    => User::all(['id','name', 'email', 'photo']),
 
             'filters'  => Request::only(['search','perPage']),
@@ -238,11 +237,6 @@ class ProjectController extends Controller
             'invoice.transactions.method:id,name', 'invoice.transactions.receivedBy:id,name',
             'invoice.transactions.paymentBy:id,name', 'invoice.quotation', 'invoice.user'])->findOrFail($id);
 
-//        $project->users->map(function ($user){
-//           return $user->role = $user->getRoleNames();
-//        });
-
-
 
         if(auth()->user()->hasRole('Administrator')  || auth()->user()->can('invoice.show')) {
             $invObj = new InvoiceController();
@@ -284,9 +278,9 @@ class ProjectController extends Controller
             "pref" => $pref ?? [],
             "users" => User::with('roles')->get(),
             "dates" =>[
-                "end_date" => $project->end->format("d M, y"),
-                "start_date" => $project->start->format("d M, y"),
-                "created_at" => $project->created_at->diffForHumans(),
+                "end_date" => Carbon::parse($project->end)?->format("d M, y"),
+                "start_date" => Carbon::parse($project->start)?->format("d M, y"),
+                "created_at" => Carbon::parse($project->created_at)?->diffForHumans(),
             ],
             "urls" =>[
                 "main_url" => URL::route('projects.index'),
@@ -506,7 +500,7 @@ class ProjectController extends Controller
                             $developer->where('name', 'like', "%{$search}%");
                         });
                 })
-                ->paginate(Request::input('perPage') ?? 10)
+                ->paginate(Request::input('perPage') ?? config('app.perpage'))
                 ->withQueryString()
                 ->through(fn($project) => [
                     'id'            => $project->id,

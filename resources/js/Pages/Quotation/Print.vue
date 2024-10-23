@@ -413,7 +413,7 @@ const preparedForShow = computed(()=>{
 </script>
 
 <style lang="sass" scoped>
-@import "../../../sass/base/pages/app-invoice.scss"
+@import "@@/sass/base/pages/app-invoice.scss"
 
 </style>
 

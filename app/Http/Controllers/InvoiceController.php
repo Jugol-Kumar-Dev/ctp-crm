@@ -449,7 +449,10 @@ class InvoiceController extends Controller
 
     }
 
-    public function downloadInvoice($id, $emailData = false)
+    /**
+     * @throws \Exception
+     */
+    public function downloadInvoice($id, $emailData = false, $showCustomer=false)
     {
         $invoice = Invoice::with(['user', 'quotation', 'client', 'transactions'])->findOrFail($id);
         $pref = [];
@@ -504,8 +507,18 @@ class InvoiceController extends Controller
             ];
         }
 
-        $pdf = Pdf::loadView('invoice.quotationInvoice', compact('invoice', 'pref', 'isPrint'));
-//        return view('invoice.quotationInvoice', compact('invoice','pref', 'isPrint'));
+
+        $showUrl = URL::route('showCustomerInvoicePDF', base64_encode($invoice->id));
+
+
+        $pdf = Pdf::loadView('invoice.quotationInvoice', compact('invoice', 'pref', 'isPrint', 'showUrl'));
+        if($showCustomer){
+
+            return $pdf->stream($clientName . "_" . now()->format('d_m_Y') . "_" . 'invoice.pdf');
+
+        }
+
+//        return view('invoice.quotationInvoice', compact('invoice','pref', 'isPrint', 'showUrl'));
         return $pdf->download($clientName . "_" . now()->format('d_m_Y') . "_" . 'invoice.pdf');
     }
 
@@ -747,6 +760,16 @@ class InvoiceController extends Controller
         ]);
 
     }
+
+
+    /**
+     * @throws \Exception
+     */
+    public function showCustomerInvoicePDF($id=null)
+    {
+        return $this->downloadInvoice(base64_decode($id), false, true) ;
+    }
+
 
 
 }

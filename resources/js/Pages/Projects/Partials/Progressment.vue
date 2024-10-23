@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import ProgressChart from "../../../components/ProgressChart.vue";
+import ProgressChart from "@/components/ProgressChart.vue";
 
 
 </script>

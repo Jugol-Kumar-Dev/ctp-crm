@@ -443,7 +443,6 @@
 
 
 <script setup>
-import ProgressChart from "../components/ProgressChart.vue";
 import moment from "moment";
 import {
     Chart as ChartJS,
@@ -455,7 +454,6 @@ import {
     LinearScale
 } from 'chart.js'
 import { Bar} from 'vue-chartjs'
-import {options} from './Modules/chartConfig'
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 

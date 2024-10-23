@@ -15,6 +15,22 @@
     "file": "assets/globe@2x-CEs4Xftd.webp",
     "src": "node_modules/intl-tel-input/build/img/globe@2x.webp"
   },
+  "node_modules/summernote/dist/font/summernote.eot": {
+    "file": "assets/summernote-CIJFJttR.eot",
+    "src": "node_modules/summernote/dist/font/summernote.eot"
+  },
+  "node_modules/summernote/dist/font/summernote.ttf": {
+    "file": "assets/summernote-BFwDdmZ-.ttf",
+    "src": "node_modules/summernote/dist/font/summernote.ttf"
+  },
+  "node_modules/summernote/dist/font/summernote.woff": {
+    "file": "assets/summernote-BpukxMI1.woff",
+    "src": "node_modules/summernote/dist/font/summernote.woff"
+  },
+  "node_modules/summernote/dist/font/summernote.woff2": {
+    "file": "assets/summernote-CG9AQWUQ.woff2",
+    "src": "node_modules/summernote/dist/font/summernote.woff2"
+  },
   "public/creativeTechPark.png": {
     "file": "assets/creativeTechPark-DC-uDthT.png",
     "src": "public/creativeTechPark.png"
@@ -25,12 +41,12 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-BsDiSsCL.js",
+    "file": "assets/app-JBIrCK_V.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "css": [
-      "assets/app-BJPj9X4O.css"
+      "assets/app-BwdjP7UL.css"
     ],
     "assets": [
       "assets/creativeTechPark-DC-uDthT.png",
@@ -40,7 +56,11 @@
       "assets/flags-CK0k7MkN.webp",
       "assets/flags@2x-CZ76gT6N.webp",
       "assets/globe-CKC-qWvL.webp",
-      "assets/globe@2x-CEs4Xftd.webp"
+      "assets/globe@2x-CEs4Xftd.webp",
+      "assets/summernote-CIJFJttR.eot",
+      "assets/summernote-CG9AQWUQ.woff2",
+      "assets/summernote-BpukxMI1.woff",
+      "assets/summernote-BFwDdmZ-.ttf"
     ]
   },
   "resources/js/assets/images/excel.svg": {

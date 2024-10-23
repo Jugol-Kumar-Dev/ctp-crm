@@ -91,7 +91,7 @@ class TransactionController extends Controller
 
         $creditSum = clone $transactions;
         $lodedDatas = $transactions->latest()
-            ->paginate(Request::input('perPage') ?? 10)
+            ->paginate(Request::input('perPage') ?? config('app.perpage'))
             ->withQueryString()
             ->through(fn($tra) => [
                 'tran' => $tra,
@@ -278,7 +278,7 @@ class TransactionController extends Controller
 
 
         $passionated = clone $transactions;
-        $allData = $passionated->paginate(Request::input('perPage') ?? 10)
+        $allData = $passionated->paginate(Request::input('perPage') ?? config('app.perpage'))
             ->withQueryString();
 
         return Inertia::render('DueReport/Index',[

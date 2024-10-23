@@ -28,7 +28,7 @@ class UserController extends Controller
                 ->when(Request::input('search'), function ($query, $search) {
                     $query->where('email', 'like', "%{$search}%");
                 })
-                ->paginate(Request::input('perPage') ?? 10)
+                ->paginate(Request::input('perPage') ?? config('app.perpage'))
                 ->withQueryString()
                 ->through(fn($user) => [
                     'id' => $user->id,

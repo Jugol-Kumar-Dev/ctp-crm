@@ -79,10 +79,10 @@
                                                     {{ exp.user.name }}
                                                 </a>
                                             </td>
-                                            <td>{{ exp.date }}</td>
-                                            <td>{{ exp.created_at }}</td>
+                                            <td>{{ moment(exp.date).format('ll') }}</td>
+                                            <td>{{ moment(exp.created_at).format('ll') }}</td>
                                             <td>
-                                                <button type="button"  @click="editItem(exp.show_url)"
+                                                <button type="button"  @click="editItem(exp.id)"
                                                         v-if="$page.props.auth.user.can.includes('expanse.edit') || $page.props.auth.user.role.includes('Administrator') "
                                                         class="btn btn-icon btn-icon rounded-circle bg-light-warning waves-effect waves-float waves-light">
                                                     <Icon title="pencil"/>
@@ -341,8 +341,8 @@ let updateForm = useForm({
 })
 let editData = ref([]);
 
-const editItem = (url, isShow=false) =>{
-    axios.get(url+"/?data=true").then((res)=>{
+const editItem = (id, isShow=false) =>{
+    axios.get(props.main_url+'/'+id+"/?data=true").then((res)=>{
         console.log(res.data.date)
         editData.value = res.data;
         updateForm.purpose_id = res.data.purpse;

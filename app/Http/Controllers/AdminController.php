@@ -27,12 +27,12 @@ class AdminController extends Controller
             abort(401);
         }
 
-        return inertia('Modules/Admin/Index', [
+        return inertia('Admin/Index', [
             'users' => User::query()
                 ->when(Request::input('search'), function ($query, $search) {
                     $query->where('email', 'like', "%{$search}%");
                 })
-                ->paginate(Request::input('perPage') ?? 10)
+                ->paginate(Request::input('perPage') ?? config('app.perpage'))
                 ->withQueryString()
                 ->through(fn($user) => [
                     'id' => $user->id,
@@ -115,7 +115,7 @@ class AdminController extends Controller
             if(Request::input("api")){
                 return $user;
             }
-            return inertia('Modules/Admin/Show', [
+            return inertia('Admin/Show', [
                 "user" => $user,
             ]);
         }else{

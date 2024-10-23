@@ -23,8 +23,7 @@
                                         <div class="col-sm-12 col-lg-4 d-flex justify-content-center justify-content-lg-start">
                                             <div class="select-search-area">
                                                 <label>Show <select class="form-select" v-model="perPage">
-                                                    <option :value="undefined">10</option>
-                                                    <option value="25">25</option>
+                                                    <option :value="undefined">25</option>
                                                     <option value="50">50</option>
                                                     <option value="100">100</option>
                                                     <option value="200">200</option>

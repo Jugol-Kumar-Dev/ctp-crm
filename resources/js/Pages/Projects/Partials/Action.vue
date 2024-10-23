@@ -70,8 +70,8 @@
 import {useForm} from "@inertiajs/vue3";
 import {ref} from "vue"
 import Swal from "sweetalert2";
-import ProgressChart from "../../../components/ProgressChart.vue";
-import {useJson} from "../../../composables/useJson";
+import ProgressChart from "@/components/ProgressChart.vue";
+import {useJson} from "@/composables/useJson.js";
 
 const props = defineProps({
     info:{

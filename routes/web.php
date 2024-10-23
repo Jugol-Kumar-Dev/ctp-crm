@@ -235,6 +235,9 @@ Route::put('/test/update/{id}', [\App\Http\Controllers\TestController::class, 'u
 Route::get('/check-phone-unique', [ClientsController::class, 'checkNumberUnique']);
 
 
+// show customer invoice
+Route::get('/invoice/preview/{id?}', [InvoiceController::class, 'showCustomerInvoicePDF'])->name('showCustomerInvoicePDF');
+
 Route::get("/test", function(){
     return inertia("ntest");
 });
